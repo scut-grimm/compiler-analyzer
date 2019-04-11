@@ -1,22 +1,35 @@
 <template>
 <div class="grammar">
+  <div class="algorithm">
+    <div class="left">
+      <p class="title">算法流程：</p>
+      <p class="step" v-for="(step,index) in algorithmSteps" :key="index" :class="{'active': curStep===index}">{{step}}</p>
+    </div>
+    <div class="right">
+      <p class="title">当前操作：</p>
+      <p class="step">{{pre_notice}}</p>
+      <p class="title">下一步操作：</p>
+      <p class="step">{{notice}}</p>
+    </div>
+  </div>
+  <div class="grammar-content">
   <div class="left">
     <GrammarIndicator style="width: 200px;" :grammar="grammar" :active="active" @changeGrammarItem="onChagneGrammarItem"></GrammarIndicator>
   </div>
   <div class="center">
     <div class="up">
       <template v-if="curGrammarItem!==null">
-        <span>First({{curGrammarItem.rightSigns.map(e => e.getStr()).join('')}})</span>
+        <span class="title">First({{curGrammarItem.rightSigns.map(e => e.getStr()).join('')}})</span>
         <div class="set-div">
-          <span v-for="(sign,index) in curFirstSet" :key="index" :class="{'active': sign.isTerminal()}">{{sign.getStr()}}</span>
+          <span v-for="(sign,index) in curFirstSet" :key="index" :class="{'active': curHighlightSymbols.indexOf(sign) !== -1}">{{sign.getStr()}}</span>
         </div>
       </template>
     </div>
     <div class="down">
       <template v-if="curGrammarItem!==null">
-        <span>Follow({{curGrammarItem.leftSign.getStr()}})</span>
+        <span class="title">Follow({{curGrammarItem.leftSign.getStr()}})</span>
         <div class="set-div">
-          <span v-for="(sign,index) in curFollowSet" :key="index" :class="{'active': sign.isTerminal()}">{{sign.getStr()}}</span>
+          <span v-for="(sign,index) in curFollowSet" :key="index" :class="{'active': curHighlightSymbols.indexOf(sign) !== -1}">{{sign.getStr()}}</span>
         </div>
       </template>
     </div>
@@ -44,15 +57,31 @@
       </el-table-column>
     </el-table-column>
   </el-table>
-  <el-button @click="next">next</el-button>
+  <div style="position: absolute; bottom: 10px;left: 10px;">
+    <template v-if="started === false">
+      <el-button type="primary" @click="start">开始</el-button>
+      </template>
+  <template v-if="started === true && isAllDone === false">
+    <el-button type="success" @click="next">下一步</el-button>
+    <el-button type="warning" @click="skip">跳过</el-button>
+    <el-button type="info" @click="startAutoPlay" v-if="autoTimer === null">自动播放</el-button>
+    <el-button type="danger" @click="stopAutoPlay" v-if="autoTimer !== null">停止播放</el-button>
+
+  </template>
+  <el-button @click="start" v-if="started" type="primary">重新开始</el-button>
   </div>
 
+  </div>
+
+</div>
 </div>
 </template>
 
 <script>
 import GrammarIndicator from '~/components/grammar-indicator'
+import AlgorithmWrapper from '~/classes/algorithm-wrapper'
 import PredictiveParsingTable from '~/classes/predictive-parsing-table'
+import GeneratePredictiveParsingTable from '~/classes/algorithms/generate-predictive-parsing-table'
 import Grammar from '~/classes/grammar'
 import MapSet from '~/classes/map-set'
 export default {
@@ -66,14 +95,57 @@ export default {
       grammar: new Grammar(),
       active: 0,
       PPT,
-      PPTData: PPT.getTableData()
+      PPTData: PPT.getTableData(),
+      wrapper: null,
+      pre_notice: '',
+      notice: '',
+      started: false,
+      curStep: -1,
+      curHighlightSymbols: [],
+      autoTime: 1000,
+      autoTimer: null,
+      isAllDone:false
     }
   },
   methods:{
     onChagneGrammarItem(index){
       this.active=index
     },
+    start(){
+      const algorithm = new GeneratePredictiveParsingTable(this.grammar)
+      this.wrapper = new AlgorithmWrapper(algorithm)
+      this.wrapper.init()
+      this.started = true
+      this.isAllDone = false
+      this.curHighlightSymbols = []
+      this.sync()
+    },
+    sync(){
+      this.active = this.wrapper.getContext().cur_g_index
+      this.PPTData = this.wrapper.getCurResult()
+      this.isAllDone = this.wrapper.isAllDone()
+      if(this.isAllDone && this.autoTimer !==null){
+        clearTimeout(this.autoTimer)
+        this.autoTimer = null
+      }
+    },
     next(){
+      let {notice, curGrammarItem, step, highlightSymbols} = this.wrapper.next()
+      this.curStep = step
+      this.pre_notice = this.notice
+      this.notice = notice
+      this.curHighlightSymbols = highlightSymbols
+      this.sync()
+    },
+    skip(){
+      let {notice, curGrammarItem, step, highlightSymbols} = this.wrapper.skip()
+      this.curStep = step
+      this.pre_notice = this.notice
+      this.notice = notice
+      this.curHighlightSymbols = highlightSymbols
+      this.sync()
+    },
+    oldnext(){
       let curFirstSet = new Set(this.curFirstSet)
       let curFollowSet = new Set(this.curFollowSet)
       const Empty = this.grammar.getSign('ε','Terminal')
@@ -92,6 +164,21 @@ export default {
 
       this.active++
       this.PPTData = this.PPT.getTableData()
+    },
+    startAutoPlay(){
+      this.autoTimer = setTimeout(() => {this.autoloop()}, this.autoTime)
+    },
+    stopAutoPlay(){
+      clearTimeout(this.autoTimer)
+      this.autoTimer = null
+    },
+    autoloop(){
+      this.next()
+      if(this.isAllDone){
+        this.autoTimer = null
+        return
+      }
+      this.autoTimer = setTimeout(() => {this.autoloop()}, this.autoTime)
     }
   },
   computed:{
@@ -141,6 +228,13 @@ export default {
         i++
       }
       return ret
+    },
+    algorithmSteps(){
+      return [
+        '对于产生式A->α，对于First(α)每个终结符号a，将A->α加入到分析表M[A,a]中',
+        '若First(α)中存在ε, 将Follow(A)中的每个终结符号b，将A->α加入到分析表M[A,b]中',
+        '若First(α)中存在ε 且 Follow(A)中存在$，将A->α加入到M[A,$]中'
+      ]
     }
   },
   mounted() {
@@ -215,15 +309,43 @@ export default {
 </script>
 <style lang="scss" scoped>
 .grammar{
+  .algorithm{
+    display: flex;
+    .left{
+      width: 50%;
+    }
+    .right{
+      width: 50%;
+    }
+    .title{
+      font-size: 30px;
+    }
+    .step{
+      font-size: 20px;
+      padding: 5px;
+      border: black solid 1px;
+      &.active{
+        background-color: yellow;
+      }
+    }
+  }
+.grammar-content{
   display: flex;
   margin-top: 30px;
-  height: 100%;
+  height: 500px;
+  >div{
+    border: black solid 1px;
+    border-right: none;
+  }
   .left{
     width:200px;
   }
   .center {
     width: 200px;
     height: 100%;
+    .title{
+      font-size: 26px;
+    }
     .up{
       height: 50%;
     }
@@ -233,6 +355,7 @@ export default {
   }
   .right{
     flex-grow: 1;
+    position: relative;
   }
   .set-div{
     font-size: 22px;
@@ -244,5 +367,6 @@ export default {
       background-color: burlywood;
     }
   }
+}
 }
 </style>

@@ -26,55 +26,57 @@ class GeneratePredictiveParsingTable{
     const End = G.getSign('$','Terminal')
     yield {
       curGrammarItem,
-      notice: '分析产生式(' + curGrammarItem.getStr() +')'
-    }
-    yield {
-      curGrammarItem,
-      notice: '对于每个产生式A->α，将First(α)中的每个终结符a，将产生式A->α加入到分析表M[A,a]中'
+      notice: '分析产生式(' + curGrammarItem.getStr() +')',
+      step: 0,
+      highlightSymbols: []
     }
     for(let symbol of curFirstSet) {
       yield {
         curGrammarItem,
-        notice: `First(${curGrammarItem.getRightStr()})中存在终止符${symbol.getStr()}, 将产生式${curGrammarItem.getStr()}加入到分析表M[${curGrammarItem.getLeftStr()},${symbol.str()}]中`
+        notice: `First(${curGrammarItem.getRightStr()})中存在终止符 ${symbol.getStr()} , 将产生式 ${curGrammarItem.getStr()} 加入到分析表M[${curGrammarItem.getLeftStr()}, ${symbol.getStr()}]中`,
+        step: 0,
+        highlightSymbols: [symbol]
       }
       table.set(curGrammarItem.leftSign, symbol, curGrammarItem)
-    }
-    yield {
-      curGrammarItem,
-      notice: `若First(α)中存在${Empty.getStr()}，则将Follow(A)中的每个终结符号b，将A->α加入到分析表M[A,b]中`
     }
     if(curFirstSet.has(Empty)){
       yield {
         curGrammarItem,
-        notice: `First(${curGrammarItem.getRightStr()})中存在${Empty.getStr()}`
+        notice: `First(${curGrammarItem.getRightStr()})中存在${Empty.getStr()}`,
+        step: 1,
+        highlightSymbols: [Empty]
       }
-      for(let symbol of this.curFollowSet){
+      for(let symbol of curFollowSet){
         yield {
           curGrammarItem,
-          notice: `Follow(${curGrammarItem.getLeftStr()})中存在终止符${symbol.getStr()}, 将产生式${curGrammarItem.getStr()}加入到分析表M[${curGrammarItem.getLeftStr()},${symbol.str()}]中`
+          notice: `Follow(${curGrammarItem.getLeftStr()})中存在终止符 ${symbol.getStr()} , 将产生式 ${curGrammarItem.getStr()} 加入到分析表M[${curGrammarItem.getLeftStr()}, ${symbol.getStr()}]中`,
+          step: 1,
+          highlightSymbols: [symbol]
         }
         table.set(curGrammarItem.leftSign, symbol, curGrammarItem)
-      }
-      yield {
-        curGrammarItem,
-        notice: `若Follow(A)中存在$，则将A->α加入到M[A,$]中`
       }
       if(curFollowSet.has(End)){
         yield {
           curGrammarItem,
-          notice: `Follow(${curGrammarItem.getLeftStr()})中存在$, 将产生式${curGrammarItem.getStr()}加入到分析表M[${curGrammarItem.getLeftStr()},$]中`
+          notice: `Follow(${curGrammarItem.getLeftStr()})中存在 $ , 将产生式 ${curGrammarItem.getStr()} 加入到分析表M[${curGrammarItem.getLeftStr()}, $]中`,
+          step: 2,
+          highlightSymbols: [End]
         }
-        this.PPT.set(this.curGrammarItem.leftSign, End, this.curGrammarItem)
+        table.set(curGrammarItem.leftSign, End, curGrammarItem)
       }else{
         yield {
           curGrammarItem,
-          notice: `Follow(${curGrammarItem.getLeftStr()})中不存在$`
+          notice: `Follow(${curGrammarItem.getLeftStr()})中不存在 $ ，跳过`,
+          step: 2,
+          highlightSymbols: []
         }
       }
     }else{
       yield {
         curGrammarItem,
-        notice: `First(${curGrammarItem.getRightStr()})中不存在${Empty.getStr()}`
+        notice: `First(${curGrammarItem.getRightStr()})中不存在 ${Empty.getStr()} ，跳过`,
+        step: 1,
+        highlightSymbols: []
       }
     }
     const nextContext = {
@@ -82,6 +84,9 @@ class GeneratePredictiveParsingTable{
       table
     }
     return [false, nextContext]
+  }
+  getCurResult({table}){
+    return table.getTableData()
   }
   getResultFromContext({table}){
     return table
