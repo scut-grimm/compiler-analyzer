@@ -313,9 +313,11 @@ export default {
     display: flex;
     .left{
       width: 50%;
+      max-width: 50%;
     }
     .right{
       width: 50%;
+      max-width: 50%;
     }
     .title{
       font-size: 30px;
@@ -338,10 +340,10 @@ export default {
     border-right: none;
   }
   .left{
-    width:200px;
+    width:20%;
   }
   .center {
-    width: 200px;
+    width: 20%;
     height: 100%;
     .title{
       font-size: 26px;
@@ -354,7 +356,7 @@ export default {
     }
   }
   .right{
-    flex-grow: 1;
+    width: 60%;
     position: relative;
   }
   .set-div{

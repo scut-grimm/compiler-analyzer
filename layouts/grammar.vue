@@ -24,7 +24,7 @@ export default {
   flex-direction: row;
   .layout-left{
     height: 100%;
-    width: 300px;
+    width: 20%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -32,7 +32,8 @@ export default {
   .layout-right{
     max-height: 100%;
     overflow-y: auto;
-    flex-grow: 1;
+    width: 80%;
+    padding-right: 10px;
   }
 }
 </style>
