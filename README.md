@@ -1,4 +1,4 @@
-# grimm-example
+# compiler-analyzer
 
 > My grand Nuxt.js project
 
