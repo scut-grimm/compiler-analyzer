@@ -1,3 +1,4 @@
+import assert from 'assert'
 class IsLL1{
     _errorProductions=Array.of()
     constructor(grammer){
@@ -9,10 +10,13 @@ class IsLL1{
     }
     
     isLL1(){
-        let nonterminals=this.grammer.getNonterminals()  
+        let nonterminals=this.grammer.getNonterminals() 
+        assert(nonterminals.length,'文法没有非终止符号') 
         for(let item of nonterminals){
             let nonFirstSet=this.grammer.getSignFirstSet(item)
+            assert(nonFirstSet.length,`First(${item.symbol})为空`)
             let nonFollowSet=this.grammer.getSignFollowSet(item)
+            assert(nonFollowSet.length,`Follow(${item.symbol})为空`)
             let intersection=new Set([...nonFirstSet,...nonFollowSet])
             if(!(nonFirstSet.includes('ε')&&intersection.length!=0)){
                 let productions=this.grammer.getDerivations(item)
