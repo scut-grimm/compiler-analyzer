@@ -39,7 +39,7 @@ class IsLL1{
                 }
             }
             else{
-                let noticeArr=Array.of(`First(${production.symbol}) 中存在 ε 且 First(${production.symbol}) 与 Follow(${production.symbol}) 相交不为空`)
+                let noticeArr=Array.of(`First(${item.symbol}) 中存在 ε 且 First(${item.symbol}) 与 Follow(${item.symbol}) 相交不为空`)
                 let errorProduction={
                     production: item,
                     notice: noticeArr,
