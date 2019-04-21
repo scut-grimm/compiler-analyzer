@@ -8,8 +8,23 @@ class Grammar{
     this.signs = new Map()
     this.firstSet = new MapSet()
     this.followSet = new MapSet()
+    this.startSign = null
+  }
+  setStartSign(sign){
+    assert.strictEqual(this.checkSignsExist([sign]), true, 'Sign should be added first')
+    this.startSign = sign
+  }
+  getStartSign(){
+    assert.notStrictEqual(this.startSign, null , 'Start Sign has not been defined.')
+    return this.startSign
   }
   getSign(symbol, type = undefined){
+    //override getSign(sign:Sign)
+    if(symbol instanceof Sign){
+      let tmp = symbol
+      symbol = tmp.symbol
+      type = tmp.type
+    }
     if(!this.signs.has(symbol)){
       this.signs.set(symbol, new Sign(symbol, type))
     }else{
@@ -21,7 +36,7 @@ class Grammar{
   }
   checkSignsExist(signs){
     for(let sign of signs){
-      if(!this.signs.has(sign.symbol)){
+      if(!this.signs.has(sign.symbol) || this.signs.get(sign.symbol) !== sign){
         return false
       }
     }
