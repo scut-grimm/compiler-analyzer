@@ -1,8 +1,8 @@
 import assert from 'assert'
 class IsLL1{
     _errorProductions=Array.of()
-    constructor(grammer){
-        this.grammer=grammer
+    constructor(grammar){
+        this.grammar=grammar
     }
 
     getInitContext(){
@@ -10,17 +10,17 @@ class IsLL1{
     }
     
     isLL1(){
-        let nonterminals=this.grammer.getNonterminals() 
+        let nonterminals=this.grammar.getNonterminals() 
         assert(nonterminals.length,'文法没有非终止符号') 
         for(let item of nonterminals){
-            let nonFirstSet=this.grammer.getSignFirstSet(item)
+            let nonFirstSet=this.grammar.getSignFirstSet(item)
             assert(nonFirstSet.length,`First(${item.symbol})为空`)
-            let nonFollowSet=this.grammer.getSignFollowSet(item)
+            let nonFollowSet=this.grammar.getSignFollowSet(item)
             assert(nonFollowSet.length,`Follow(${item.symbol})为空`)
             let intersection=new Set([...nonFirstSet,...nonFollowSet])
             if(!(nonFirstSet.includes('ε')&&intersection.length!=0)){
-                let productions=this.grammer.getDerivations(item)
-                let bodyFirstSets=productions.map(x=>this.grammer.getGrammarItemRightFirstSet(x))
+                let productions=this.grammar.getDerivations(item)
+                let bodyFirstSets=productions.map(x=>this.grammar.getGrammarItemRightFirstSet(x))
                 let flatBodyFirstSet=bodyFirstSets.flat()  //将产生式体的First集合的所有元素放在一个数组中
                 let duplexItems=this._duplexItem(flatBodyFirstSet.map(x=>x.getStr()))
                 if(duplexItems.length!=0){
