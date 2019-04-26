@@ -118,7 +118,7 @@ class GenerateGrammarFromUserInput{
     
 
     _genGrammar(){
-        this._G.setStartSymbol(this._startSymbol)
+        this._G.setStartSign(this._startSymbol)
         this._genGrammarItems()
     }
 
