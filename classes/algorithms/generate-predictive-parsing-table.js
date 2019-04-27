@@ -15,66 +15,66 @@ class GeneratePredictiveParsingTable{
   *epoch(curContext){
     let {cur_g_index,table} = curContext
     const G = this.grammar
-    if(cur_g_index >= G.grammars.length){
+    if(cur_g_index >= G.productions.length){
       return [true, table]
     }
-    const curGrammarItem = G.grammars[cur_g_index]
+    const curProduction = G.productions[cur_g_index]
 
-    let curFirstSet = new Set(G.getGrammarItemRightFirstSet(curGrammarItem))
-    let curFollowSet = new Set(G.getSignFollowSet(curGrammarItem.leftSign))
+    let curFirstSet = new Set(G.getProductionBodyFirstSet(curProduction))
+    let curFollowSet = new Set(G.getSignFollowSet(curProduction.head))
     const Empty = G.getSign('ε','Terminal')
     const End = G.getSign('$','Terminal')
     yield {
-      curGrammarItem,
-      notice: '分析产生式(' + curGrammarItem.getStr() +')',
+      curProduction,
+      notice: '分析产生式(' + curProduction.getString() +')',
       step: 0,
       highlightSymbols: []
     }
     for(let symbol of curFirstSet) {
       yield {
-        curGrammarItem,
-        notice: `First(${curGrammarItem.getRightStr()})中存在终止符 ${symbol.getStr()} , 将产生式 ${curGrammarItem.getStr()} 加入到分析表M[${curGrammarItem.getLeftStr()}, ${symbol.getStr()}]中`,
+        curProduction,
+        notice: `First(${curProduction.getBodyString()})中存在终止符 ${symbol.getString()} , 将产生式 ${curProduction.getString()} 加入到分析表M[${curProduction.getHeadString()}, ${symbol.getString()}]中`,
         step: 0,
         highlightSymbols: [symbol]
       }
-      table.set(curGrammarItem.leftSign, symbol, curGrammarItem)
+      table.set(curProduction.head, symbol, curProduction)
     }
     if(curFirstSet.has(Empty)){
       yield {
-        curGrammarItem,
-        notice: `First(${curGrammarItem.getRightStr()})中存在${Empty.getStr()}`,
+        curProduction,
+        notice: `First(${curProduction.getBodyString()})中存在${Empty.getString()}`,
         step: 1,
         highlightSymbols: [Empty]
       }
       for(let symbol of curFollowSet){
         yield {
-          curGrammarItem,
-          notice: `Follow(${curGrammarItem.getLeftStr()})中存在终止符 ${symbol.getStr()} , 将产生式 ${curGrammarItem.getStr()} 加入到分析表M[${curGrammarItem.getLeftStr()}, ${symbol.getStr()}]中`,
+          curProduction,
+          notice: `Follow(${curProduction.getHeadString()})中存在终止符 ${symbol.getString()} , 将产生式 ${curProduction.getString()} 加入到分析表M[${curProduction.getHeadString()}, ${symbol.getString()}]中`,
           step: 1,
           highlightSymbols: [symbol]
         }
-        table.set(curGrammarItem.leftSign, symbol, curGrammarItem)
+        table.set(curProduction.head, symbol, curProduction)
       }
       if(curFollowSet.has(End)){
         yield {
-          curGrammarItem,
-          notice: `Follow(${curGrammarItem.getLeftStr()})中存在 $ , 将产生式 ${curGrammarItem.getStr()} 加入到分析表M[${curGrammarItem.getLeftStr()}, $]中`,
+          curProduction,
+          notice: `Follow(${curProduction.getHeadString()})中存在 $ , 将产生式 ${curProduction.getString()} 加入到分析表M[${curProduction.getHeadString()}, $]中`,
           step: 2,
           highlightSymbols: [End]
         }
-        table.set(curGrammarItem.leftSign, End, curGrammarItem)
+        table.set(curProduction.head, End, curProduction)
       }else{
         yield {
-          curGrammarItem,
-          notice: `Follow(${curGrammarItem.getLeftStr()})中不存在 $ ，跳过`,
+          curProduction,
+          notice: `Follow(${curProduction.getHeadString()})中不存在 $ ，跳过`,
           step: 2,
           highlightSymbols: []
         }
       }
     }else{
       yield {
-        curGrammarItem,
-        notice: `First(${curGrammarItem.getRightStr()})中不存在 ${Empty.getStr()} ，跳过`,
+        curProduction,
+        notice: `First(${curProduction.getBodyString()})中不存在 ${Empty.getString()} ，跳过`,
         step: 1,
         highlightSymbols: []
       }

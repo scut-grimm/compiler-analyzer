@@ -14,22 +14,22 @@
   </div>
   <div class="grammar-content">
   <div class="left">
-    <GrammarIndicator style="width: 200px;" :grammar="grammar" :active="active" @changeGrammarItem="onChagneGrammarItem"></GrammarIndicator>
+    <GrammarIndicator style="width: 200px;" :grammar="grammar" :active="active" @changeProduction="onChagneProduction"></GrammarIndicator>
   </div>
   <div class="center">
     <div class="up">
-      <template v-if="curGrammarItem!==null">
-        <span class="title">First({{curGrammarItem.rightSigns.map(e => e.getStr()).join('')}})</span>
+      <template v-if="curProduction!==null">
+        <span class="title">First({{curProduction.body.map(e => e.getString()).join('')}})</span>
         <div class="set-div">
-          <span v-for="(sign,index) in curFirstSet" :key="index" :class="{'active': curHighlightSymbols.indexOf(sign) !== -1}">{{sign.getStr()}}</span>
+          <span v-for="(sign,index) in curFirstSet" :key="index" :class="{'active': curHighlightSymbols.indexOf(sign) !== -1}">{{sign.getString()}}</span>
         </div>
       </template>
     </div>
     <div class="down">
-      <template v-if="curGrammarItem!==null">
-        <span class="title">Follow({{curGrammarItem.leftSign.getStr()}})</span>
+      <template v-if="curProduction!==null">
+        <span class="title">Follow({{curProduction.head.getString()}})</span>
         <div class="set-div">
-          <span v-for="(sign,index) in curFollowSet" :key="index" :class="{'active': curHighlightSymbols.indexOf(sign) !== -1}">{{sign.getStr()}}</span>
+          <span v-for="(sign,index) in curFollowSet" :key="index" :class="{'active': curHighlightSymbols.indexOf(sign) !== -1}">{{sign.getString()}}</span>
         </div>
       </template>
     </div>
@@ -107,7 +107,7 @@ export default {
     }
   },
   methods:{
-    onChagneGrammarItem(index){
+    onChagneProduction(index){
       this.active=index
     },
     start(){
@@ -129,7 +129,7 @@ export default {
       }
     },
     next(){
-      let {notice, curGrammarItem, step, highlightSymbols} = this.wrapper.next()
+      let {notice, curProduction, step, highlightSymbols} = this.wrapper.next()
       this.curStep = step
       this.pre_notice = this.notice
       this.notice = notice
@@ -137,7 +137,7 @@ export default {
       this.sync()
     },
     skip(){
-      let {notice, curGrammarItem, step, highlightSymbols} = this.wrapper.skip()
+      let {notice, curProduction, step, highlightSymbols} = this.wrapper.skip()
       this.curStep = step
       this.pre_notice = this.notice
       this.notice = notice
@@ -150,14 +150,14 @@ export default {
       const Empty = this.grammar.getSign('ε','Terminal')
       const End = this.grammar.getSign('$','Terminal')
       for(let symbol of curFirstSet){
-        this.PPT.set(this.curGrammarItem.leftSign, symbol, this.curGrammarItem)
+        this.PPT.set(this.curProduction.head, symbol, this.curProduction)
       }
       if(curFirstSet.has(Empty)){
         this.curFollowSet.filter(e => e.isTerminal()).forEach(e => {
-          this.PPT.set(this.curGrammarItem.leftSign, e, this.curGrammarItem)
+          this.PPT.set(this.curProduction.head, e, this.curProduction)
         })
         if(curFollowSet.has(End)){
-          this.PPT.set(this.curGrammarItem.leftSign, End, this.curGrammarItem)
+          this.PPT.set(this.curProduction.head, End, this.curProduction)
         }
       }
 
@@ -181,31 +181,31 @@ export default {
     }
   },
   computed:{
-    curGrammarItem(){
-      const grammars = this.grammar.getGrammarItems()
-      if(grammars.length > this.active){
-        return grammars[this.active]
+    curProduction(){
+      const productions = this.grammar.getProductions()
+      if(productions.length > this.active){
+        return productions[this.active]
       }else{
         return null
       }
     },
     curFirstSet(){
-      let grammar = this.curGrammarItem
+      let grammar = this.curProduction
       if(grammar === null){
         return []
       }
-      return this.grammar.getGrammarItemRightFirstSet(grammar)
+      return this.grammar.getProductionBodyFirstSet(grammar)
     },
     curFollowSet(){
-      let grammar = this.curGrammarItem
+      let grammar = this.curProduction
       if(grammar === null){
         return []
       }
-      return this.grammar.getSignFollowSet(grammar.leftSign)
+      return this.grammar.getSignFollowSet(grammar.head)
     },
     tableTerminals(){
       const {nonterminals, terminals, table} = this.PPTData
-      return terminals.filter(e => !e.isEmpty()).map(e => e.getStr())
+      return terminals.filter(e => !e.isEmpty()).map(e => e.getString())
     },
     tableData(){
       const {nonterminals, terminals, table} = this.PPTData
@@ -213,14 +213,14 @@ export default {
       let i=0
       for(let nonterminal of nonterminals){
         let tmp = {
-          nonterminal: nonterminal.getStr()
+          nonterminal: nonterminal.getString()
         }
         for(let j in table[i]){
           let terminal = terminals[j]
           if(table[i][j] === null){
-            tmp[terminal.getStr()] = ''
+            tmp[terminal.getString()] = ''
           }else{
-            tmp[terminal.getStr()] = table[i][j].getStr()
+            tmp[terminal.getString()] = table[i][j].getString()
           }
         }
         ret.push(tmp)
@@ -250,14 +250,14 @@ export default {
     const RightClose = grammar.getSign(')', 'Terminal')
     const Empty = grammar.getSign('ε', 'Terminal')
     const End = grammar.getSign('$', 'Terminal')
-    grammar.addGrammarItem(E, [T, E1])
-    grammar.addGrammarItem(E1, [Plus, T, E1])
-    grammar.addGrammarItem(E1, [Empty])
-    grammar.addGrammarItem(T, [F, T1])
-    grammar.addGrammarItem(T1, [Multi, F, T1])
-    grammar.addGrammarItem(T1, [Empty])
-    grammar.addGrammarItem(F, [LeftClose, E, RightClose])
-    grammar.addGrammarItem(F, [Id])
+    grammar.addProduction(E, [T, E1])
+    grammar.addProduction(E1, [Plus, T, E1])
+    grammar.addProduction(E1, [Empty])
+    grammar.addProduction(T, [F, T1])
+    grammar.addProduction(T1, [Multi, F, T1])
+    grammar.addProduction(T1, [Empty])
+    grammar.addProduction(F, [LeftClose, E, RightClose])
+    grammar.addProduction(F, [Id])
 
     const firstSet = new MapSet()
     const followSet = new MapSet()
@@ -300,8 +300,8 @@ export default {
     grammar.followSet = followSet
 
     grammar.getNonterminals().forEach(e => {
-      console.log('First(' + e.getStr() +'): {', grammar.getSignFirstSet(e).map(e => e.getStr()).join(','),'}')
-      console.log('Follow(' + e.getStr() +'): {', grammar.getSignFollowSet(e).map(e => e.getStr()).join(','),'}')
+      console.log('First(' + e.getString() +'): {', grammar.getSignFirstSet(e).map(e => e.getString()).join(','),'}')
+      console.log('Follow(' + e.getString() +'): {', grammar.getSignFollowSet(e).map(e => e.getString()).join(','),'}')
     })
   }
 }
