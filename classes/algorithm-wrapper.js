@@ -2,13 +2,13 @@ class AlgorithmWrapper{
   constructor(algorithm){
     this.algorithm = algorithm
     this.context = null
-    this.epoll = null
+    this.epoch = null
     this.alldone = false
     this.lastvalue = null
   }
   init(){
     this.context = this.algorithm.getInitContext()
-    this.epoll = this.algorithm.epoll(this.context)
+    this.epoch = this.algorithm.epoch(this.context)
     this.alldone = false
   }
   isAllDone(){
@@ -21,7 +21,7 @@ class AlgorithmWrapper{
     return this.algorithm.getCurResult(this.context)
   }
   next(){
-    let {value, done} = this.epoll.next()
+    let {value, done} = this.epoch.next()
     if(done){
       let [alldone, nextContext] = value
       if(alldone){
@@ -29,7 +29,7 @@ class AlgorithmWrapper{
         return false
       }else{
         this.context = nextContext
-        this.epoll = this.algorithm.epoll(nextContext)
+        this.epoch = this.algorithm.epoch(nextContext)
         return this.next()
       }
     }else{
@@ -39,7 +39,7 @@ class AlgorithmWrapper{
   }
   skip(){
     while(true){
-      let {value, done} = this.epoll.next()
+      let {value, done} = this.epoch.next()
       if(done){
         let [alldone, nextContext] = value
         if(alldone){
@@ -47,7 +47,7 @@ class AlgorithmWrapper{
           return this.lastvalue
         }else{
           this.context = nextContext
-          this.epoll = this.algorithm.epoll(nextContext)
+          this.epoch = this.algorithm.epoch(nextContext)
           return this.lastvalue
         }
       }else{
