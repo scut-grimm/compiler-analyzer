@@ -20,15 +20,15 @@ class IsLL1{
             let intersection=new Set([...nonFirstSet,...nonFollowSet])
             if(!(nonFirstSet.includes('ε')&&intersection.length!=0)){
                 let productions=this.grammar.getDerivations(item)
-                let bodyFirstSets=productions.map(x=>this.grammar.getGrammarItemRightFirstSet(x))
+                let bodyFirstSets=productions.map(x=>this.grammar.getProductionBodyFirstSet(x))
                 let flatBodyFirstSet=bodyFirstSets.flat()  //将产生式体的First集合的所有元素放在一个数组中
-                let duplexItems=this._duplexItem(flatBodyFirstSet.map(x=>x.getStr()))
+                let duplexItems=this._duplexItem(flatBodyFirstSet.map(x=>x.getString()))
                 if(duplexItems.length!=0){
                     let noticeArr=Array.of()
                     for(let dItem of duplexItems){
                         let index=new Set()
                         for(let i=0;i<productions.length;++i){
-                            let bodyFirstSetSymbols=bodyFirstSets[i].map(x=>x.getStr())
+                            let bodyFirstSetSymbols=bodyFirstSets[i].map(x=>x.getString())
                             if(bodyFirstSetSymbols.includes(dItem)){
                                 index.add(i)
                             }
@@ -79,7 +79,7 @@ class IsLL1{
     _genErrorNotice(production,index){  //生成错误提示信息
         let temp=new String('')
         for(let i=0; i<index.length;i++){
-            temp+='First('+production[index[i]].getRightStr()+') '
+            temp+='First('+production[index[i]].getBodyString()+') '
         }
         return temp
     }
