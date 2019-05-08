@@ -73,59 +73,84 @@ const preDefineSymbolSet=new Set([
     new Sign('Z','Nonterminal')    
 ])
 class GenerateGrammarFromUserInput{
-    _productions=Array.of()
-    _userDefineSymbols=Array.of()
-    _startSymbol
-    _userSymbols=new Set()
-    _legalSymbols=preDefineSymbolSet
-    _G=new Grammar()
+    productions=Array.of()
+    userDefineSymbols=Array.of()
+    startSymbol
+    userSymbols=new Set()
+    legalSymbols=preDefineSymbolSet
+    G=new Grammar()
+    
     constructor(productions,userDefineSymbols){
         assert(productions.length,'前端传来的文法规则为空')
-        this._productions=[...productions]
-        this._userDefineSymbols=[...userDefineSymbols]
-        this._genGrammar()
+        this.productions=[...productions]
+        this.userDefineSymbols=[...userDefineSymbols]
+        this.setGrammar()
     }
-    _preHandle(){
 
+    setGrammar(){
+        this.setSigns()  //设置文法符号
+        this.setProductions()  //设置产生式
+        this.setStartSign()  //设置文法开始符号，默认是第一条产生式的头部
     }
-    _genHeadAndBodys(production){
+
+    setSigns(){
+        for(let i of this.userDefineSymbols){
+            this.G.getSign(i)
+        }
+        for(let i of preDefineSymbolSet){
+            this.G.getSign(i)
+        }
+    }
+
+    setStartSign(){
+        this.G.setStartSign(this.startSymbol)
+    }
+
+    setProductions(){
+        for(let i=0; i<this.productions.length;i++){
+            //对第一条产生式特殊处理，将产生式的头部作为文法的开始符号
+            if(i==0){
+                let {head,bodys}=this.genHeadAndBodys(this.productions[i])
+                this.startSymbol=this.G.getSign(head)
+                for(let body of bodys){
+                    this.G.addProduction(head,body)
+                }
+            }
+            let {head, bodys}=this.genHeadAndBodys(this.productions[i])
+            for(let body of bodys){
+                this.G.addProduction(head,body)
+            }
+        }
+    }
+
+    genHeadAndBodys(production){
         let head
         const bodys=new Set()
-        //先将产生式的体'|'处分割开，得到多个体
-        //再将体中字符转换为 Sign 对象的实例
-        //保证 head 和 bodys 用到的 sign 都是通过 this._G.getSign(Sign) 得到的
-        //调用 this._G.getSign(Sign) 的同时，会将参数 Sign 添加到 this._G 的 signs 属性中 
+        //保证 head 和 bodys 用到的 sign 都是通过 this.G.getSign(Sign) 得到的
+        production=production.replace(/\s+/g,'')  //去除产生式中的空格
+        items=production.split(/->|\|/)  //将产生式按照 -> 和 | 分开 
+        head=this.G.getSign(items[0])  //items 数组的第一个元素是产生式的头部
+        for(let i=1;i<items.length;i++){
+            bodys.add(stringToSigns(items[i]));
+        }
         return {
             head: head,
             bodys: [...bodys],
         }
     }
 
-    _genGrammarItems(productions){
-        for(let production of productions){
-            let {head, bodys}=this._genHeadAndBodys(production)
-            for(let body of bodys){
-                this._G.addGrammarItem(head,body)
-            }
+    stringToSigns(string){
+        string=string.split('')
+        const signs=Array.of()
+        for(let i of string){
+            signs.push(this.G.getSign(i))
         }
-    }
-
-    _getSymbolsFormBody(body){
-        const symbols=new Set()
-        
-        return [...symbols]
-    }
-    
-
-    _genGrammar(){
-        this._G.setStartSign(this._startSymbol)
-        this._genGrammarItems()
+        return signs
     }
 
     getGrammar(){
-        return this._G
+        return this.G
     }
-
 }
 
 export default GenerateGrammarFromUserInput
