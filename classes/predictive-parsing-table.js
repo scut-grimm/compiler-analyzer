@@ -15,18 +15,18 @@ class PredictiveParsingTable{
     }
     return submap.get(terminal)
   }
-  set(nonterminal, terminal, grammarItem){
+  set(nonterminal, terminal, production){
 
     if(!this.map.has(nonterminal)){
       this.map.set(nonterminal, new Map())
     }
     const submap = this.map.get(nonterminal)
     if(submap.has(terminal)){
-      console.log(nonterminal.getStr(),terminal.getStr(),grammarItem.getStr() )
-      console.log(submap.get(terminal).getStr(),grammarItem.getStr() )
-      assert.strictEqual(submap.get(terminal).getStr(), grammarItem.getStr(), 'has more than one item')
+      console.log(nonterminal.getString(),terminal.getString(),production.getString() )
+      console.log(submap.get(terminal).getString(),production.getString() )
+      assert.strictEqual(submap.get(terminal).getString(), production.getString(), 'has more than one item')
     }
-    submap.set(terminal, grammarItem)
+    submap.set(terminal, production)
     this.nonterminals.add(nonterminal)
     this.terminals.add(terminal)
   }

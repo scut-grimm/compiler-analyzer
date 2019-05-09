@@ -1,6 +1,6 @@
 export const state = () => {
   return {
-    grammars: []
+    productions: []
   }
 }
 export const mutations = {
