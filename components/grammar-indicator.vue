@@ -2,12 +2,12 @@
   <div class="grammar-indicator">
       <span class="title">文法产生式</span>
       <div class="grammar"
-        v-for="(grammar,index) in grammar.getGrammarItems()"
+        v-for="(grammar,index) in grammar.getProductions()"
         :key="index"
         :class="{'active': index === active}"
-        @click="changeGrammarItem(index)"
+        @click="changeProduction(index)"
       >
-        {{grammar.getStr()}}
+        {{grammar.getString()}}
       </div>
   </div>
 </template>
@@ -20,10 +20,10 @@ export default {
     }
   },
   methods:{
-    changeGrammarItem(index){
-      const grammar = this.grammar.getGrammarItems()[index]
-      console.log(this.grammar.getDerivations(grammar.leftSign).map(e => e.getStr()))
-      this.$emit('changeGrammarItem',index)
+    changeProduction(index){
+      const grammar = this.grammar.getProductions()[index]
+      console.log(this.grammar.getDerivations(grammar.head).map(e => e.getString()))
+      this.$emit('changeProduction',index)
     }
   }
 }

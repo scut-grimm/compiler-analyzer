@@ -9,7 +9,7 @@ class Sign {
     this.symbol = symbol
     this.type = type
   }
-  getStr(){
+  getString(){
     return this.symbol
   }
   isTerminal(){

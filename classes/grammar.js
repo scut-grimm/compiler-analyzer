@@ -1,15 +1,31 @@
-import GrammarItem from './grammar-item'
+import Production from './production'
 import Sign from './sign'
 import assert from 'assert'
 import MapSet from './map-set'
 class Grammar{
   constructor(){
-    this.grammars = []
+    this.productions = []
     this.signs = new Map()
     this.firstSet = new MapSet()
     this.followSet = new MapSet()
+    this.startSign = null
+  }
+  setStartSign(sign){
+    assert.strictEqual(this.checkSignsExist([sign]), true, 'Sign should be added first')
+    getSign(sign)
+    this.startSign = sign
+  }
+  getStartSign(){
+    assert.notStrictEqual(this.startSign, null , 'Start Sign has not been defined.')
+    return this.startSign
   }
   getSign(symbol, type = undefined){
+    //override getSign(sign:Sign)
+    if(symbol instanceof Sign){
+      let tmp = symbol
+      symbol = tmp.symbol
+      type = tmp.type
+    }
     if(!this.signs.has(symbol)){
       this.signs.set(symbol, new Sign(symbol, type))
     }else{
@@ -21,27 +37,27 @@ class Grammar{
   }
   checkSignsExist(signs){
     for(let sign of signs){
-      if(!this.signs.has(sign.symbol)){
+      if(!this.signs.has(sign.symbol) || this.signs.get(sign.symbol) !== sign){
         return false
       }
     }
     return true
   }
-  addGrammarItem(leftSign, rightSigns){
-    assert.strictEqual(this.checkSignsExist([leftSign,...rightSigns]), true, 'All Sign should be add first')
-    let grammarItem = new GrammarItem(leftSign, rightSigns)
-    this.grammars.push(grammarItem)
-    return grammarItem
+  addProduction(head, body){
+    assert.strictEqual(this.checkSignsExist([head,...body]), true, 'All Sign should be add first')
+    let production = new Production(head, body)
+    this.productions.push(production)
+    return production
   }
-  getGrammarItems(){
-    return this.grammars
+  getProductions(){
+    return this.productions
   }
-  getDerivations(leftSign){
-    if(typeof(leftSign) === 'string'){
-      assert.strictEqual(this.signs.has(leftSign),true)
-      leftSign = this.signs.get(leftSign)
+  getDerivations(head){
+    if(typeof(head) === 'string'){
+      assert.strictEqual(this.signs.has(head),true)
+      head = this.signs.get(head)
     }
-    return this.grammars.filter(e => e.leftSign.symbol === leftSign.symbol)
+    return this.productions.filter(e => e.head.symbol === head.symbol)
   }
   getTerminals(){
     return [...this.signs.values()].filter(e => e.type === 'Terminal')
@@ -60,11 +76,11 @@ class Grammar{
     }
     return [...this.firstSet.get(sign)]
   }
-  getGrammarItemRightFirstSet(grammarItem){
+  getProductionBodyFirstSet(production){
     const result = new Set()
     let frontAllHaveEmpty = true
     const Empty = this.getSign('ε', 'Terminal')
-    for(let sign of grammarItem.rightSigns){
+    for(let sign of production.body){
       if(frontAllHaveEmpty===true){
         this.getSignFirstSet(sign).filter(e => e.isTerminal()).forEach(e => result.add(e))
       }
@@ -72,7 +88,7 @@ class Grammar{
         frontAllHaveEmpty = false
       }
     }
-    if(frontAllHaveEmpty && grammarItem.rightSigns.length > 0){
+    if(frontAllHaveEmpty && production.body.length > 0){
       result.add(Empty)
     }
     return [...result]
