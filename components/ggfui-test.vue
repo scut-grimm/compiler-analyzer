@@ -69,22 +69,40 @@ export default {
         productions=[pd1,pd2,pd3,pd4,pd5]
         userDefineSigns=[alpha,beta]
 
-        let G=new GenerateGrammarFromUserInput(productions,userDefineSigns)
-        console.log('Start symbol: ' + G.getStartSign().getString())
+        //测试用例1
+        let G1=new GenerateGrammarFromUserInput(productions,userDefineSigns)
+        console.log('Start symbol: ' + G1.getStartSign().getString())
         console.log('Productions')
-        G.productions.forEach(e=>{
+        G1.productions.forEach(e=>{
             console.log(e.getHeadString()+'->'+e.getBodyString())
         })
-        let nonterminals=''
-        G.getNonterminals().forEach(e=>{
-            nonterminals+=e.getString()+' '
+        let nonterminals1=''
+        G1.getNonterminals().forEach(e=>{
+            nonterminals1+=e.getString()+' '
         })
-        console.log('Nonterminals: '+nonterminals)
-        let terminals=''
-        G.getTerminals().forEach(e=>{
-            terminals+=e.getString()+' '
+        console.log('Nonterminals: '+nonterminals1)
+        let terminals1=''
+        G1.getTerminals().forEach(e=>{
+            terminals1+=e.getString()+' '
         })
-        console.log('Terminals: '+terminals)
+        console.log('Terminals: '+terminals1)
+        //测试用例2
+        let G2=new GenerateGrammarFromUserInput(productions,userDefineSigns,F)
+        console.log('Start symbol: ' + G2.getStartSign().getString())
+        console.log('Productions')
+        G2.productions.forEach(e=>{
+            console.log(e.getHeadString()+'->'+e.getBodyString())
+        })
+        let nonterminals2=''
+        G2.getNonterminals().forEach(e=>{
+            nonterminals2+=e.getString()+' '
+        })
+        console.log('Nonterminals: '+nonterminals2)
+        let terminals2=''
+        G2.getTerminals().forEach(e=>{
+            terminals2+=e.getString()+' '
+        })
+        console.log('Terminals: '+terminals2)
     }
 }
 </script>
