@@ -80,10 +80,17 @@ class GenerateGrammarFromUserInput{
     legalSymbols=preDefineSymbolSet
     G=new Grammar()
     
-    constructor(productions,userDefineSymbols){
+    constructor(productions,userDefineSymbols,startSymbol=0){
         assert(productions.length,'前端传来的文法规则为空')
         this.productions=[...productions]
         this.userDefineSymbols=[...userDefineSymbols]
+        if(startSymbol===0){
+            let start=this.G.getSign(this.productions[0][0])
+            this.startSymbol=start
+        }
+        else{
+            this.startSymbol=this.G.getSign(startSymbol)
+        }
         this.setGrammar()
     }
 
@@ -97,9 +104,6 @@ class GenerateGrammarFromUserInput{
         for(let i of this.userDefineSymbols){
             this.G.getSign(i)
         }
-        for(let i of preDefineSymbolSet){
-            this.G.getSign(i)
-        }
     }
 
     setStartSign(){
@@ -107,45 +111,17 @@ class GenerateGrammarFromUserInput{
     }
 
     setProductions(){
+        let head  //保证head通过this.G.getSign()得到
         for(let i=0; i<this.productions.length;i++){
-            //对第一条产生式特殊处理，将产生式的头部作为文法的开始符号
-            if(i==0){
-                let {head,bodys}=this.genHeadAndBodys(this.productions[i])
-                this.startSymbol=this.G.getSign(head)
-                for(let body of bodys){
-                    this.G.addProduction(head,body)
+            head=this.G.getSign(this.productions[i][0])
+            for(let j=1;j<this.productions[i].length;j++){
+                let body=Array.of()  //保证body中的每一项都通过this.G.getSign()得到
+                for(let k=0;k<this.productions[i][j].length;k++){
+                    body.push(this.G.getSign(this.productions[i][j][k]))
                 }
-            }
-            let {head, bodys}=this.genHeadAndBodys(this.productions[i])
-            for(let body of bodys){
                 this.G.addProduction(head,body)
             }
         }
-    }
-
-    genHeadAndBodys(production){
-        let head
-        const bodys=new Set()
-        //保证 head 和 bodys 用到的 sign 都是通过 this.G.getSign(Sign) 得到的
-        production=production.replace(/\s+/g,'')  //去除产生式中的空格
-        items=production.split(/->|\|/)  //将产生式按照 -> 和 | 分开 
-        head=this.G.getSign(items[0])  //items 数组的第一个元素是产生式的头部
-        for(let i=1;i<items.length;i++){
-            bodys.add(stringToSigns(items[i]));
-        }
-        return {
-            head: head,
-            bodys: [...bodys],
-        }
-    }
-
-    stringToSigns(string){
-        string=string.split('')
-        const signs=Array.of()
-        for(let i of string){
-            signs.push(this.G.getSign(i))
-        }
-        return signs
     }
 
     getGrammar(){
@@ -153,4 +129,7 @@ class GenerateGrammarFromUserInput{
     }
 }
 
-export default GenerateGrammarFromUserInput
+export default function(productions,userDefineSymbols,startSign=0){
+    let G=new GenerateGrammarFromUserInput(productions,userDefineSymbols,startSign)
+    return G.getGrammar()
+}
