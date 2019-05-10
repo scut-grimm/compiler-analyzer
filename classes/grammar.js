@@ -12,8 +12,7 @@ class Grammar{
   }
   setStartSign(sign){
     assert.strictEqual(this.checkSignsExist([sign]), true, 'Sign should be added first')
-    getSign(sign)
-    this.startSign = sign
+    this.startSign = this.getSign(sign)
   }
   getStartSign(){
     assert.notStrictEqual(this.startSign, null , 'Start Sign has not been defined.')
