@@ -1,6 +1,6 @@
 import assert from 'assert'
 class IsLL1{
-    _errorProductions=Array.of()
+    errorProductions=Array.of()
     constructor(grammar){
         this.grammar=grammar
     }
@@ -22,7 +22,7 @@ class IsLL1{
                 let productions=this.grammar.getDerivations(item)
                 let bodyFirstSets=productions.map(x=>this.grammar.getProductionBodyFirstSet(x))
                 let flatBodyFirstSet=bodyFirstSets.flat()  //将产生式体的First集合的所有元素放在一个数组中
-                let duplexItems=this._duplexItem(flatBodyFirstSet.map(x=>x.getString()))
+                let duplexItems=this.duplexItem(flatBodyFirstSet.map(x=>x.getString()))
                 if(duplexItems.length!=0){
                     let noticeArr=Array.of()
                     for(let dItem of duplexItems){
@@ -33,13 +33,13 @@ class IsLL1{
                                 index.add(i)
                             }
                         }
-                        noticeArr.push(`${this._genErrorNotice(productions,index)}相交不为空`)
+                        noticeArr.push(`${this.genErrorNotice(productions,index)}相交不为空`)
                     }
                     let errorProduction={
                         production: item,
                         notice: noticeArr,
                     }
-                    this._errorProductions.push(errorProduction)
+                    this.errorProductions.push(errorProduction)
                 }
             }
             else{
@@ -48,24 +48,24 @@ class IsLL1{
                     production: item,
                     notice: noticeArr,
                 }
-                this._errorProductions.push(errorProduction)
+                this.errorProductions.push(errorProduction)
             }
         }
-        if(this._errorProduction.length==0){
+        if(this.errorProduction.length==0){
             return {
                 isLL1:True,
-                errorProductions:this._errorProductions,
+                errorProductions:this.errorProductions,
             }
         }
         else{
             return{
                 isLL1:False,
-                errorProductions:this._errorProductions,
+                errorProductions:this.errorProductions,
             }
         }
     }
 
-    _duplexItem(arr){  //返回 arr 中所有重复元素
+    duplexItem(arr){  //返回 arr 中所有重复元素
         let temp=arr.join()+","
         const result=new Set()
         for(let i=0;i<arr.length;i++){
@@ -76,7 +76,7 @@ class IsLL1{
         return [...result]
     }
 
-    _genErrorNotice(production,index){  //生成错误提示信息
+    genErrorNotice(production,index){  //生成错误提示信息
         let temp=new String('')
         for(let i=0; i<index.length;i++){
             temp+='First('+production[index[i]].getBodyString()+') '
@@ -85,4 +85,7 @@ class IsLL1{
     }
 
 }
-export default isLL1
+export default function(grammar){
+    let temp=new IsLL1(grammar)
+    return temp.isLL1()
+}
