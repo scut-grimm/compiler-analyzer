@@ -13,30 +13,38 @@ class IsLL1{
         let nonterminals=this.grammar.getNonterminals() 
         assert(nonterminals.length,'文法没有非终止符号') 
         for(let item of nonterminals){
-            let nonFirstSet=this.grammar.getSignFirstSet(item)
+            let nonFirstSet=this.grammar.getSignFirstSet(item).map(e=>e.getString())
             assert(nonFirstSet.length,`First(${item.symbol})为空`)
-            let nonFollowSet=this.grammar.getSignFollowSet(item)
+            let nonFollowSet=this.grammar.getSignFollowSet(item).map(e=>e.getString())
             assert(nonFollowSet.length,`Follow(${item.symbol})为空`)
             let intersection=new Set([...nonFirstSet,...nonFollowSet])
-            if(!(nonFirstSet.includes('ε')&&intersection.length!=0)){
+            if(!(nonFirstSet.includes('ε')&&intersection.size<(nonFirstSet.length+nonFollowSet.length))){
                 let productions=this.grammar.getDerivations(item)
                 let bodyFirstSets=productions.map(x=>this.grammar.getProductionBodyFirstSet(x))
-                let flatBodyFirstSet=bodyFirstSets.flat()  //将产生式体的First集合的所有元素放在一个数组中
+                let flatBodyFirstSet=bodyFirstSets.flat()  //将头部相同的所有产生式的产生式体的First集合放在同一个数组中
                 let duplexItems=this.duplexItem(flatBodyFirstSet.map(x=>x.getString()))
                 if(duplexItems.length!=0){
                     let noticeArr=Array.of()
                     for(let dItem of duplexItems){
                         let index=new Set()
                         for(let i=0;i<productions.length;++i){
-                            let bodyFirstSetSymbols=bodyFirstSets[i].map(x=>x.getString())
-                            if(bodyFirstSetSymbols.includes(dItem)){
+                            let bodyFirstSetString=bodyFirstSets[i].map(x=>x.getString())
+                            if(bodyFirstSetString.includes(dItem)){
                                 index.add(i)
                             }
                         }
                         noticeArr.push(`${this.genErrorNotice(productions,index)}相交不为空`)
                     }
+
+                    let errorProductionArray=this.grammar.getDerivations(item)
+                    let errorProductionString=errorProductionArray[0].getHeadString()+'->'
+                    for(let i=0;i<errorProductionArray.length;i++){
+                        errorProductionString+=errorProductionArray[i].getBodyString()+'|'
+                    }
+                    errorProductionString=errorProductionString.slice(0,-1)
+                    
                     let errorProduction={
-                        production: item,
+                        production: errorProductionString,
                         notice: noticeArr,
                     }
                     this.errorProductions.push(errorProduction)
@@ -44,22 +52,28 @@ class IsLL1{
             }
             else{
                 let noticeArr=Array.of(`First(${item.symbol}) 中存在 ε 且 First(${item.symbol}) 与 Follow(${item.symbol}) 相交不为空`)
+                let errorProductionArray=this.grammar.getDerivations(item)
+                let errorProductionString=errorProductionArray[0].getHeadString()+'->'
+                for(let i=0;i<errorProductionArray.length;i++){
+                    errorProductionString+=errorProductionArray[i].getBodyString()+'|'
+                }
+                errorProductionString=errorProductionString.slice(0,-1)
                 let errorProduction={
-                    production: item,
+                    production: errorProductionString,
                     notice: noticeArr,
                 }
                 this.errorProductions.push(errorProduction)
             }
         }
-        if(this.errorProduction.length==0){
+        if(this.errorProductions.length==0){
             return {
-                isLL1:True,
+                isLL1:true,
                 errorProductions:this.errorProductions,
             }
         }
         else{
             return{
-                isLL1:False,
+                isLL1:false,
                 errorProductions:this.errorProductions,
             }
         }
@@ -77,9 +91,9 @@ class IsLL1{
     }
 
     genErrorNotice(production,index){  //生成错误提示信息
-        let temp=new String('')
-        for(let i=0; i<index.length;i++){
-            temp+='First('+production[index[i]].getBodyString()+') '
+        let temp=''
+        for(let i of index){
+            temp+='First('+production[i].getBodyString()+') '
         }
         return temp
     }

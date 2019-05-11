@@ -29,6 +29,10 @@ export default {
         grammar.addProduction(F, [LeftClose, E, RightClose])
         grammar.addProduction(F, [Id])
 
+        //@test 使得first(+TE')、first(+F)和first(E')相交不为空
+        grammar.addProduction(E1,[Plus,F])
+        grammar.addProduction(E1,[E1])
+
         const firstSet = new MapSet()
         const followSet = new MapSet()
         firstSet.add(E, LeftClose)
@@ -51,6 +55,8 @@ export default {
 
         followSet.add(E1, RightClose)
         followSet.add(E1, End)
+        //@test first(E')包含ε并且与follow(E')相交不为空
+        // followSet.add(E1, Plus)
 
         followSet.add(T, Plus)
         followSet.add(T, RightClose)
@@ -59,15 +65,29 @@ export default {
         followSet.add(T1, Plus)
         followSet.add(T1, RightClose)
         followSet.add(T1, End)
+        //@test first(T')包含ε并且与follow(T')相交不为空
+        followSet.add(T1, Multi)
 
         followSet.add(F, Plus)
         followSet.add(F, Multi)
         followSet.add(F, RightClose)
         followSet.add(F, End)
 
-
         grammar.firstSet = firstSet
         grammar.followSet = followSet
+
+        let isLL1=new IsLL1(grammar)
+        if(isLL1.isLL1===true){
+            console.log('The grammar is LL(1) grammar')
+        }
+        else{
+            isLL1.errorProductions.forEach(e=>{
+                console.log('Error production: '+e.production)
+                e.notice.forEach(e=>{
+                    console.log('Notice: '+e)
+                })
+            })
+        }
     }
 }
 </script>

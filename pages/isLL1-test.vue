@@ -2,7 +2,7 @@
     <IsLL1></IsLL1>
 </template>
 <script>
-import IsLL1 from '~/componment/is-LL1-test'
+import IsLL1 from '~/components/isLL1-test'
 export default {
     layout:'grammar',
     components:{
