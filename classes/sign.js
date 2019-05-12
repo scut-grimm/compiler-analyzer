@@ -1,7 +1,9 @@
 const assert = require('assert')
 const Types = {
   Terminal: 1,
-  Nonterminal: 2
+  Nonterminal: 2,
+  Empty: 3,
+  StackBottom: 4
 }
 class Sign {
   constructor(symbol, type){
@@ -19,7 +21,10 @@ class Sign {
     return this.type === 'Nonterminal'
   }
   isEmpty(){
-    return this.symbol === 'ε'
+    return this.type === 'Empty'
+  }
+  isStackBottom(){
+    return this.type === 'StackBottom'
   }
 }
 export default Sign
