@@ -18,5 +18,11 @@ class Production{
   getBodyString(){
     return this.body.map(e => e.getString()).join('')
   }
+  getHead(){
+    return this.head
+  }
+  getBody(){
+    return this.body
+  }
 }
 export default Production
