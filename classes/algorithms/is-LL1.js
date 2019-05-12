@@ -21,21 +21,12 @@ class IsLL1{
             if(!(nonFirstSet.includes('ε')&&intersection.size<(nonFirstSet.length+nonFollowSet.length))){
                 let productions=this.grammar.getDerivations(item)
                 let bodyFirstSets=productions.map(x=>this.grammar.getProductionBodyFirstSet(x))
-                let flatBodyFirstSet=bodyFirstSets.flat()  //将头部相同的所有产生式的产生式体的First集合放在同一个数组中
-                let duplexItems=this.duplexItem(flatBodyFirstSet.map(x=>x.getString()))
-                if(duplexItems.length!=0){
+                let errorBodyIndex=this.findProductionBodyFirstSetIntersectionNotEmpty(bodyFirstSets)
+                if(errorBodyIndex.length!=0){
                     let noticeArr=Array.of()
-                    for(let dItem of duplexItems){
-                        let index=new Set()
-                        for(let i=0;i<productions.length;++i){
-                            let bodyFirstSetString=bodyFirstSets[i].map(x=>x.getString())
-                            if(bodyFirstSetString.includes(dItem)){
-                                index.add(i)
-                            }
-                        }
-                        noticeArr.push(`${this.genErrorNotice(productions,index)}相交不为空`)
+                    for(let i of errorBodyIndex){
+                        noticeArr.push(`${this.genErrorNotice(productions,i)}相交不为空`)
                     }
-
                     let errorProductionArray=this.grammar.getDerivations(item)
                     let errorProductionString=errorProductionArray[0].getHeadString()+'->'
                     for(let i=0;i<errorProductionArray.length;i++){
@@ -77,6 +68,28 @@ class IsLL1{
                 errorProductions:this.errorProductions,
             }
         }
+    }
+
+    findProductionBodyFirstSetIntersectionNotEmpty(bodyFirstSets){
+        const errorBodyIndex=Array.of()
+        for(let i=0;i<bodyFirstSets.length;i++){
+            let tempIndex=new Set()
+            for(let j=0;j<bodyFirstSets[i].length;j++){
+                let interIndex=i+1
+                for(;interIndex<bodyFirstSets.length;interIndex++){
+                    for(let k=0;k<bodyFirstSets[interIndex].length;k++){
+                        if(bodyFirstSets[i][j]===bodyFirstSets[interIndex][k]){
+                            tempIndex.add(i)
+                            tempIndex.add(interIndex)
+                        }
+                    }
+                }
+            }
+            if(tempIndex.size!==0){
+                errorBodyIndex.push(tempIndex)
+            }
+        }
+        return errorBodyIndex
     }
 
     duplexItem(arr){  //返回 arr 中所有重复元素

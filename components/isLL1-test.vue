@@ -30,8 +30,8 @@ export default {
         grammar.addProduction(F, [Id])
 
         //@test 使得first(+TE')、first(+F)和first(E')相交不为空
-        grammar.addProduction(E1,[Plus,F])
-        grammar.addProduction(E1,[E1])
+        // grammar.addProduction(E1,[Plus,F])
+        // grammar.addProduction(E1,[E1])
 
         const firstSet = new MapSet()
         const followSet = new MapSet()
@@ -66,7 +66,7 @@ export default {
         followSet.add(T1, RightClose)
         followSet.add(T1, End)
         //@test first(T')包含ε并且与follow(T')相交不为空
-        followSet.add(T1, Multi)
+        // followSet.add(T1, Multi)
 
         followSet.add(F, Plus)
         followSet.add(F, Multi)
