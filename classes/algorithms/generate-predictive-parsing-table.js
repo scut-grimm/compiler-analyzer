@@ -104,9 +104,9 @@ class GeneratePredictiveParsingTable{
   run(){
     let ret = [false, this.getInitContext()]
     while(ret[0] == false){
-      ret = runEpoch(ret[1])
+      ret = this.runEpoch(ret[1])
     }
-    return this.getResultFromContext(ret[1])
+    return ret[1]
   }
 }
 export default GeneratePredictiveParsingTable
