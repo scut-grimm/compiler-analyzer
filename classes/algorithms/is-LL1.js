@@ -13,11 +13,12 @@ class IsLL1{
         let nonterminals=this.grammar.getNonterminals() 
         assert(nonterminals.length,'文法没有非终止符号') 
         for(let item of nonterminals){
-            let nonFirstSet=this.grammar.getSignFirstSet(item).map(e=>e.getString())
+            let nonFirstSet=this.grammar.getSignFirstSet(item).map(e=>e.getString())  //不要使用字符串
             assert(nonFirstSet.length,`First(${item.symbol})为空`)
-            let nonFollowSet=this.grammar.getSignFollowSet(item).map(e=>e.getString())
+            let nonFollowSet=this.grammar.getSignFollowSet(item).map(e=>e.getString())  //不要使用字符串
             assert(nonFollowSet.length,`Follow(${item.symbol})为空`)
             let intersection=new Set([...nonFirstSet,...nonFollowSet])
+            //不要使用字符串判断是否有 ε 直接用 set.has(Sign)
             if(!(nonFirstSet.includes('ε')&&intersection.size<(nonFirstSet.length+nonFollowSet.length))){
                 let productions=this.grammar.getDerivations(item)
                 let bodyFirstSets=productions.map(x=>this.grammar.getProductionBodyFirstSet(x))
@@ -35,7 +36,7 @@ class IsLL1{
                     errorProductionString=errorProductionString.slice(0,-1)
                     
                     let errorProduction={
-                        production: errorProductionString,
+                        production: errorProductionString,  //这里放原始的产生式对象，不要放字符串
                         notice: noticeArr,
                     }
                     this.errorProductions.push(errorProduction)
@@ -50,7 +51,7 @@ class IsLL1{
                 }
                 errorProductionString=errorProductionString.slice(0,-1)
                 let errorProduction={
-                    production: errorProductionString,
+                    production: errorProductionString,  //这里放原始的产生式对象，不要放字符串
                     notice: noticeArr,
                 }
                 this.errorProductions.push(errorProduction)
@@ -59,7 +60,7 @@ class IsLL1{
         if(this.errorProductions.length==0){
             return {
                 isLL1:true,
-                errorProductions:this.errorProductions,
+                errorProductions:this.errorProductions, 
             }
         }
         else{
@@ -69,7 +70,7 @@ class IsLL1{
             }
         }
     }
-
+    //这里也用 set 来判断有没有重复的对象
     findProductionBodyFirstSetIntersectionNotEmpty(bodyFirstSets){
         const errorBodyIndex=Array.of()
         for(let i=0;i<bodyFirstSets.length;i++){
