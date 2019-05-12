@@ -34,6 +34,12 @@ class Grammar{
     }
     return this.signs.get(symbol)
   }
+  getEmptySign(){
+    return this.getSign('ε', 'Empty')
+  }
+  getStackBottomSign(){
+    return this.getSign('$', 'StackBottom')
+  }
   checkSignsExist(signs){
     for(let sign of signs){
       if(!this.signs.has(sign.symbol) || this.signs.get(sign.symbol) !== sign){
