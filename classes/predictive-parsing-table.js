@@ -22,8 +22,8 @@ class PredictiveParsingTable{
     }
     const submap = this.map.get(nonterminal)
     if(submap.has(terminal)){
-      console.log(nonterminal.getString(),terminal.getString(),production.getString() )
-      console.log(submap.get(terminal).getString(),production.getString() )
+      console.log(nonterminal.getString(),terminal.getString(),production.getString())
+      console.log(submap.get(terminal).getString(),production.getString())
       assert.strictEqual(submap.get(terminal).getString(), production.getString(), 'has more than one item')
     }
     submap.set(terminal, production)
