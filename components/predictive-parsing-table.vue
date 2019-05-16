@@ -45,17 +45,17 @@
         <span>{{scope.row.nonterminal}}</span>
       </template>
     </el-table-column>
-    <el-table-column label="Input Symbol">
-      <el-table-column
-        v-for="(terminal,index) in tableTerminals"
-        :key="index"
-        :label="terminal"
-        width="120">
-        <template slot-scope="scope">
-          <span>{{scope.row[terminal]}}</span>
-        </template>
+      <el-table-column label="Input Symbol">
+        <el-table-column
+          v-for="(terminal,index) in tableTerminals"
+          :key="index"
+          :label="terminal"
+          width="120">
+          <template slot-scope="scope">
+            <span>{{scope.row[terminal]}}</span>
+          </template>
+        </el-table-column>
       </el-table-column>
-    </el-table-column>
   </el-table>
   <div style="position: absolute; bottom: 10px;left: 10px;">
     <template v-if="started === false">
@@ -208,24 +208,24 @@ export default {
       return terminals.filter(e => !e.isEmpty()).map(e => e.getString())
     },
     tableData(){
-      const {nonterminals, terminals, table} = this.PPTData
-      let ret = []
-      let i=0
-      for(let nonterminal of nonterminals){
-        let tmp = {
-          nonterminal: nonterminal.getString()
-        }
-        for(let j in table[i]){
-          let terminal = terminals[j]
-          if(table[i][j] === null){
-            tmp[terminal.getString()] = ''
-          }else{
-            tmp[terminal.getString()] = table[i][j].getString()
+        const {nonterminals, terminals, table} = this.PPTData
+        let ret = []
+        let i=0
+        for(let nonterminal of nonterminals){
+          let tmp = {
+            nonterminal: nonterminal.getString()
           }
+          for(let j in table[i]){
+            let terminal = terminals[j]
+            if(table[i][j] === null){
+              tmp[terminal.getString()] = ''
+            }else{
+              tmp[terminal.getString()] = table[i][j].getString()
+            }
+          }
+          ret.push(tmp)
+          i++
         }
-        ret.push(tmp)
-        i++
-      }
       return ret
     },
     algorithmSteps(){
