@@ -76,15 +76,13 @@ class GenerateGrammarFromUserInput{
     productions=Array.of()
     userDefineSymbols=Array.of()
     startSymbol
-    userSymbols=new Set()
-    legalSymbols=preDefineSymbolSet
     G=new Grammar()
     
-    constructor(productions,userDefineSymbols,startSymbol=0){
+    constructor(productions,userDefineSymbols,startSymbol){
         assert(productions.length,'前端传来的文法规则为空')
         this.productions=[...productions]
         this.userDefineSymbols=[...userDefineSymbols]
-        if(startSymbol===0){
+        if(startSymbol==undefined){
             let start=this.G.getSign(this.productions[0][0])
             this.startSymbol=start
         }
@@ -129,7 +127,7 @@ class GenerateGrammarFromUserInput{
     }
 }
 
-export default function(productions,userDefineSymbols,startSign=0){
+export default function(productions,userDefineSymbols,startSign){
     let G=new GenerateGrammarFromUserInput(productions,userDefineSymbols,startSign)
     return G.getGrammar()
 }
