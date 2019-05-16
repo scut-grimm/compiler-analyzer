@@ -84,7 +84,7 @@ class Grammar{
   getProductionBodyFirstSet(production){
     const result = new Set()
     let frontAllHaveEmpty = true
-    const Empty = this.getSign('ε', 'Terminal')
+    const Empty = this.getEmptySign()
     for(let sign of production.body){
       if(frontAllHaveEmpty===true){
         this.getSignFirstSet(sign).filter(e => e.isTerminal()).forEach(e => result.add(e))

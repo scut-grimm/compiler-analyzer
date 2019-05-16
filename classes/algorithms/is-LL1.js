@@ -4,22 +4,18 @@ class IsLL1{
     constructor(grammar){
         this.grammar=grammar
     }
-
-    getInitContext(){
-        return null
-    }
     
     isLL1(){
         let nonterminals=this.grammar.getNonterminals() 
         assert(nonterminals.length,'文法没有非终止符号') 
         for(let item of nonterminals){
-            let nonFirstSet=this.grammar.getSignFirstSet(item).map(e=>e.getString())  //不要使用字符串
-            assert(nonFirstSet.length,`First(${item.symbol})为空`)
-            let nonFollowSet=this.grammar.getSignFollowSet(item).map(e=>e.getString())  //不要使用字符串
-            assert(nonFollowSet.length,`Follow(${item.symbol})为空`)
-            let intersection=new Set([...nonFirstSet,...nonFollowSet])
+            let nonFirstSet=new Set(this.grammar.getSignFirstSet(item)) //不要使用字符串
+            assert(nonFirstSet.size,`First(${item.symbol})为空`)
+            let nonFollowSet=new Set(this.grammar.getSignFollowSet(item))  //不要使用字符串
+            assert(nonFollowSet.size,`Follow(${item.symbol})为空`)
+            let intersection=this.intersection(nonFirstSet,nonFollowSet)
             //不要使用字符串判断是否有 ε 直接用 set.has(Sign)
-            if(!(nonFirstSet.includes('ε')&&intersection.size<(nonFirstSet.length+nonFollowSet.length))){
+            if(!(nonFirstSet.has(this.grammar.getEmptySign())&&intersection.size>0)){
                 let productions=this.grammar.getDerivations(item)
                 let bodyFirstSets=productions.map(x=>this.grammar.getProductionBodyFirstSet(x))
                 let errorBodyIndex=this.findProductionBodyFirstSetIntersectionNotEmpty(bodyFirstSets)
@@ -29,14 +25,8 @@ class IsLL1{
                         noticeArr.push(`${this.genErrorNotice(productions,i)}相交不为空`)
                     }
                     let errorProductionArray=this.grammar.getDerivations(item)
-                    let errorProductionString=errorProductionArray[0].getHeadString()+'->'
-                    for(let i=0;i<errorProductionArray.length;i++){
-                        errorProductionString+=errorProductionArray[i].getBodyString()+'|'
-                    }
-                    errorProductionString=errorProductionString.slice(0,-1)
-                    
                     let errorProduction={
-                        production: errorProductionString,  //这里放原始的产生式对象，不要放字符串
+                        production: errorProductionArray,  //这里放原始的产生式对象，不要放字符串
                         notice: noticeArr,
                     }
                     this.errorProductions.push(errorProduction)
@@ -45,13 +35,8 @@ class IsLL1{
             else{
                 let noticeArr=Array.of(`First(${item.symbol}) 中存在 ε 且 First(${item.symbol}) 与 Follow(${item.symbol}) 相交不为空`)
                 let errorProductionArray=this.grammar.getDerivations(item)
-                let errorProductionString=errorProductionArray[0].getHeadString()+'->'
-                for(let i=0;i<errorProductionArray.length;i++){
-                    errorProductionString+=errorProductionArray[i].getBodyString()+'|'
-                }
-                errorProductionString=errorProductionString.slice(0,-1)
                 let errorProduction={
-                    production: errorProductionString,  //这里放原始的产生式对象，不要放字符串
+                    production: errorProductionArray,  //这里放原始的产生式对象，不要放字符串
                     notice: noticeArr,
                 }
                 this.errorProductions.push(errorProduction)
@@ -70,7 +55,7 @@ class IsLL1{
             }
         }
     }
-    //这里也用 set 来判断有没有重复的对象
+    
     findProductionBodyFirstSetIntersectionNotEmpty(bodyFirstSets){
         const errorBodyIndex=Array.of()
         for(let i=0;i<bodyFirstSets.length;i++){
@@ -93,15 +78,14 @@ class IsLL1{
         return errorBodyIndex
     }
 
-    duplexItem(arr){  //返回 arr 中所有重复元素
-        let temp=arr.join()+","
-        const result=new Set()
-        for(let i=0;i<arr.length;i++){
-            if(temp.replace(arr[i]+",","").indexOf(arr[i]+",")>-1){
-                result.add(arr[i])
+    intersection(setA,setB){  //求交集
+        let _intersection = new Set();
+        for (let elem of setB) {
+            if (setA.has(elem)) {
+                _intersection.add(elem);
             }
         }
-        return [...result]
+        return _intersection;
     }
 
     genErrorNotice(production,index){  //生成错误提示信息
@@ -115,5 +99,19 @@ class IsLL1{
 }
 export default function(grammar){
     let temp=new IsLL1(grammar)
-    return temp.isLL1()
+    let result=temp.isLL1()
+    if(result.isLL1===true){
+        return result
+    }
+    else{
+        result.errorProductions.forEach(e=>{
+            let errorProductionString=e.production[0].getHeadString()+'->'
+            for(let i of e.production){
+                errorProductionString+=i.getBodyString()+'|'
+            }
+            errorProductionString=errorProductionString.slice(0,-1)
+            e.production=errorProductionString
+        })
+        return result
+    }
 }
