@@ -14,7 +14,7 @@ export default {
         let add=new Sign('+','Terminal')
         let multiply=new Sign('*','Terminal')
         let a=new Sign('a','Terminal')
-        let empty=new Sign('ε','Terminal')
+        let empty=new Sign('ε','Empty')
         let i=new Sign('i','Terminal')
         let d=new Sign('d','Terminal')
         let id=new Sign('id','Terminal')
