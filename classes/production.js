@@ -1,27 +1,27 @@
-class Production{
-  constructor(head, body){
+class Production {
+  constructor(head, body) {
     this.head = head
     this.body = body
   }
-  getString(){
+  getString() {
     return this.head.getString() + '->' + this.body.map(e => e.getString()).join('')
   }
-  getTerminals(){
+  getTerminals() {
     return this.body.filter(e => e.type === 'Terminal')
   }
-  getNonterminals(){
+  getNonterminals() {
     return this.body.filter(e => e.type === 'Nonterminal')
   }
-  getHeadString(){
+  getHeadString() {
     return this.head.getString()
   }
-  getBodyString(){
+  getBodyString() {
     return this.body.map(e => e.getString()).join('')
   }
-  getHead(){
+  getHead() {
     return this.head
   }
-  getBody(){
+  getBody() {
     return this.body
   }
 }
