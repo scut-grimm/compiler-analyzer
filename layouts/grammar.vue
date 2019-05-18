@@ -9,27 +9,27 @@
   </div>
 </template>
 <script>
-import GrammarStep from '~/components/grammar-step'
+import GrammarStep from "~/components/grammar-step";
 export default {
-  components:{
+  components: {
     GrammarStep
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>
-.grammar-layout{
+.grammar-layout {
   display: flex;
   height: 100vh;
   flex-direction: row;
-  .layout-left{
+  .layout-left {
     height: 100%;
     width: 20%;
     display: flex;
     align-items: center;
     justify-content: center;
   }
-  .layout-right{
+  .layout-right {
     max-height: 100%;
     overflow-y: auto;
     width: 80%;

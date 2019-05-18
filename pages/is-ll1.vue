@@ -1,13 +1,9 @@
-<template>
-    
-</template>
+<template></template>
 <script>
 export default {
-    layout:'grammar',
-
-}
+  layout: "grammar"
+};
 </script>
 <style scoped>
-
 </style>
 
