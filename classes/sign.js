@@ -6,24 +6,24 @@ const Types = {
   StackBottom: 4
 }
 class Sign {
-  constructor(symbol, type){
+  constructor(symbol, type) {
     assert.notEqual(Types[type], undefined, 'type is not defined')
     this.symbol = symbol
     this.type = type
   }
-  getString(){
+  getString() {
     return this.symbol
   }
-  isTerminal(){
+  isTerminal() {
     return this.type === 'Terminal'
   }
-  isNonterminal(){
+  isNonterminal() {
     return this.type === 'Nonterminal'
   }
-  isEmpty(){
+  isEmpty() {
     return this.type === 'Empty'
   }
-  isStackBottom(){
+  isStackBottom() {
     return this.type === 'StackBottom'
   }
 }

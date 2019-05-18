@@ -1,60 +1,60 @@
-class AlgorithmWrapper{
-  constructor(algorithm){
+class AlgorithmWrapper {
+  constructor(algorithm) {
     this.algorithm = algorithm
     this.context = null
     this.epoch = null
     this.alldone = false
     this.lastvalue = null
   }
-  init(){
+  init() {
     this.context = this.algorithm.getInitContext()
     this.epoch = this.algorithm.epoch(this.context)
     this.alldone = false
   }
-  isAllDone(){
+  isAllDone() {
     return this.alldone
   }
-  getContext(){
+  getContext() {
     return this.context
   }
-  getCurResult(){
+  getCurResult() {
     return this.algorithm.getCurResult(this.context)
   }
-  next(){
-    let {value, done} = this.epoch.next()
-    if(done){
-      let [alldone, nextContext] = value
-      if(alldone){
+  next() {
+    const { value, done } = this.epoch.next()
+    if (done) {
+      const [alldone, nextContext] = value
+      if (alldone) {
         this.alldone = true
         return false
-      }else{
+      } else {
         this.context = nextContext
         this.epoch = this.algorithm.epoch(nextContext)
         return this.next()
       }
-    }else{
+    } else {
       this.lastvalue = value
       return value
     }
   }
-  skip(){
-    while(true){
-      let {value, done} = this.epoch.next()
-      if(done){
-        let [alldone, nextContext] = value
-        if(alldone){
+  skip() {
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      const { value, done } = this.epoch.next()
+      if (done) {
+        const [alldone, nextContext] = value
+        if (alldone) {
           this.alldone = true
           return this.lastvalue
-        }else{
+        } else {
           this.context = nextContext
           this.epoch = this.algorithm.epoch(nextContext)
           return this.lastvalue
         }
-      }else{
+      } else {
         this.lastvalue = value
       }
     }
-
   }
 }
 export default AlgorithmWrapper

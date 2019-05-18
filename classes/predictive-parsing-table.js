@@ -1,43 +1,42 @@
 import assert from 'assert'
-class PredictiveParsingTable{
-  constructor(){
+class PredictiveParsingTable {
+  constructor() {
     this.map = new Map()
     this.nonterminals = new Set()
     this.terminals = new Set()
   }
-  get(nonterminal, terminal){
-    if(!this.map.has(nonterminal)){
+  get(nonterminal, terminal) {
+    if (!this.map.has(nonterminal)) {
       return null
     }
     const submap = this.map.get(nonterminal)
-    if(!submap.has(terminal)){
+    if (!submap.has(terminal)) {
       return null
     }
     return submap.get(terminal)
   }
-  set(nonterminal, terminal, production){
-
-    if(!this.map.has(nonterminal)){
+  set(nonterminal, terminal, production) {
+    if (!this.map.has(nonterminal)) {
       this.map.set(nonterminal, new Map())
     }
     const submap = this.map.get(nonterminal)
-    if(submap.has(terminal)){
-      console.log(nonterminal.getString(),terminal.getString(),production.getString())
-      console.log(submap.get(terminal).getString(),production.getString())
+    if (submap.has(terminal)) {
+      console.log(nonterminal.getString(), terminal.getString(), production.getString())
+      console.log(submap.get(terminal).getString(), production.getString())
       assert.strictEqual(submap.get(terminal).getString(), production.getString(), 'has more than one item')
     }
     submap.set(terminal, production)
     this.nonterminals.add(nonterminal)
     this.terminals.add(terminal)
   }
-  getTableData(){
+  getTableData() {
     const nonterminals = [...this.nonterminals]
     const terminals = [...this.terminals]
     const table = []
-    for(let nonterminal of nonterminals){
+    for (const nonterminal of nonterminals) {
       const cur = []
-      for(let terminal of terminals){
-        cur.push(this.get(nonterminal,terminal))
+      for (const terminal of terminals) {
+        cur.push(this.get(nonterminal, terminal))
       }
       table.push(cur)
     }
