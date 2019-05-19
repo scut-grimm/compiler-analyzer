@@ -1,6 +1,6 @@
 import assert from 'assert'
 class IsLL1 {
-  errorProductions = Array.of()
+  productions = Array.of()
   constructor(grammar) {
     this.grammar = grammar
   }
@@ -9,47 +9,59 @@ class IsLL1 {
     const nonterminals = this.grammar.getNonterminals()
     assert(nonterminals.length, '文法没有非终止符号')
     for (const item of nonterminals) {
-      const nonFirstSet = new Set(this.grammar.getSignFirstSet(item)) // 不要使用字符串
-      assert(nonFirstSet.size, `First(${item.symbol})为空`)
-      const nonFollowSet = new Set(this.grammar.getSignFollowSet(item)) // 不要使用字符串
-      assert(nonFollowSet.size, `Follow(${item.symbol})为空`)
-      const intersection = this.intersection(nonFirstSet, nonFollowSet)
-      // 不要使用字符串判断是否有 ε 直接用 set.has(Sign)
-      if (!(nonFirstSet.has(this.grammar.getEmptySign()) && intersection.size > 0)) {
-        const productions = this.grammar.getDerivations(item)
-        const bodyFirstSets = productions.map(x => this.grammar.getProductionBodyFirstSet(x))
-        const errorBodyIndex = this.findProductionBodyFirstSetIntersectionNotEmpty(bodyFirstSets)
-        if (errorBodyIndex.length !== 0) {
-          const noticeArr = Array.of()
-          for (const i of errorBodyIndex) {
-            noticeArr.push(`${this.genErrorNotice(productions, i)}相交不为空`)
+      const productions = this.grammar.getDerivations(item)
+      if (productions.length !== 0) {
+        const nonFirstSet = new Set(this.grammar.getSignFirstSet(item)) // 不要使用字符串
+        assert(nonFirstSet.size, `First(${item.symbol})为空`)
+        const nonFollowSet = new Set(this.grammar.getSignFollowSet(item)) // 不要使用字符串
+        assert(nonFollowSet.size, `Follow(${item.symbol})为空`)
+        const intersection = this.intersection(nonFirstSet, nonFollowSet)
+        // 不要使用字符串判断是否有 ε 直接用 set.has(Sign)
+        if (!(nonFirstSet.has(this.grammar.getEmptySign()) && intersection.size > 0)) {
+          const bodyFirstSets = productions.map(x => this.grammar.getProductionBodyFirstSet(x))
+          const errorBodyIndex = this.findProductionBodyFirstSetIntersectionNotEmpty(bodyFirstSets)
+          if (errorBodyIndex.length !== 0) {
+            const noticeArr = Array.of()
+            for (const i of errorBodyIndex) {
+              noticeArr.push(`${this.genErrorNotice(productions, i)}相交不为空`)
+            }
+            const errorProductionArray = this.grammar.getDerivations(item)
+            const errorProduction = {
+              error: true,
+              production: errorProductionArray, // 这里放原始的产生式对象，不要放字符串
+              notice: noticeArr
+            }
+            this.productions.push(errorProduction)
+          } else {
+            const rightProductionArray = this.grammar.getDerivations(item)
+            const rightProduction = {
+              error: false,
+              production: rightProductionArray,
+              notice: ['产生式符合规则']
+            }
+            this.productions.push(rightProduction)
           }
+        } else {
+          const noticeArr = Array.of(`First(${item.symbol}) 中存在 ε 且 First(${item.symbol}) 与 Follow(${item.symbol}) 相交不为空`)
           const errorProductionArray = this.grammar.getDerivations(item)
           const errorProduction = {
+            error: true,
             production: errorProductionArray, // 这里放原始的产生式对象，不要放字符串
             notice: noticeArr
           }
-          this.errorProductions.push(errorProduction)
+          this.productions.push(errorProduction)
         }
-      } else {
-        const noticeArr = Array.of(`First(${item.symbol}) 中存在 ε 且 First(${item.symbol}) 与 Follow(${item.symbol}) 相交不为空`)
-        const errorProductionArray = this.grammar.getDerivations(item)
-        const errorProduction = {
-          production: errorProductionArray, // 这里放原始的产生式对象，不要放字符串
-          notice: noticeArr
-        }
-        this.errorProductions.push(errorProduction)
       }
     }
-    if (this.errorProductions.length === 0) {
+    if (this.productions.length === 0) {
       return {
         isLL1: true,
-        errorProductions: this.errorProductions
+        productions: this.productions
       }
     } else {
       return {
         isLL1: false,
-        errorProductions: this.errorProductions
+        productions: this.productions
       }
     }
   }
@@ -97,17 +109,13 @@ class IsLL1 {
 export default function(grammar) {
   const temp = new IsLL1(grammar)
   const result = temp.isLL1()
-  if (result.isLL1 === true) {
-    return result
-  } else {
-    result.errorProductions.forEach(e => {
-      let errorProductionString = e.production[0].getHeadString() + '->'
-      for (const i of e.production) {
-        errorProductionString += i.getBodyString() + '|'
-      }
-      errorProductionString = errorProductionString.slice(0, -1)
-      e.production = errorProductionString
-    })
-    return result
-  }
+  result.productions.forEach(e => {
+    let productionString = e.production[0].getHeadString() + '->'
+    for (const i of e.production) {
+      productionString += i.getBodyString() + '|'
+    }
+    productionString = productionString.slice(0, -1)
+    e.production = productionString
+  })
+  return result
 }
