@@ -1,11 +1,15 @@
 <template>
   <div>
     <div v-for="production in productions" :key="production.production">
-      <el-popover placement="right" width="200" title="Notice" trigger="click">
+      <el-popover placement="right" width="200" trigger="click">
         <el-table :data="production.notice">
           <el-table-column width="150" property="notice" lable="notice"></el-table-column>
         </el-table>
-        <el-button slot="reference" type="text" :class="{}">{{production.production}}</el-button>
+        <el-button
+          slot="reference"
+          type="text"
+          :class="{errorProduction:production.error}"
+        >{{production.production}}</el-button>
       </el-popover>
     </div>
     <div v-if="productions.isLL1===true">当前文法属于LL(1)文法</div>
@@ -98,5 +102,8 @@ export default {
 };
 </script>
 <style>
+.errorProduction {
+  color: red;
+}
 </style>
 
