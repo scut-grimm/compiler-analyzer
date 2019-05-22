@@ -4,7 +4,8 @@ class GenerateParsingStack {
   constructor(grammar, PredictiveParsingTable, strToken) {
     this.grammar = grammar
     this.PredictiveParsingTable = PredictiveParsingTable
-    this.end = this.grammar.getSign('$', 'Terminal')
+    this.end = this.grammar.getStackBottomSign()
+    this.empty = this.grammar.getEmptySign()
     this.strToken = [...strToken]
     this.strToken.push(this.end)
     this.started = false
@@ -14,14 +15,15 @@ class GenerateParsingStack {
     return {
       cur_index: 0,
       // stack: new ParsingStack().push(this.grammar.getSign('$','Terminal')).push(this.grammar.getStartSign())
-      stack: new ParsingStack().push(this.grammar.getSign('$', 'Terminal')).push([this.grammar.getSign('E', 'Nonterminal')])
+      stack: new ParsingStack().push(this.end).push([this.grammar.getSign('E', 'Nonterminal')])
     }
   }
 
   * epoch(curContext) {
     const { cur_index, stack } = curContext
 
-    const G = this.grammar
+    // const G = this.grammar
+    const empty = this.empty
     const end = this.end
     const PPT = this.PredictiveParsingTable
     const strToken = this.strToken
@@ -45,7 +47,7 @@ class GenerateParsingStack {
       } else if (!M) {
         console.log('M is null:', M)
         return this.error()
-      } else if (M.getBody().length === 1 && M.getBody()[0] === G.getSign('ε', 'Terminal')) {
+      } else if (M.getBody().length === 1 && M.getBody()[0] === empty) {
         stack.pop()
         yield {
           Production: M.getString(),
