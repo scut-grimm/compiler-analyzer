@@ -147,8 +147,8 @@ export default {
     oldnext(){
       let curFirstSet = new Set(this.curFirstSet)
       let curFollowSet = new Set(this.curFollowSet)
-      const Empty = this.grammar.getSign('ε','Terminal')
-      const End = this.grammar.getSign('$','Terminal')
+      const Empty = this.grammar.getEmptySign()
+      const End = this.grammar.getStackBottomSign()
       for(let symbol of curFirstSet){
         this.PPT.set(this.curProduction.head, symbol, this.curProduction)
       }
@@ -248,8 +248,8 @@ export default {
     const Id = grammar.getSign('id', 'Terminal')
     const LeftClose = grammar.getSign('(', 'Terminal')
     const RightClose = grammar.getSign(')', 'Terminal')
-    const Empty = grammar.getSign('ε', 'Terminal')
-    const End = grammar.getSign('$', 'Terminal')
+    const Empty = this.grammar.getEmptySign()
+    const End = this.grammar.getStackBottomSign()
     grammar.addProduction(E, [T, E1])
     grammar.addProduction(E1, [Plus, T, E1])
     grammar.addProduction(E1, [Empty])
