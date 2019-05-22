@@ -2,14 +2,12 @@ import assert from 'assert'
 import Grammar from '../grammar'
 class GenerateGrammarFromUserInput {
   productions = Array.of()
-  userDefineSymbols = Array.of()
   startSymbol
   G = new Grammar()
 
-  constructor(productions, userDefineSymbols, startSymbol) {
+  constructor(productions, startSymbol) {
     assert(productions.length, '前端传来的文法规则为空')
     this.productions = [...productions]
-    this.userDefineSymbols = [...userDefineSymbols]
     if (startSymbol === undefined) {
       const start = this.G.getSign(this.productions[0][0])
       this.startSymbol = start
@@ -20,15 +18,8 @@ class GenerateGrammarFromUserInput {
   }
 
   setGrammar() {
-    this.setSigns() // 设置文法符号
-    this.setProductions() // 设置产生式
+    this.setProductions() // 设置产生式，同时会把文法符号设置好
     this.setStartSign() // 设置文法开始符号，默认是第一条产生式的头部
-  }
-
-  setSigns() {
-    for (const i of this.userDefineSymbols) {
-      this.G.getSign(i)
-    }
   }
 
   setStartSign() {
@@ -54,7 +45,7 @@ class GenerateGrammarFromUserInput {
   }
 }
 
-export default function(productions, userDefineSymbols, startSign) {
-  const G = new GenerateGrammarFromUserInput(productions, userDefineSymbols, startSign)
+export default function(productions, startSign) {
+  const G = new GenerateGrammarFromUserInput(productions, startSign)
   return G.getGrammar()
 }
