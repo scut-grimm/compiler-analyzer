@@ -22,8 +22,8 @@ class GeneratePredictiveParsingTable {
 
     const curFirstSet = new Set(G.getProductionBodyFirstSet(curProduction))
     const curFollowSet = new Set(G.getSignFollowSet(curProduction.head))
-    const Empty = G.getSign('ε', 'Terminal')
-    const End = G.getSign('$', 'Terminal')
+    const Empty = G.getEmptySign()
+    const End = G.getStackBottomSign()
     yield {
       curProduction,
       notice: '分析产生式(' + curProduction.getString() + ')',

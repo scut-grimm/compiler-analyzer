@@ -72,7 +72,7 @@ class Grammar {
   }
   getSignFirstSet(sign) {
     assert.strictEqual(this.signs.has(sign.symbol), true)
-    if (sign.isTerminal()) {
+    if (!sign.isNonterminal()) {
       return [sign]
     }
     sign = this.getSign(sign.symbol)
@@ -87,7 +87,7 @@ class Grammar {
     const Empty = this.getEmptySign()
     for (const sign of production.body) {
       if (frontAllHaveEmpty === true) {
-        this.getSignFirstSet(sign).filter(e => e.isTerminal()).forEach(e => result.add(e))
+        this.getSignFirstSet(sign).filter(e => e.isTerminal() || e.isEmpty() || e.isStackBottom()).forEach(e => result.add(e))
       }
       if (!(new Set(this.getSignFirstSet(sign))).has(Empty)) {
         frontAllHaveEmpty = false
