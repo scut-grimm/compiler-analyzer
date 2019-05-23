@@ -110,22 +110,13 @@
         placeholder="输入文法产生式"
         v-model="userInputProductions"
         class="production"
-      >
-        <el-autocomplete
-          v-model="tip"
-          :fetch-suggestions="querySearch"
-          placeholder="请输入产生式"
-          :trigger-on-focus="false"
-          @select="handleSelect"
-        >
-          <template slot-scope="{item}">
-            <span>{{item.symbol}}</span>
-          </template>
-        </el-autocomplete>
-      </el-input>
+      ></el-input>
       <el-button round size="medium" @click="getProductions">完成</el-button>
     </div>
-    <div class="left">
+    <!-- <div class="left">
+      <smithTag></smithTag>
+    </div>-->
+    <!-- <div class="left">
       <el-autocomplete
         v-model="tip"
         :fetch-suggestions="querySearch"
@@ -137,13 +128,17 @@
           <span>{{item.symbol}}</span>
         </template>
       </el-autocomplete>
-    </div>
+    </div>-->
   </div>
 </template>
 <script>
 import Sign from "~/classes/sign";
 import GGFUI from "~/classes/algorithms/generate-grammar-from-user-input";
+import smithTag from "~/components/smith-tag";
 export default {
+  components: {
+    smithTag
+  },
   data() {
     return {
       terminals: [
@@ -185,6 +180,7 @@ export default {
         }
       }
       this.terminals.push(newTerminal);
+      this.symbol = "";
     },
     addNonterminal() {
       let newNonterminal = new Sign(this.symbol, "Nonterminal");
@@ -201,6 +197,7 @@ export default {
         }
       }
       this.nonterminals.push(newNonterminal);
+      this.symbol = "";
     },
     getProductions() {
       let productions = Array.of();
@@ -417,6 +414,8 @@ export default {
     }
   }
   .left {
+    position: relative;
+    // top: 165px;
     .production {
       width: 100%;
     }
