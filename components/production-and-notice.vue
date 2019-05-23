@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="isLL1">
     <div v-for="production in productions" :key="production.production">
       <el-popover placement="right" width="200" trigger="click">
         <el-table :data="production.notice">
@@ -104,6 +104,11 @@ export default {
 <style>
 .errorProduction {
   color: red;
+}
+.isLL1 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>
 

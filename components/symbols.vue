@@ -110,6 +110,7 @@
         placeholder="输入文法产生式"
         v-model="userInputProductions"
         class="production"
+        spellcheck="false"
       ></el-input>
       <el-button round size="medium" @click="getProductions">完成</el-button>
     </div>
@@ -392,6 +393,8 @@ export default {
 <style lang="scss" scoped>
 .userinput {
   display: flex;
+  position: relative;
+  top: 165px;
   .right {
     .table {
       width: 100%;
@@ -414,8 +417,6 @@ export default {
     }
   }
   .left {
-    position: relative;
-    // top: 165px;
     .production {
       width: 100%;
     }

@@ -92,8 +92,14 @@ export default {
         clearTimeout(this.autoTimer);
         this.autoTimer = null;
       }
-      if (this.isAllDone && this.strToken.length > 1) {
-        alert("无法继续匹配");
+      if (this.isAllDone) {
+        if (this.strToken.length > 1) {
+          this.$message("无法继续匹配");
+          return;
+        } else {
+          this.$message("匹配完成");
+          return;
+        }
       }
 
       // todo:测试用，待改

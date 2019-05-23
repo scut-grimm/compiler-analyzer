@@ -4,7 +4,7 @@
 <script>
 import Symbols from "~/components/symbols";
 export default {
-  layout: "default",
+  layout: "grammar",
   components: {
     Symbols
   }
