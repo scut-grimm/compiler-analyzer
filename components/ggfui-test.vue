@@ -65,7 +65,7 @@ export default {
     productions = [pd1, pd2, pd3, pd4, pd5];
     userDefineSigns = [alpha, beta];
     //测试用例1
-    let G1 = new GenerateGrammarFromUserInput(productions);
+    let G1 = new GenerateGrammarFromUserInput(productions, userDefineSigns);
     console.log("Start symbol: " + G1.getStartSign().getString());
     console.log("Productions");
     G1.productions.forEach(e => {
@@ -82,7 +82,7 @@ export default {
     });
     console.log("Terminals: " + terminals1);
     //测试用例2
-    let G2 = new GenerateGrammarFromUserInput(productions, F);
+    let G2 = new GenerateGrammarFromUserInput(productions, userDefineSigns, F);
     console.log("Start symbol: " + G2.getStartSign().getString());
     console.log("Productions");
     G2.productions.forEach(e => {

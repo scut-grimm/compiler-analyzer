@@ -15,4 +15,3 @@ export default {
 </script>
 <style>
 </style>
-© 2019 GitHub, Inc.
