@@ -124,12 +124,14 @@ export default {
         firstSet = firstSet.slice(0, -2);
         for (let i = 0; i < this.oldTableData.length; i++) {
           if (i === this.firstSetSymbolIndex) {
-            this.oldTableData[i][this.turn] = firstSet;
+            this.$set(this.oldTableData[i], [this.turn], firstSet); //Vue教程的深入响应式原理有详解
           } else {
             if (this.turn > 1) {
-              this.oldTableData[i][this.turn] = this.oldTableData[i][
-                this.turn - 1
-              ];
+              this.$set(
+                this.oldTableData[i],
+                [this.turn],
+                this.oldTableData[i][this.turn - 1]
+              ); //Vue教程的深入响应式原理有详解
             }
           }
         }
