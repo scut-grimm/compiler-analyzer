@@ -50,7 +50,7 @@ class GenerateFollowSet {
           if(toAdd.length > 0){
             yield {
               production,
-              notice: `FIRST(${remains.map(e=>e.getString()).join('')})=${toAdd.map(e=>e.getString()).join('')})，将除${Empty.getString()}之外的符号加入FOLLOW(${sign.getString()})中`,
+              notice: `FIRST(${remains.map(e=>e.getString()).join('')})=${toAdd.map(e=>e.getString()).join('')}，将除${Empty.getString()}之外的符号加入FOLLOW(${sign.getString()})中`,
               step: 1,
               highlightSymbols: [],
               processedSigns: [...processedSigns],
@@ -100,13 +100,12 @@ class GenerateFollowSet {
             }
           }
         }
-        active++
       }
+      active++
     }
     if(followset.isDirty()){
       pass_results.push(followset.clone())
     }
-    followset.print()
     return [!followset.isDirty(), {
       followset,
       first: false,

@@ -43,36 +43,61 @@
         </div>
       </div>
       <div class="right">
-        <el-table :data="tableData" style="width: 100%">
-          <el-table-column label="Non Terminal" width="150">
+        <el-table
+          :data="tableData"
+          style="width: 100%"
+        >
+          <el-table-column
+            label="NonTerminal"
+            width="150"
+          >
             <template slot-scope="scope">
               <span>{{scope.row.nonterminal}}</span>
             </template>
           </el-table-column>
-          <el-table-column label="Input Symbol">
-            <el-table-column
-              v-for="(terminal,index) in tableTerminals"
-              :key="index"
-              :label="terminal"
-              width="120"
-            >
-              <template slot-scope="scope">
-                <span>{{scope.row[terminal]}}</span>
-              </template>
-            </el-table-column>
+          <el-table-column
+            v-for="index in passCount"
+            :key="index"
+            :label="'Pass ' + String(index)"
+            width="120"
+          >
+            <template slot-scope="scope">
+              <span>{{scope.row['pass' + String(index - 1)]}}</span>
+            </template>
           </el-table-column>
         </el-table>
         <div style="position: absolute; bottom: 10px;left: 10px;">
           <template v-if="started === false">
-            <el-button type="primary" @click="start">开始</el-button>
+            <el-button
+              type="primary"
+              @click="start"
+            >开始</el-button>
           </template>
           <template v-if="started === true && isAllDone === false">
-            <el-button type="success" @click="next">下一步</el-button>
-            <el-button type="warning" @click="skip">跳过</el-button>
-            <el-button type="info" @click="startAutoPlay" v-if="autoTimer === null">自动播放</el-button>
-            <el-button type="danger" @click="stopAutoPlay" v-if="autoTimer !== null">停止播放</el-button>
+            <el-button
+              type="success"
+              @click="next"
+            >下一步</el-button>
+            <el-button
+              type="warning"
+              @click="skip"
+            >跳过</el-button>
+            <el-button
+              type="info"
+              @click="startAutoPlay"
+              v-if="autoTimer === null"
+            >自动播放</el-button>
+            <el-button
+              type="danger"
+              @click="stopAutoPlay"
+              v-if="autoTimer !== null"
+            >停止播放</el-button>
           </template>
-          <el-button @click="start" v-if="started" type="primary">重新开始</el-button>
+          <el-button
+            @click="start"
+            v-if="started"
+            type="primary"
+          >重新开始</el-button>
         </div>
       </div>
     </div>
@@ -105,7 +130,9 @@ export default {
       gettingFirst: [],
       followset: null,
       pass_results: [],
-      tableTerminals: []
+      tableTerminals: [],
+      tableNonterminals: [],
+      processedSigns: []
     };
   },
   methods: {
@@ -126,6 +153,7 @@ export default {
       this.followset = this.wrapper.getCurResult().followset
       this.pass_results = this.wrapper.getCurResult().pass_results
       this.tableTerminals = this.grammar.getTerminals()
+      this.tableNonterminals = this.grammar.getNonterminals()
       this.isAllDone = this.wrapper.isAllDone();
       if (this.isAllDone && this.autoTimer !== null) {
         clearTimeout(this.autoTimer);
@@ -139,8 +167,10 @@ export default {
         step,
         highlightSymbols,
         active,
-        gettingFirst
+        gettingFirst,
+        processedSigns
       } = this.wrapper.next();
+      this.processedSigns = processedSigns
       this.gettingFirst = gettingFirst
       this.curStep = step;
       this.pre_notice = this.notice;
@@ -156,8 +186,10 @@ export default {
         step,
         highlightSymbols,
         active,
-        gettingFirst
+        gettingFirst,
+        processedSigns
       } = this.wrapper.skip();
+      this.processedSigns = processedSigns
       this.gettingFirst = gettingFirst
       this.curStep = step;
       this.pre_notice = this.notice;
@@ -206,32 +238,49 @@ export default {
         "如果存在产生式A->αB，或A->αBβ，其中FIRST(β)中包含ε，则将FOLLOW(A)中的所有符号放入FOLLOW(B)中"
       ];
     },
+    passCount() {
+      if (this.followset === null) {
+        return 0
+      }
+      return this.pass_results.length + 1
+    },
     tableData() {
-      if(this.followset === null){
+      if (this.followset === null) {
         return []
       }
-      let tableData = this.tableTerminals.map(e => {
+      let tableData = this.tableNonterminals.map(e => {
         let obj = {
-          terminal: e.getString()
+          nonterminal: e.getString()
         }
-        for(let i=0;i<this.pass_results.length+1;i++){
+        for (let i = 0; i < this.pass_results.length + 1; i++) {
           obj['pass' + i] = ''
         }
-          return obj
-        })
+        return obj
+      })
       let pass = 0
-      for(let map of this.pass_results){
-        for(let i=0;i<this.tableTerminals.length;i++){
-          let key = this.tableTerminals[i]
+      for (let map of this.pass_results) {
+        for (let i = 0; i < this.tableNonterminals.length; i++) {
+          let key = this.tableNonterminals[i]
           let cur = tableData[i]
           let values = []
-          if(map.has(key)){
+          if (map.has(key)) {
             values = [...map.get(key)]
           }
-          console.log(values)
           cur['pass' + pass] = values.map(e => e.getString()).join('')
         }
         pass++
+      }
+      let followset = this.followset
+      if(followset !== null){
+        for (let i = 0; i < this.tableNonterminals.length; i++) {
+          let key = this.tableNonterminals[i]
+          let cur = tableData[i]
+          let values = []
+          if (followset.has(key) && this.processedSigns.indexOf(key) !== -1) {
+            values = [...followset.get(key)]
+          }
+          cur['pass' + pass] = values.map(e => e.getString()).join('')
+        }
       }
       return tableData
     }
