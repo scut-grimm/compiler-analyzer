@@ -204,12 +204,8 @@ export default {
       while (true) {
         let firstSetSymbolIndex = this.wrapper.getContext().symbolIndex; //当前正在计算first集合的文法符号在this.allFirstSet中的下标
         this.allDone = this.wrapper.isAllDone();
-        console.log("All done " + this.allDone);
         if (!this.allDone) {
           let wrapperSkipReturn = this.wrapper.skip(); //this.wrapper.skip()的返回值
-          console.log("当前符号" + firstSetSymbolIndex);
-          console.log(wrapperSkipReturn.symbolIndex);
-
           if (firstSetSymbolIndex === wrapperSkipReturn.symbolIndex) {
             //如果两者相等，则说明first集合有变化，正在计算的文法符号的first集合中添加了新的元素
             this.wrapperReturn = wrapperSkipReturn; //更新组件的this.wrapperReturn
