@@ -106,9 +106,9 @@ export default {
   color: red;
 }
 .isLL1 {
-  display: flex;
   justify-content: center;
   align-items: center;
 }
 </style>
+
 
