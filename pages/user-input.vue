@@ -2,7 +2,7 @@
   <Symbols></Symbols>
 </template>
 <script>
-import Symbols from "~/components/symbols";
+import Symbols from "~/components/generate-grammar-from-user-input";
 export default {
   layout: "grammar",
   components: {
