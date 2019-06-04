@@ -62,6 +62,7 @@ import GrammarIndicator from "~/components/grammar-indicator";
 import FirstSet from "~/classes/algorithms/firstSet";
 import Grammar from "~/classes/grammar";
 import AlgorithmWrapper from "~/classes/algorithm-wrapper";
+import MapSet from "~/classes/map-set";
 export default {
   components: {
     GrammarIndicator
@@ -88,7 +89,8 @@ export default {
       started: false,
       allDone: false,
       autoTimer: null,
-      autoTime: 1000
+      autoTime: 1000,
+      firstSet: null
     };
   },
   computed: {
@@ -188,6 +190,7 @@ export default {
         this.activeProductionIndex = this.wrapperReturn.productionIndex;
       } else {
         this.notice = "first集合计算完成";
+        this.getFirstSet();
         this.dependSymbolIndex = null;
       }
       if (this.autoTimer !== null) {
@@ -209,7 +212,6 @@ export default {
           let wrapperSkipReturn = this.wrapper.skip(); //this.wrapper.skip()的返回值
           console.log("当前符号" + firstSetSymbolIndex);
           console.log(wrapperSkipReturn.symbolIndex);
-
           if (firstSetSymbolIndex === wrapperSkipReturn.symbolIndex) {
             //如果两者相等，则说明first集合有变化，正在计算的文法符号的first集合中添加了新的元素
             this.wrapperReturn = wrapperSkipReturn; //更新组件的this.wrapperReturn
@@ -244,6 +246,15 @@ export default {
     },
     onChagneProduction(index) {
       this.activeProductionIndex = index;
+    },
+    getFirstSet() {
+      const firstSet = new MapSet();
+      for (let i of this.allFirstSet) {
+        for (let j of i[2]) {
+          firstSet.add(i[0], j);
+        }
+      }
+      this.firstSet = firstSet;
     }
   },
   mounted() {
