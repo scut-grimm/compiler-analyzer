@@ -1,6 +1,7 @@
 import assert from 'assert'
 class IsLL1 {
   productions = Array.of()
+  isLL1Label = true
   constructor(grammar) {
     this.grammar = grammar
   }
@@ -31,6 +32,7 @@ class IsLL1 {
               production: errorProductionArray, // 这里放原始的产生式对象，不要放字符串
               notice: noticeArr
             }
+            this.isLL1Label = false
             this.productions.push(errorProduction)
           } else {
             const rightProductionArray = this.grammar.getDerivations(item)
@@ -49,20 +51,14 @@ class IsLL1 {
             production: errorProductionArray, // 这里放原始的产生式对象，不要放字符串
             notice: noticeArr
           }
+          this.isLL1Label = false
           this.productions.push(errorProduction)
         }
       }
     }
-    if (this.productions.length === 0) {
-      return {
-        isLL1: true,
-        productions: this.productions
-      }
-    } else {
-      return {
-        isLL1: false,
-        productions: this.productions
-      }
+    return {
+      isLL1: this.isLL1Label,
+      productions: this.productions
     }
   }
 

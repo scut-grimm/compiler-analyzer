@@ -12,7 +12,7 @@
         >{{production.production}}</el-button>
       </el-popover>
     </div>
-    <div v-if="productions.isLL1===true">当前文法属于LL(1)文法</div>
+    <div v-if="isLL1===true">当前文法属于LL(1)文法</div>
     <div v-else>当前文法不属于LL(1)文法</div>
   </div>
 </template>
@@ -23,7 +23,8 @@ import MapSet from "~/classes/map-set";
 export default {
   data() {
     return {
-      grammar: new Grammar()
+      grammar: new Grammar(),
+      isLL1: false
     };
   },
   computed: {
@@ -36,6 +37,7 @@ export default {
         }
         i.notice = temp;
       }
+      this.isLL1 = judge.isLL1;
       return judge.productions;
     }
   },
@@ -55,7 +57,7 @@ export default {
     const Empty = grammar.getEmptySign();
     const End = grammar.getStackBottomSign();
     grammar.addProduction(E, [T, E1]);
-    grammar.addProduction(E1, [Plus, T, E1, G]);
+    grammar.addProduction(E1, [Plus, T, E1]);
     grammar.addProduction(E1, [Empty]);
     grammar.addProduction(T, [F, T1]);
     grammar.addProduction(T1, [Multi, F, T1]);
