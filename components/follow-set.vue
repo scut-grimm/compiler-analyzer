@@ -276,7 +276,7 @@ export default {
           let key = this.tableNonterminals[i]
           let cur = tableData[i]
           let values = []
-          if (followset.has(key) && this.processedSigns.indexOf(key) !== -1) {
+          if (followset.has(key) /*&& this.processedSigns.indexOf(key) !== -1*/) {
             values = [...followset.get(key)]
           }
           cur['pass' + pass] = values.map(e => e.getString()).join('')
