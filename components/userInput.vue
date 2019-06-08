@@ -22,13 +22,18 @@
       },
       watch:{
           input(val){
-            const grammar = this.grammar
-            let result = []
-            const arr = val.split(' ')
-            for(let i of arr){
-              result.push(grammar.getSign(i, 'Terminal'))
-            }
-            this.$emit('getInput', result)
+
+            clearTimeout(this.timeout);
+            this.timeout = setTimeout(() => {
+              const grammar = this.grammar
+              let result = []
+              const arr = val.split(' ')
+              for(let i of arr){
+                result.push(grammar.getSign(i, 'Terminal'))
+              }
+              this.$emit('getInput', result)
+            }, 300);
+
           }
       }
     }
