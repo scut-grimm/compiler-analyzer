@@ -82,10 +82,13 @@ class Grammar {
     return [...this.firstSet.get(sign)]
   }
   getProductionBodyFirstSet(production) {
+    return this.getSignsFirstSet(production.getBody())
+  }
+  getSignsFirstSet(signs){
     const result = new Set()
     let frontAllHaveEmpty = true
     const Empty = this.getEmptySign()
-    for (const sign of production.body) {
+    for (const sign of signs) {
       if (frontAllHaveEmpty === true) {
         this.getSignFirstSet(sign).filter(e => e.isTerminal() || e.isEmpty() || e.isStackBottom()).forEach(e => result.add(e))
       }
@@ -93,7 +96,7 @@ class Grammar {
         frontAllHaveEmpty = false
       }
     }
-    if (frontAllHaveEmpty && production.body.length > 0) {
+    if (frontAllHaveEmpty && signs.length > 0) {
       result.add(Empty)
     }
     return [...result]
