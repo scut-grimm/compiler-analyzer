@@ -359,41 +359,34 @@ export default {
       this.terminals = this.terminals.filter(e => e.getString() !== val);
       this.nonterminals = this.nonterminals.filter(e => e.getString() !== val);
     },
+
     generateGrammar() {
       let grammar = new GGFUI(this.formalProductions);
-      this.grammarIsLegal(grammar);
-      // console.log("Start symbol: " + grammar.getStartSign().getString());
-      // console.log("Productions");
-      // grammar.productions.forEach(e => {
-      //   console.log(e.getHeadString() + "->" + e.getBodyString());
-      // });
-      // let nonterminals2 = "";
-      // grammar.getNonterminals().forEach(e => {
-      //   nonterminals2 += e.getString() + " ";
-      // });
-      // console.log("Nonterminals: " + nonterminals2);
-      // let terminals2 = "";
-      // grammar.getTerminals().forEach(e => {
-      //   terminals2 += e.getString() + " ";
-      // });
-      // console.log("Terminals: " + terminals2);
+      let result = this.grammarIsLegal(grammar);
+      if(result){
+        this.$eventbus.$emit('FinishInputGrammar', grammar)
+      }
     },
     grammarIsLegal(grammar) {
       if (grammar.getTerminals().length === 0) {
         this.$message(
           "当前文法没有终止符号，不是合法的上下文无关文法，请重新输入"
         );
+        return false
       }
       if (grammar.getNonterminals().length === 0) {
         this.$message(
           "当前文法没有非终止符号，不是合法的上下文无关文法，请重新输入"
         );
+        return false
       }
       if (grammar.getProductions().length === 0) {
         this.$message(
           "当前文法没有产生式，不是合法的上下文无关文法，请重新输入"
         );
+        return false
       }
+      return true
     },
     querySearch(queryString, cb) {
       let signs = [...this.terminals, ...this.nonterminals];

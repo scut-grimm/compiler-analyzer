@@ -83,6 +83,7 @@
             <el-button type="danger" @click="stopAutoPlay" v-if="autoTimer !== null">停止播放</el-button>
           </template>
           <el-button @click="start" v-if="started" type="primary">重新开始</el-button>
+          <el-button type="primary" @click="finish">完成</el-button>
         </div>
       </div>
     </div>
@@ -206,6 +207,13 @@ export default {
       this.autoTimer = setTimeout(() => {
         this.autoloop();
       }, this.autoTime);
+    },
+    finish(){
+      this.$eventbus.$emit('FinishPPT')
+    },
+    setGrammar(grammar) {
+      this.grammar = grammar
+      this.PPT = new GeneratePredictiveParsingTable(grammar).run();
     }
   },
   computed: {
@@ -265,85 +273,7 @@ export default {
     }
   },
   mounted() {
-    const grammar = this.grammar;
-    const E = grammar.getSign("E", "Nonterminal");
-    const E1 = grammar.getSign("E'", "Nonterminal");
-    const T = grammar.getSign("T", "Nonterminal");
-    const T1 = grammar.getSign("T'", "Nonterminal");
-    const F = grammar.getSign("F", "Nonterminal");
-    const Plus = grammar.getSign("+", "Terminal");
-    const Multi = grammar.getSign("*", "Terminal");
-    const Id = grammar.getSign("id", "Terminal");
-    const LeftClose = grammar.getSign("(", "Terminal");
-    const RightClose = grammar.getSign(")", "Terminal");
-    const Empty = this.grammar.getEmptySign();
-    const End = this.grammar.getStackBottomSign();
-    grammar.addProduction(E, [T, E1]);
-    grammar.addProduction(E1, [Plus, T, E1]);
-    grammar.addProduction(E1, [Empty]);
-    grammar.addProduction(T, [F, T1]);
-    grammar.addProduction(T1, [Multi, F, T1]);
-    grammar.addProduction(T1, [Empty]);
-    grammar.addProduction(F, [LeftClose, E, RightClose]);
-    grammar.addProduction(F, [Id]);
 
-    const firstSet = new MapSet();
-    const followSet = new MapSet();
-    firstSet.add(E, LeftClose);
-    firstSet.add(E, Id);
-
-    firstSet.add(T, LeftClose);
-    firstSet.add(T, Id);
-
-    firstSet.add(F, LeftClose);
-    firstSet.add(F, Id);
-
-    firstSet.add(E1, Plus);
-    firstSet.add(E1, Empty);
-
-    firstSet.add(T1, Multi);
-    firstSet.add(T1, Empty);
-
-    followSet.add(E, RightClose);
-    followSet.add(E, End);
-
-    followSet.add(E1, RightClose);
-    followSet.add(E1, End);
-
-    followSet.add(T, Plus);
-    followSet.add(T, RightClose);
-    followSet.add(T, End);
-
-    followSet.add(T1, Plus);
-    followSet.add(T1, RightClose);
-    followSet.add(T1, End);
-
-    followSet.add(F, Plus);
-    followSet.add(F, Multi);
-    followSet.add(F, RightClose);
-    followSet.add(F, End);
-
-    grammar.firstSet = firstSet;
-    grammar.followSet = followSet;
-
-    grammar.getNonterminals().forEach(e => {
-      console.log(
-        "First(" + e.getString() + "): {",
-        grammar
-          .getSignFirstSet(e)
-          .map(e => e.getString())
-          .join(","),
-        "}"
-      );
-      console.log(
-        "Follow(" + e.getString() + "): {",
-        grammar
-          .getSignFollowSet(e)
-          .map(e => e.getString())
-          .join(","),
-        "}"
-      );
-    });
   }
 };
 </script>

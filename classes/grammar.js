@@ -2,13 +2,24 @@ import Production from './production'
 import Sign from './sign'
 import assert from 'assert'
 import MapSet from './map-set'
+import PPT from './predictive-parsing-table'
 class Grammar {
   constructor() {
     this.productions = []
     this.signs = new Map()
     this.firstSet = new MapSet()
     this.followSet = new MapSet()
+    this.PPT = new PPT()
     this.startSign = null
+  }
+  setFirstSet(firstSet){
+    this.firstSet = firstSet
+  }
+  setFollowSet(followSet){
+    this.followSet = followSet
+  }
+  setPPT(PPT){
+    this.PPT = PPT
   }
   setStartSign(sign) {
     assert.strictEqual(this.checkSignsExist([sign]), true, 'Sign should be added first')

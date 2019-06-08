@@ -1,6 +1,6 @@
 <template>
   <div style="height: 70%;">
-    <el-steps direction="vertical" :active="5">
+    <el-steps direction="vertical" :active="active">
       <el-step title="拟定文法"></el-step>
       <el-step title="First集"></el-step>
       <el-step title="Follow集"></el-step>
@@ -10,3 +10,27 @@
     </el-steps>
   </div>
 </template>
+<script>
+import { mapState } from 'vuex'
+export default {
+  computed:{
+    ...mapState('global',['curStep']),
+    active(){
+      switch(this.curStep){
+        case 'GrammarInput':
+          return 0
+        case 'FirstSet':
+          return 1
+        case 'FollowSet':
+          return 2
+        case 'IsLL1':
+          return 3
+        case 'PredictiveParsingTable':
+          return 4
+        case 'ParsingStack':
+          return 5
+      }
+    }
+  }
+}
+</script>

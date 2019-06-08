@@ -133,7 +133,7 @@ class GenerateFollowSet {
     while (ret[0] === false) {
       ret = this.runEpoch(ret[1])
     }
-    return ret[1]
+    return ret[1]['followset']
   }
 }
 export default GenerateFollowSet

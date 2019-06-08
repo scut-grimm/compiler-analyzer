@@ -1,28 +1,77 @@
 <template>
   <div class="analysis">
     <div class="left">
-      <userInput :grammar="grammar" @getInput="getData"></userInput>
-      <el-input type="textarea" :rows="12" placeholder="预测分析表"></el-input>
+      <userInput
+        :grammar="grammar"
+        @getInput="getData"
+      ></userInput>
+      <el-input
+        type="textarea"
+        :rows="12"
+        placeholder="预测分析表"
+      ></el-input>
       <div style="position: relative; bottom: 10px;left: 10px;">
         <template v-if="started === false">
-          <el-button type="primary" @click="start">开始</el-button>
+          <el-button
+            type="primary"
+            @click="start"
+          >开始</el-button>
         </template>
         <template v-if="started === true && isAllDone === false">
-          <el-button type="success" @click="next">下一步</el-button>
-          <el-button type="warning" @click="skip">跳过</el-button>
-          <el-button type="info" @click="startAutoPlay" v-if="autoTimer === null">自动播放</el-button>
-          <el-button type="danger" @click="stopAutoPlay" v-if="autoTimer !== null">停止播放</el-button>
+          <el-button
+            type="success"
+            @click="next"
+          >下一步</el-button>
+          <el-button
+            type="warning"
+            @click="skip"
+          >跳过</el-button>
+          <el-button
+            type="info"
+            @click="startAutoPlay"
+            v-if="autoTimer === null"
+          >自动播放</el-button>
+          <el-button
+            type="danger"
+            @click="stopAutoPlay"
+            v-if="autoTimer !== null"
+          >停止播放</el-button>
         </template>
-        <el-button @click="restart" v-if="started" type="primary">重新开始</el-button>
+        <el-button
+          @click="restart"
+          v-if="started"
+          type="primary"
+        >重新开始</el-button>
       </div>
     </div>
 
     <div class="right">
-      <el-table :data="stackData" style="width: 100%">
-        <el-table-column prop="matched" label="已匹配" width="180" align="right"></el-table-column>
-        <el-table-column prop="symbolStack" label="符号栈" width="180" align="right"></el-table-column>
-        <el-table-column prop="input" label="输入" align="right"></el-table-column>
-        <el-table-column prop="action" label="动作" align="right"></el-table-column>
+      <el-table
+        :data="stackData"
+        style="width: 100%"
+      >
+        <el-table-column
+          prop="matched"
+          label="已匹配"
+          width="180"
+          align="right"
+        ></el-table-column>
+        <el-table-column
+          prop="symbolStack"
+          label="符号栈"
+          width="180"
+          align="right"
+        ></el-table-column>
+        <el-table-column
+          prop="input"
+          label="输入"
+          align="right"
+        ></el-table-column>
+        <el-table-column
+          prop="action"
+          label="动作"
+          align="right"
+        ></el-table-column>
       </el-table>
     </div>
   </div>
@@ -46,7 +95,7 @@ export default {
       grammar: new Grammar(),
       active: 0,
       parsingStack,
-      stack: this.parsingStack,
+      stack: parsingStack,
       PPT: "",
       PPTData: "",
       strToken: "",
@@ -140,6 +189,10 @@ export default {
       while (!this.isAllDone) {
         this.next();
       }
+    },
+    setGrammar(grammar) {
+      this.grammar = grammar
+      this.PPT = grammar.PPT
     }
   },
   computed: {
@@ -152,80 +205,6 @@ export default {
     }
   },
   mounted() {
-    const grammar = this.grammar;
-    const E = grammar.getSign("E", "Nonterminal");
-    const E1 = grammar.getSign("E'", "Nonterminal");
-    const T = grammar.getSign("T", "Nonterminal");
-    const T1 = grammar.getSign("T'", "Nonterminal");
-    const F = grammar.getSign("F", "Nonterminal");
-    const Plus = grammar.getSign("+", "Terminal");
-    const Multi = grammar.getSign("*", "Terminal");
-    const Id = grammar.getSign("id", "Terminal");
-    const LeftClose = grammar.getSign("(", "Terminal");
-    const RightClose = grammar.getSign(")", "Terminal");
-    const Empty = grammar.getEmptySign();
-    const End = grammar.getStackBottomSign();
-    grammar.addProduction(E, [T, E1]);
-    grammar.addProduction(E1, [Plus, T, E1]);
-    grammar.addProduction(E1, [Empty]);
-    grammar.addProduction(T, [F, T1]);
-    grammar.addProduction(T1, [Multi, F, T1]);
-    grammar.addProduction(T1, [Empty]);
-    grammar.addProduction(F, [LeftClose, E, RightClose]);
-    grammar.addProduction(F, [Id]);
-
-    const firstSet = new MapSet();
-    const followSet = new MapSet();
-    firstSet.add(E, LeftClose);
-    firstSet.add(E, Id);
-
-    firstSet.add(T, LeftClose);
-    firstSet.add(T, Id);
-
-    firstSet.add(F, LeftClose);
-    firstSet.add(F, Id);
-
-    firstSet.add(E1, Plus);
-    firstSet.add(E1, Empty);
-
-    firstSet.add(T1, Multi);
-    firstSet.add(T1, Empty);
-
-    followSet.add(E, RightClose);
-    followSet.add(E, End);
-
-    followSet.add(E1, RightClose);
-    followSet.add(E1, End);
-
-    followSet.add(T, Plus);
-    followSet.add(T, RightClose);
-    followSet.add(T, End);
-
-    followSet.add(T1, Plus);
-    followSet.add(T1, RightClose);
-    followSet.add(T1, End);
-
-    followSet.add(F, Plus);
-    followSet.add(F, Multi);
-    followSet.add(F, RightClose);
-    followSet.add(F, End);
-
-    grammar.firstSet = firstSet;
-    grammar.followSet = followSet;
-
-    // console.log("------------------------------------------------")
-    this.PPT = new GeneratePredictiveParsingTable(grammar).run();
-    this.strToken = [
-      grammar.getSign("id", "Terminal"),
-      grammar.getSign("*", "Terminal"),
-      grammar.getSign("id", "Terminal")
-    ];
-    this.inputData = [
-      grammar.getSign("id", "Terminal"),
-      grammar.getSign("*", "Terminal"),
-      grammar.getSign("id", "Terminal")
-    ];
-    console.log(this.PPT.getTableData());
   }
 };
 </script>

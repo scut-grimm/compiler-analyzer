@@ -15,7 +15,7 @@ class GenerateParsingStack {
     return {
       cur_index: 0,
       // stack: new ParsingStack().push(this.grammar.getSign('$','Terminal')).push(this.grammar.getStartSign())
-      stack: new ParsingStack().push(this.end).push([this.grammar.getSign('E', 'Nonterminal')])
+      stack: new ParsingStack().push(this.end).push([this.grammar.getStartSign()])
     }
   }
 

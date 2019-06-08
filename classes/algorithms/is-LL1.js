@@ -13,9 +13,9 @@ class IsLL1 {
       const productions = this.grammar.getDerivations(item)
       if (productions.length !== 0) {
         const nonFirstSet = new Set(this.grammar.getSignFirstSet(item)) // 不要使用字符串
-        assert(nonFirstSet.size, `First(${item.symbol})为空`)
+        //assert(nonFirstSet.size, `First(${item.symbol})为空`)
         const nonFollowSet = new Set(this.grammar.getSignFollowSet(item)) // 不要使用字符串
-        assert(nonFollowSet.size, `Follow(${item.symbol})为空`)
+        //assert(nonFollowSet.size, `Follow(${item.symbol})为空`)
         const intersection = this.intersection(nonFirstSet, nonFollowSet)
         // 不要使用字符串判断是否有 ε 直接用 set.has(Sign)
         if (!(nonFirstSet.has(this.grammar.getEmptySign()) && intersection.size > 0)) {
