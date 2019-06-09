@@ -85,6 +85,7 @@ import Grammar from "~/classes/grammar";
 import MapSet from "~/classes/map-set";
 import ParsingStack from "~/classes/parsing-stack";
 import GenerateParsingStack from "~/classes/algorithms/generate-parsing-stack";
+import sign from "../classes/sign";
 export default {
   components: {
     userInput
@@ -114,7 +115,17 @@ export default {
   },
   methods: {
     getData(val) {
-      if (val !== "") this.inputData = val;
+      if (val !== null) {
+        let result = []
+        for(let i of val){
+          if(this.grammar.checkSignsExist([i])){
+            result.push(this.grammar.getSign(i))
+          }else{
+            result.push(new sign(i,"Terminal"))
+          }
+          }
+        this.inputData = result;
+      }
     },
     start() {
       const algorithm = new GenerateParsingStack(
