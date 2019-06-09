@@ -23,8 +23,6 @@
       watch:{
           input(val){
 
-            clearTimeout(this.timeout);
-            this.timeout = setTimeout(() => {
               if(val!=='') {
                 // const grammar = this.grammar
                 // let result = []
@@ -35,10 +33,10 @@
                 if (arr.length > 0) {
                   this.$emit('getInput', arr)
                 }
-              }
-            }, 300);
+
 
           }
+      }
       }
     }
 </script>

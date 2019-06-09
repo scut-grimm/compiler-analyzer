@@ -53,11 +53,17 @@ class Grammar {
   }
   checkSignsExist(signs) {
     for (const sign of signs) {
-      if (!this.signs.has(sign.symbol) || this.signs.get(sign.symbol) !== sign) {
-        return false
+      if (typeof sign == "string") {
+        if (!this.signs.has(sign) || this.signs.get(sign).symbol !== sign) {
+          return false
+        }
+      } else {
+        if (!this.signs.has(sign.symbol) || this.signs.get(sign.symbol) !== sign) {
+          return false
+        }
       }
+      return true
     }
-    return true
   }
   addProduction(head, body) {
     assert.strictEqual(this.checkSignsExist([head, ...body]), true, 'All Sign should be add first')
@@ -101,7 +107,7 @@ class Grammar {
     const Empty = this.getEmptySign()
     for (const sign of signs) {
       if (frontAllHaveEmpty === true) {
-        this.getSignFirstSet(sign).filter(e => e.isTerminal() || e.isEmpty() || e.isStackBottom()).forEach(e => result.add(e))
+        this.getSignFirstSet(sign).filter(e => e.isTerminal() ).forEach(e => result.add(e))
       }
       if (!(new Set(this.getSignFirstSet(sign))).has(Empty)) {
         frontAllHaveEmpty = false

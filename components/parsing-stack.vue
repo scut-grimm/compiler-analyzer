@@ -100,6 +100,7 @@ export default {
       PPT: "",
       PPTData: "",
       strToken: "",
+      tempInput: [],
       inputData: "",
       Production: "",
       stackData: [],
@@ -110,34 +111,41 @@ export default {
       curStep: -1,
       autoTime: 1000,
       autoTimer: null,
-      isAllDone: false
+      isAllDone: false,
     };
   },
   methods: {
     getData(val) {
-      if (val !== null) {
-        let result = []
-        for(let i of val){
-          if(this.grammar.checkSignsExist([i])){
-            result.push(this.grammar.getSign(i))
-          }else{
-            result.push(new sign(i,"Terminal"))
-          }
-          }
-        this.inputData = result;
-      }
+      // if (val !== null) {
+      //   let result = []
+      //   for(let i of val){
+      //     if(this.grammar.checkSignsExist([i])){
+      //       try{
+      //         result.push(this.grammar.getSign(i))
+      //       }catch (e) {
+      //         console.log(e)
+      //       }
+      //     }else{
+      //       console.log(i)
+      //       this.TokenIsValiable = false
+      //       this.$message("输入了文法中不存在的符号，请重新修改")
+      //     }
+      //     }
+      this.tempInput = val
     },
     start() {
-      const algorithm = new GenerateParsingStack(
-        this.grammar,
-        this.PPT,
-        this.inputData
-      );
-      this.wrapper = new AlgorithmWrapper(algorithm);
-      this.wrapper.init();
-      this.started = true;
-      this.isAllDone = false;
-      this.next();
+      if (this.checkInput()) {
+        const algorithm = new GenerateParsingStack(
+          this.grammar,
+          this.PPT,
+          this.inputData
+        );
+        this.wrapper = new AlgorithmWrapper(algorithm);
+        this.wrapper.init();
+        this.started = true;
+        this.isAllDone = false;
+        this.next();
+      }
     },
     restart() {
       this.stackData = [];
@@ -171,7 +179,7 @@ export default {
       });
     },
     next() {
-      let { Production, notice } = this.wrapper.next();
+      let {Production, notice} = this.wrapper.next();
       // this.pre_notice = this.notice
       this.notice = notice;
       this.Production = Production;
@@ -204,6 +212,36 @@ export default {
     setGrammar(grammar) {
       this.grammar = grammar
       this.PPT = grammar.PPT
+    },
+    checkInput() {
+      let val = this.tempInput
+      let result = []
+      if (val.length > 0) {
+        for (let i of val) {
+          if (this.grammar.checkSignsExist([i])) {
+            try {
+              let temp = this.grammar.getSign(i)
+              if (temp.isNonterminal()){
+                this.$message("输中存在非终结符，请重新输入")
+                return false
+              }else {
+                result.push(temp)
+              }
+            } catch (e) {
+              console.log(e)
+            }
+          } else {
+            console.log(i)
+            this.$message("输入了文法中不存在的符号，请重新修改")
+            return false
+          }
+        }
+      }
+      if(result.length==0){
+        return false
+      }
+      this.inputData = result
+      return true
     }
   },
   computed: {
