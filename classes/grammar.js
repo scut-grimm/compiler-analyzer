@@ -57,6 +57,24 @@ class Grammar {
     }
     return this.signs.get(symbol)
   }
+  //symbol::string
+  hasSymbol(symbol){
+    return this.signs.has(symbol)
+  }
+  printProductions(){
+    for(let production of this.productions){
+      console.log(production.getString())
+    }
+  }
+  getSignUnusedAlias(sign){
+    let cur = sign.getString()
+    while(true){
+      cur = cur + "'"
+      if(!this.hasSymbol(cur)){
+        return this.getSign(cur, sign.type)
+      }
+    }
+  }
   getEmptySign() {
     return this.getSign('ε', 'Empty')
   }
@@ -86,6 +104,25 @@ class Grammar {
       head = this.signs.get(head)
     }
     return this.productions.filter(e => e.head.symbol === head.symbol)
+  }
+  deleteProduction(head,body){
+    for(let a=0;a<this.productions.length;a++){
+      let production = this.productions[a]
+      if(production.head === head && body.length === production.body.length){
+        let same = true
+        for(let i=0;i<body.length;i++){
+          if(body[i] !== production.body[i]){
+            same = false
+            break
+          }
+        }
+        if(same){
+          this.productions.splice(a,1)
+          return true
+        }
+      }
+    }
+    return false
   }
   getTerminals() {
     return [...this.signs.values()].filter(e => e.type === 'Terminal')
