@@ -5,6 +5,15 @@ class PredictiveParsingTable {
     this.nonterminals = new Set()
     this.terminals = new Set()
   }
+  clone(){
+    let other = new PredictiveParsingTable()
+    for(let key of this.map.keys()){
+      other.map.set(key, this.map.get(key))
+    }
+    other.nonterminals = new Set([...this.nonterminals])
+    other.terminals = new Set([...this.terminals])
+    return other
+  }
   get(nonterminal, terminal) {
     if (!this.map.has(nonterminal)) {
       return null

@@ -12,6 +12,18 @@ class Grammar {
     this.PPT = new PPT()
     this.startSign = null
   }
+  clone(){
+    let other = new Grammar()
+    for(let key of this.signs.keys()){
+      other.signs.set(key, this.signs.get(key))
+    }
+    other.productions = [...this.productions]
+    other.firstSet = this.firstSet.clone()
+    other.followSet = this.followSet.clone()
+    other.PPT = this.PPT.clone()
+    other.startSign = this.startSign
+    return other
+  }
   setFirstSet(firstSet){
     this.firstSet = firstSet
   }

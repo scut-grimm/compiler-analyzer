@@ -1,12 +1,12 @@
 <template>
   <div class="grammar-step">
     <el-steps direction="vertical" :active="active">
-      <el-step title="拟定文法"></el-step>
-      <el-step title="First集"></el-step>
-      <el-step title="Follow集"></el-step>
-      <el-step title="判断符合LL(1)文法"></el-step>
-      <el-step title="分析预测表"></el-step>
-      <el-step title="分析栈"></el-step>
+      <el-step title="拟定文法" description="输入文法规则"></el-step>
+      <el-step title="First集" description="计算文法的First集合"></el-step>
+      <el-step title="Follow集" description="计算文法的follow集"></el-step>
+      <el-step title="判断符合LL(1)文法" description="判断文法是否符合LL(1)文法"></el-step>
+      <el-step title="分析预测表" description="生成预测分析表"></el-step>
+      <el-step title="分析栈" description="根据拟定文法分析输入串"></el-step>
     </el-steps>
   </div>
 </template>
