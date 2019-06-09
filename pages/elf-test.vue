@@ -1,19 +1,27 @@
 <template>
-  <div>
+  <div class="elf">
+    <div class="main">
+      <HightlightProduction :disjointSet="disjointSet" :productions="leftProductions"></HightlightProduction>
+      <HightlightProduction :disjointSet="disjointSet" :productions="rightProductions"></HightlightProduction>
+    </div>
 
   </div>
 </template>
 <script>
 import Grammar from "~/classes/grammar";
 import ExtractLeftFactor from "~/classes/algorithms/extract-left-factor";
+import HightlightProduction from '~/components/highlight-production'
 export default {
   layout: "grammar",
   components: {
-
+    HightlightProduction
   },
   data(){
     return {
-      grammar: null
+      grammar: null,
+      disjointSet: '',
+      leftProductions: [],
+      rightProductions: []
     }
   },
   mounted(){
@@ -41,10 +49,12 @@ export default {
     grammar.addProduction(A, [a, b, e]);
     grammar.addProduction(A, [a, c]);
     grammar.addProduction(A, [a, a]);
+    grammar.addProduction(A, [b, a]);
+    grammar.addProduction(A, [b, c]);
 
     grammar.addProduction(B, [b, b]);
     grammar.addProduction(B, [b, c, d]);
-    grammar.addProduction(B, [b, c, b, d, ]);
+    grammar.addProduction(B, [b, c, b, d]);
 
     grammar.addProduction(C, [c ,a, b, a, c, c, c]);
     grammar.addProduction(C, [c, a, b, a, d, d, d]);
@@ -52,12 +62,22 @@ export default {
     grammar.setStartSign(D);
     grammar.printProductions()
     let elf = new ExtractLeftFactor(grammar)
-    let newGrammar = elf.run()
+    let {newGrammar,disjointSet} = elf.run()
     console.log(newGrammar)
     newGrammar.printProductions()
+    this.disjointSet = disjointSet
+    this.leftProductions = grammar.getProductions()
+    this.rightProductions = newGrammar.getProductions()
   }
 };
 </script>
-<style>
+<style lang="scss" scoped>
+.elf{
+  .main{
+    display: flex;
+
+  }
+}
 </style>
+
 

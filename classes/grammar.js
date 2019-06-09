@@ -108,18 +108,9 @@ class Grammar {
   deleteProduction(head,body){
     for(let a=0;a<this.productions.length;a++){
       let production = this.productions[a]
-      if(production.head === head && body.length === production.body.length){
-        let same = true
-        for(let i=0;i<body.length;i++){
-          if(body[i] !== production.body[i]){
-            same = false
-            break
-          }
-        }
-        if(same){
-          this.productions.splice(a,1)
-          return true
-        }
+      if(production.isSameOf(head,body)){
+        this.productions.splice(a,1)
+        return true
       }
     }
     return false
