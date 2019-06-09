@@ -1,5 +1,5 @@
 <template>
-  <div style="height: 70%;">
+  <div class="grammar-step">
     <el-steps direction="vertical" :active="active">
       <el-step title="拟定文法"></el-step>
       <el-step title="First集"></el-step>
@@ -34,3 +34,10 @@ export default {
   }
 }
 </script>
+<style lang="scss" scoped>
+.grammar-step{
+  height: 90%;
+  padding-top: 40px;
+  padding-left:40px;
+}
+</style>

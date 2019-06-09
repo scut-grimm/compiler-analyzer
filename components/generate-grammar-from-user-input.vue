@@ -448,7 +448,7 @@ export default {
 .userinput {
   display: flex;
   position: relative;
-  top: 165px;
+  //top: 165px;
   .right {
     .table {
       width: 100%;
