@@ -116,21 +116,6 @@ export default {
   },
   methods: {
     getData(val) {
-      // if (val !== null) {
-      //   let result = []
-      //   for(let i of val){
-      //     if(this.grammar.checkSignsExist([i])){
-      //       try{
-      //         result.push(this.grammar.getSign(i))
-      //       }catch (e) {
-      //         console.log(e)
-      //       }
-      //     }else{
-      //       console.log(i)
-      //       this.TokenIsValiable = false
-      //       this.$message("输入了文法中不存在的符号，请重新修改")
-      //     }
-      //     }
       this.tempInput = val
     },
     start() {
@@ -160,7 +145,9 @@ export default {
         clearTimeout(this.autoTimer);
         this.autoTimer = null;
       }
+
       if (this.isAllDone) {
+        this.pushTable()
         if (this.strToken.length > 1) {
           this.$message("无法继续匹配");
           return;
@@ -168,15 +155,11 @@ export default {
           this.$message("匹配完成");
           return;
         }
+      }else{
+        this.pushTable(this.notice)
       }
 
-      // todo:测试用，待改
-      this.stackData.push({
-        matched: this.Production,
-        symbolStack: this.stack.getStringStack(),
-        input: this.strTokenData,
-        action: this.notice
-      });
+
     },
     next() {
       let {Production, notice} = this.wrapper.next();
@@ -212,6 +195,14 @@ export default {
     setGrammar(grammar) {
       this.grammar = grammar
       this.PPT = grammar.PPT
+    },
+    pushTable(notice=""){
+      this.stackData.push({
+        matched: this.Production,
+        symbolStack: this.stack.getStringStack(),
+        input: this.strTokenData,
+        action: notice
+      });
     },
     checkInput() {
       let val = this.tempInput
