@@ -12,6 +12,18 @@ class Grammar {
     this.PPT = new PPT()
     this.startSign = null
   }
+  clone(){
+    let other = new Grammar()
+    for(let key of this.signs.keys()){
+      other.signs.set(key, this.signs.get(key))
+    }
+    other.productions = [...this.productions]
+    other.firstSet = this.firstSet.clone()
+    other.followSet = this.followSet.clone()
+    other.PPT = this.PPT.clone()
+    other.startSign = this.startSign
+    return other
+  }
   setFirstSet(firstSet){
     this.firstSet = firstSet
   }
@@ -44,6 +56,24 @@ class Grammar {
       }
     }
     return this.signs.get(symbol)
+  }
+  //symbol::string
+  hasSymbol(symbol){
+    return this.signs.has(symbol)
+  }
+  printProductions(){
+    for(let production of this.productions){
+      console.log(production.getString())
+    }
+  }
+  getSignUnusedAlias(sign){
+    let cur = sign.getString()
+    while(true){
+      cur = cur + "'"
+      if(!this.hasSymbol(cur)){
+        return this.getSign(cur, sign.type)
+      }
+    }
   }
   getEmptySign() {
     return this.getSign('ε', 'Empty')
@@ -80,6 +110,16 @@ class Grammar {
       head = this.signs.get(head)
     }
     return this.productions.filter(e => e.head.symbol === head.symbol)
+  }
+  deleteProduction(head,body){
+    for(let a=0;a<this.productions.length;a++){
+      let production = this.productions[a]
+      if(production.isSameOf(head,body)){
+        this.productions.splice(a,1)
+        return true
+      }
+    }
+    return false
   }
   getTerminals() {
     return [...this.signs.values()].filter(e => e.type === 'Terminal')

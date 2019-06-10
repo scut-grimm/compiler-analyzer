@@ -2,7 +2,7 @@
   <el-container class="grammar-layout">
     <el-header>
       <el-menu
-  :default-active="2"
+  :default-active="'2'"
   class="menu"
   mode="horizontal"
   background-color="#545c64"

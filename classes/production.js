@@ -24,5 +24,18 @@ class Production {
   getBody() {
     return this.body
   }
+  isSameOf(head, body){
+    if(this.head === head && body.length === this.body.length){
+      let same = true
+      for(let i=0;i<body.length;i++){
+        if(body[i] !== this.body[i]){
+          same = false
+          break
+        }
+      }
+      return same
+    }
+    return false
+  }
 }
 export default Production
