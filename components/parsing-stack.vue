@@ -85,6 +85,7 @@ import Grammar from "~/classes/grammar";
 import MapSet from "~/classes/map-set";
 import ParsingStack from "~/classes/parsing-stack";
 import GenerateParsingStack from "~/classes/algorithms/generate-parsing-stack";
+import sign from "../classes/sign";
 export default {
   components: {
     userInput
@@ -99,6 +100,7 @@ export default {
       PPT: "",
       PPTData: "",
       strToken: "",
+      tempInput: [],
       inputData: "",
       Production: "",
       stackData: [],
@@ -109,24 +111,26 @@ export default {
       curStep: -1,
       autoTime: 1000,
       autoTimer: null,
-      isAllDone: false
+      isAllDone: false,
     };
   },
   methods: {
     getData(val) {
-      if (val !== "") this.inputData = val;
+      this.tempInput = val
     },
     start() {
-      const algorithm = new GenerateParsingStack(
-        this.grammar,
-        this.PPT,
-        this.inputData
-      );
-      this.wrapper = new AlgorithmWrapper(algorithm);
-      this.wrapper.init();
-      this.started = true;
-      this.isAllDone = false;
-      this.next();
+      if (this.checkInput()) {
+        const algorithm = new GenerateParsingStack(
+          this.grammar,
+          this.PPT,
+          this.inputData
+        );
+        this.wrapper = new AlgorithmWrapper(algorithm);
+        this.wrapper.init();
+        this.started = true;
+        this.isAllDone = false;
+        this.next();
+      }
     },
     restart() {
       this.stackData = [];
@@ -141,7 +145,9 @@ export default {
         clearTimeout(this.autoTimer);
         this.autoTimer = null;
       }
+
       if (this.isAllDone) {
+        this.pushTable()
         if (this.strToken.length > 1) {
           this.$message("无法继续匹配");
           return;
@@ -149,18 +155,14 @@ export default {
           this.$message("匹配完成");
           return;
         }
+      }else{
+        this.pushTable(this.notice)
       }
 
-      // todo:测试用，待改
-      this.stackData.push({
-        matched: this.Production,
-        symbolStack: this.stack.getStringStack(),
-        input: this.strTokenData,
-        action: this.notice
-      });
+
     },
     next() {
-      let { Production, notice } = this.wrapper.next();
+      let {Production, notice} = this.wrapper.next();
       // this.pre_notice = this.notice
       this.notice = notice;
       this.Production = Production;
@@ -193,6 +195,44 @@ export default {
     setGrammar(grammar) {
       this.grammar = grammar
       this.PPT = grammar.PPT
+    },
+    pushTable(notice=""){
+      this.stackData.push({
+        matched: this.Production,
+        symbolStack: this.stack.getStringStack(),
+        input: this.strTokenData,
+        action: notice
+      });
+    },
+    checkInput() {
+      let val = this.tempInput
+      let result = []
+      if (val.length > 0) {
+        for (let i of val) {
+          if (this.grammar.checkSignsExist([i])) {
+            try {
+              let temp = this.grammar.getSign(i)
+              if (temp.isNonterminal()){
+                this.$message("输中存在非终结符，请重新输入")
+                return false
+              }else {
+                result.push(temp)
+              }
+            } catch (e) {
+              console.log(e)
+            }
+          } else {
+            console.log(i)
+            this.$message("输入了文法中不存在的符号，请重新输入")
+            return false
+          }
+        }
+      }
+      if(result.length==0){
+        return false
+      }
+      this.inputData = result
+      return true
     }
   },
   computed: {
