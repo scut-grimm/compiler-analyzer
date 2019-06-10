@@ -42,6 +42,8 @@ export default {
     grammar.addProduction(T, [G, F]);
     //@test加包含ε的产生式T=>G G=>ε
     grammar.addProduction(T, [G]);
+    //@test加包含ε的间接左递归T=>GGGGE=>E G=>ε
+    grammar.addProduction(T, [G, G, G, G, E]);
     this.grammar = grammar;
 
     console.log("Start symbol: " + this.grammar.getStartSign().getString());
@@ -61,20 +63,20 @@ export default {
     console.log("Terminals: " + terminals);
 
     let { immedationRecursion, indirectRecursion } = new ELR(this.grammar);
-    // const productions = this.grammar.getProductions();
-    // console.log("Indirect left recursion");
-    // for (const i of indirectRecursion) {
-    //   let tempString = "";
-    //   for (const j of i) {
-    //     tempString += j.getString() + ", ";
-    //   }
-    //   tempString = tempString.slice(0, -2);
-    //   console.log(tempString);
-    // }
-    // console.log("Immedation left recursion");
-    // for (const i of immedationRecursion) {
-    //   console.log(i.getString());
-    // }
+    const productions = this.grammar.getProductions();
+    console.log("Indirect left recursion");
+    for (const i of indirectRecursion) {
+      let tempString = "";
+      for (const j of i) {
+        tempString += j.getString() + ", ";
+      }
+      tempString = tempString.slice(0, -2);
+      console.log(tempString);
+    }
+    console.log("Immedation left recursion");
+    for (const i of immedationRecursion) {
+      console.log(i.getString());
+    }
   }
 };
 </script>

@@ -39,7 +39,6 @@ class EliminateLeftRecursion {
   nollableNonterminal = Array.of()
   solutionSpace = new Stack()
   derivationStack = new Stack() // 推导栈，记录当前推导链上的产生式，压栈之前先检测栈中是否存在左递归
-  nullableNonterminals = Array.of()
   eliminatingEmptyGrammar = new Grammar() // 消除ε-production以后的新文法
   eliminatingCyclesGrammar = new Grammar() // 消除环以后的新文法
   constructor(grammar) {
@@ -59,6 +58,7 @@ class EliminateLeftRecursion {
     this.solutionSpace.push(frame) // 解空间初始化
     this.derivationStack.push(frame.productions[frame.index]) // 推导栈初始化
     this.scanIndirectLeftRecursion(this.solutionSpace, this.derivationStack)
+
     this.eliminatingEmptyProduction()
     // console.log('消除ε产生式后的文法')
     // console.log('Start symbol: ' + this.eliminatingEmptyGrammar.getStartSign().getString())
@@ -76,6 +76,24 @@ class EliminateLeftRecursion {
     //   terminals += e.getString() + ' '
     // })
     // console.log('Terminals: ' + terminals)
+
+    this.eliminatingCycles()
+    // console.log('消除环后的文法')
+    // console.log('Start symbol: ' + this.eliminatingCyclesGrammar.getStartSign().getString())
+    // console.log('Productions')
+    // this.eliminatingCyclesGrammar.productions.forEach(e => {
+    //   console.log(e.getHeadString() + '->' + e.getBodyString())
+    // })
+    // let eliminatingCyclesNonterminals = ''
+    // this.eliminatingCyclesGrammar.getNonterminals().forEach(e => {
+    //   eliminatingCyclesNonterminals += e.getString() + ' '
+    // })
+    // console.log('Nonterminals: ' + eliminatingCyclesNonterminals)
+    // let eliminatingCyclesTerminals = ''
+    // this.eliminatingCyclesGrammar.getTerminals().forEach(e => {
+    //   eliminatingCyclesTerminals += e.getString() + ' '
+    // })
+    // console.log('Terminals: ' + eliminatingCyclesTerminals)
   }
   // 扫描立即左递归
   scanImmedationLeftRecursion() {
@@ -88,28 +106,28 @@ class EliminateLeftRecursion {
   }
   // 递归实现的回溯法扫描间接左递归
   scanIndirectLeftRecursion(solutionSpace, derivationStack) {
-    // console.log('-----------------------------------')
-    // const temp = solutionSpace.getData()
-    // for (const i of temp) {
-    //   let tempString = ''
-    //   for (let j = 0; j < i.productions.length; j++) {
-    //     tempString += i.productions[j].getString() + ', '
-    //   }
-    //   console.log(tempString + i.index.toString() + ', ' + i.bodySymbolIndex.toString())
-    // }
-    // console.log('************************************')
-    // const tempDer = derivationStack.getData()
-    // let tempString = ''
-    // for (const i of tempDer) {
-    //   if (i !== undefined) {
-    //     tempString += i.getString() + ', '
-    //   } else {
-    //     tempString += 'undefined, '
-    //   }
-    // }
-    // tempString = tempString.slice(0, -2)
-    // console.log(tempString)
-    // console.log('-----------------------------------')
+    console.log('-----------------------------------')
+    const temp = solutionSpace.getData()
+    for (const i of temp) {
+      let tempString = ''
+      for (let j = 0; j < i.productions.length; j++) {
+        tempString += i.productions[j].getString() + ', '
+      }
+      console.log(tempString + i.index.toString() + ', ' + i.bodySymbolIndex.toString())
+    }
+    console.log('************************************')
+    const tempDer = derivationStack.getData()
+    let tempString = ''
+    for (const i of tempDer) {
+      if (i !== undefined) {
+        tempString += i.getString() + ', '
+      } else {
+        tempString += 'undefined, '
+      }
+    }
+    tempString = tempString.slice(0, -2)
+    console.log(tempString)
+    console.log('-----------------------------------')
     const bottom = solutionSpace.bottom()
     if (bottom.index === bottom.productions.length) { // 已经处理完解空间栈栈底产生式数组的最后一个产生式，算法结束
       return
@@ -175,7 +193,7 @@ class EliminateLeftRecursion {
                 derivationStack.push(frame.productions[frame.index])
                 this.scanIndirectLeftRecursion(solutionSpace, derivationStack)
               }
-            } else if (current.isEmpty()) {
+            } else if (current.isEmpty()) { // 这里没有回溯到正确位置
               const former = solutionSpace.pop()
               former.bodySymbolIndex++
               if (former.bodySymbolIndex === former.productions[former.index].getBody().length) {
@@ -263,19 +281,20 @@ class EliminateLeftRecursion {
     }
   }
   // 寻找所有可空的非终止符号
-  findnullableNonterminals() {
+  findnullableNonterminals(grammar) {
     let done = false
+    const nullableNonterminals = []
     while (!done) {
       done = true
-      const nonterminals = this.grammar.getNonterminals()
+      const nonterminals = grammar.getNonterminals()
       for (const nonterminal of nonterminals) {
-        const productions = this.grammar.getDerivations(nonterminal)
+        const productions = grammar.getDerivations(nonterminal)
         for (const production of productions) {
           const body = production.getBody()
           for (const symbol of body) {
-            if (symbol.isEmpty() || this.nullableNonterminals.includes(symbol)) {
-              if (body.indexOf(symbol) === body.length - 1 && !this.nullableNonterminals.includes(nonterminal)) {
-                this.nullableNonterminals.push(nonterminal)
+            if (symbol.isEmpty() || nullableNonterminals.includes(symbol)) {
+              if (body.indexOf(symbol) === body.length - 1 && !nullableNonterminals.includes(nonterminal)) {
+                nullableNonterminals.push(nonterminal)
                 done = false
               } else {
                 continue
@@ -287,11 +306,13 @@ class EliminateLeftRecursion {
         }
       }
     }
+    return nullableNonterminals
   }
-  // 消除ε产生式
-  eliminatingEmptyProduction() {
+  // 消除ε产生式，形如 A->ε 的产生式称为 ε 产生式
+  eliminatingEmptyProduction() { // 保证消除后的文法没有ε产生式（一种情况除外：产生式 S->ε，S为开始符号）
     this.eliminatingEmptyGrammar.setStartSign(this.eliminatingEmptyGrammar.getSign(this.grammar.getStartSign()))
-    this.findnullableNonterminals() // 找到所有可空非终止符号
+    const nullableNonterminals = this.findnullableNonterminals(this.grammar) // 找到 this.grammar 中所有可空非终止符号
+    // console.log('可空非终止符号： ' + nullableNonterminals.map(e => e.getString()).join(', '))
     const productions = this.grammar.getProductions()
     for (const production of productions) {
       // console.log('******************')
@@ -300,38 +321,39 @@ class EliminateLeftRecursion {
       const body = production.getBody()
       if (body[0].isEmpty()) { // 如果产生式体是ε，直接忽略
         continue
-      } else if (this.allBodySymbolNotNullable(body)) { // 如果产生式体中的符号都是不可空的，则将该产生式直接放入新的文法中
+      } else if (this.allBodySymbolNotNullable(this.grammar, body)) { // 如果产生式体中的符号都是不可空的，则将该产生式直接放入新的文法中
         const newBody = []
         for (const symbol of body) {
           newBody.push(this.eliminatingEmptyGrammar.getSign(symbol))
         }
-        this.eliminatingEmptyGrammar.addProduction(head, newBody)
+        const tempProduction = new Production(head, newBody)
+        if (!this.existTheProduction(this.eliminatingEmptyGrammar, tempProduction) && newBody.length > 0) {
+          // console.log(tempProduction.getString())
+          this.eliminatingEmptyGrammar.addProduction(head, newBody)
+        }
       } else {
         // 处理另一种情况的步骤如下：
         // 假定某一非空产生式p的body为"aAbAAc"，其中A为可空符号，a,b,c为不可空符号。
-
         // 再构造一对象pos{position,value}，其中position用于存储某个A在body中出现的位置，value表示position位置的字符是否在
         // 新的body中出现（0不出现，1出现）。构造pos类型的数组posArray，用于存储所有A的位置信息(将value初始化为0)。则posArray的初始内容为
         // [{1,0},{3,0},{4,0}]。
-
         // 新字符串的数量由A的个数n决定，一般为2^n个(每个位置的A都可以选择出现或是不出现在新字符串中)。但是对于
         // 像S->AA(S不可空)这样的产生式。由于产生式体中不存在不可空符号。所以当所有A都选择不出现时，新产生式将是空产
         // 生式，而这种情况应该忽略。
-
         // 可以通过循环2^n次来生成不同情况下的posArray,例如第5次循环生成的posArray为[{1,1},{3,0},{4,1}]。然后根据posArray
         // 生成新的body,例如根据[{1,1},{3,0},{4,1}]而得到新的body为"aAbAc"。
-        // 最后生成新产生式，并放入this.eliminatingEmptyGrammar中。为了避免产生式重复出现，加入之前先要判断产生式是否存在
+        // 最后生成新产生式，并放入this.eliminatingEmptyGrammar中。为了避免产生式重复出现，加入之前先要判断产生式是否存在。
         let turn = 0
-        const nullableSymbolIndex = [] // 记录可空符号在body中的下标
-        for (const symbol of body) {
-          if (this.nullableNonterminals.includes(symbol)) {
-            nullableSymbolIndex.push(body.indexOf(symbol))
+        const nullableSymbolIndex = [] // 记录可空符号在body中的下标，数组的长度表示可空符号的个数
+        for (let i = 0; i < body.length; i++) {
+          if (nullableNonterminals.includes(body[i])) {
+            nullableSymbolIndex.push(i)
             turn++
           }
         }
         turn = Math.pow(2, turn)
-        // console.log(nullableSymbolIndex.length)
-        // console.log(turn)
+        // console.log('可空符号的个数' + nullableSymbolIndex.length)
+        // console.log('总轮次数' + turn)
         for (let i = 0; i < turn; i++) {
           // console.log('turn:' + i.toString())
           let i1 = i
@@ -347,6 +369,14 @@ class EliminateLeftRecursion {
             end--
             i1 = Math.floor(i1 / 2)
           }
+          let posArrayString = '['
+          for (const pos of posArray) {
+            const tempString = '{' + pos.position.toString() + ',' + pos.value.toString() + '}'
+            posArrayString += tempString + ', '
+          }
+          posArrayString = posArrayString.slice(0, -2)
+          posArrayString += ']'
+          // console.log(posArrayString)
           // 根据 posArray 生成新的 body
           const tempBody = [] // 一个临时的body
           for (const j of body) {
@@ -371,7 +401,7 @@ class EliminateLeftRecursion {
         }
       }
     }
-    if (this.nullableNonterminals.includes(this.grammar.getStartSign())) { // 处理开始符号可空的情况
+    if (nullableNonterminals.includes(this.grammar.getStartSign())) { // 处理开始符号可空的情况
       const head = this.eliminatingEmptyGrammar.getStartSign()
       const body = [this.eliminatingEmptyGrammar.getEmptySign()]
       this.eliminatingEmptyGrammar.addProduction(head, body)
@@ -388,23 +418,89 @@ class EliminateLeftRecursion {
     return false
   }
   // 判断产生式体中的符号是不是都不可空
-  allBodySymbolNotNullable(body) {
+  allBodySymbolNotNullable(grammar, body) {
+    const nullableNonterminals = this.findnullableNonterminals(grammar)
     for (const symbol of body) {
-      if (this.nullableNonterminals.includes(symbol)) {
+      if (nullableNonterminals.includes(symbol)) {
         return false
       }
     }
     return true
   }
-  // 消除环
+  // 消除环，形如 A (=>)+ A 的推导称为环
+  // 算法的实质是在消除ε产生式的基础上消除单产生式
   eliminatingCycles() {
-    const EEG = this.eliminatingEmptyGrammar
-    this.eliminatingCyclesGrammar.setStartSign(EEG.getSign(this.grammar.getStartSign()))
+    const EEG = this.eliminatingEmptyGrammar // 基于消除ε产生式后的文法
+    this.eliminatingCyclesGrammar.setStartSign(this.eliminatingCyclesGrammar.getSign(EEG.getStartSign()))
     let heads = new Set()
-    for (const production of EEG.getProductions()) {
-      heads.add(production.getHead())
+    const EEGProductions = EEG.getProductions() // 获取无ε产生式文法的产生式
+    for (const EEGProduction of EEGProductions) {
+      heads.add(EEGProduction.getHead())
     }
-    heads = [...heads]
+    heads = [...heads] // 存放所有产生式的头部（无重复）
+    const unitProductions = [] // unit-production 形如 A(=>)*B 的产生式，A B都是非终止符号
+    for (const head of heads) { // 初始化 unitProductions
+      const temp = { head: head, body: [], done: false }
+      unitProductions.push(temp)
+    }
+    for (const item of unitProductions) { // 扩充 unitProductions
+      for (const EEGProduction of EEGProductions) { // 将文法EEG中产生式的head与item.head相同且body长度为1且是非终止符的body添加至item.body中
+        if (EEGProduction.getHead() === item.head && EEGProduction.getBody().length === 1 && EEGProduction.getBody()[0].isNonterminal()) {
+          item.body.push(EEGProduction.getBody()[0])
+        }
+      }
+      if (item.body.length > 0) { // item.body 的长度为零说明没有以 item.head 为头部的 unit-production
+        while (!item.done) {
+          item.done = true
+          for (const symbol of item.body) {
+            for (const EEGProduction of EEGProductions) { // 将文法EEG中产生式的head与symbol相同且body长度为一且是非终止符的body添加至item.body中
+              if (EEGProduction.getHead() === symbol && EEGProduction.getBody().length === 1 && EEGProduction.getBody()[0].isNonterminal()) {
+                if (!item.body.includes(EEGProduction.getBody()[0])) { // 确保不重复添加
+                  item.body.push(EEGProduction.getBody()[0])
+                  item.done = false
+                }
+              }
+            }
+          }
+        }
+      } else {
+        item.done = true
+      }
+    }
+    for (const unitProduction of unitProductions) { // 遍历 unitProductions 为 this.eliminatingCyclesGrammar 添加产生式
+      const head = this.eliminatingCyclesGrammar.getSign(unitProduction.head) // 处理 head
+      const EEGProductions = EEG.getDerivations(head)
+      for (const EEGProduction of EEGProductions) {
+        if (EEGProduction.getBody().length > 1 || (EEGProduction.getBody().length === 1 && !EEGProduction.getBody()[0].isNonterminal())) {
+          const newBody = []
+          for (const symbol of EEGProduction.getBody()) {
+            newBody.push(this.eliminatingCyclesGrammar.getSign(symbol))
+          }
+          const tempProduction = new Production(head, newBody)
+          if (!this.existTheProduction(this.eliminatingCyclesGrammar, tempProduction) && newBody.length > 0) { // 确保不重复添加产生式
+            this.eliminatingCyclesGrammar.addProduction(head, newBody)
+          }
+        }
+      }
+      const body = unitProduction.body // 处理 body
+      for (const symbol of body) {
+        const head = this.eliminatingCyclesGrammar.getSign(symbol)
+        const EEGProductions = EEG.getDerivations(symbol)
+        for (const EEGProduction of EEGProductions) {
+          if (EEGProduction.getBody().length > 1 || (EEGProduction.getBody().length === 1 && !EEGProduction.getBody()[0].isNonterminal())) {
+            const newBody = []
+            const oldBody = EEGProduction.getBody()
+            for (const oldSymbol of oldBody) {
+              newBody.push(this.eliminatingCyclesGrammar.getSign(oldSymbol))
+            }
+            const tempProduction = new Production(head, newBody)
+            if (!this.existTheProduction(this.eliminatingCyclesGrammar, tempProduction) && newBody.length > 0) { // 确保不重复添加产生式
+              this.eliminatingCyclesGrammar.addProduction(head, newBody)
+            }
+          }
+        }
+      }
+    }
   }
 }
 export default function(grammar) {
