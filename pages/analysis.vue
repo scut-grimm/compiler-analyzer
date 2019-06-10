@@ -4,6 +4,10 @@
       v-if="curStep === 'GrammarInput'"
       ref="GrammarInput"
     ></grammar-input>
+    <extract-left-factor
+      v-if="curStep === 'ExtractLeftFactor'"
+      ref="ExtractLeftFactor"
+    ></extract-left-factor>
     <first-set
       v-if="curStep === 'FirstSet'"
       ref="FirstSet"
@@ -29,6 +33,8 @@
 
 <script>
 import GrammarInput from "~/components/generate-grammar-from-user-input";
+import ExtractLeftFactor from '~/components/extract-left-factor'
+import ExtractLeftFactorAlgorithm from "~/classes/algorithms/extract-left-factor";
 import FirstSet from "~/components/first-set";
 import FollowSet from "~/components/follow-set";
 import IsLL1 from '~/components/isll1';
@@ -44,7 +50,8 @@ export default {
   data() {
     return {
       curStep: 'GrammarInput',
-      grammar: new Grammar()
+      grammar: new Grammar(),
+      rawGrammar: new Grammar()
     }
   },
   components: {
@@ -53,11 +60,15 @@ export default {
     FollowSet,
     IsLL1,
     ParsingStack,
-    PredictiveParsingTable
+    PredictiveParsingTable,
+    ExtractLeftFactor
   },
   mounted() {
     this.$eventbus.$on('FinishInputGrammar', (grammar) => {
-      this.grammar = grammar
+      this.rawGrammar = grammar
+      this.jumptTo('ExtractLeftFactor')
+    })
+    this.$eventbus.$on('FinishExtractLeftFactor', () => {
       this.jumptTo('FirstSet')
     })
     this.$eventbus.$on('FinishFirstSet', () => {
@@ -79,11 +90,15 @@ export default {
       this.$store.commit('global/setStep',step)
       if (step === 'GrammarInput') {
         this.grammar = new Grammar()
+        this.rawGrammar = new Grammar()
       }
       this.curStep = step
       this.$nextTick(() => {
         if (step === 'GrammarInput') {
 
+        }
+        if (step === 'ExtractLeftFactor') {
+          this.$refs[step].setGrammar(this.rawGrammar)
         }
         if (step === 'FirstSet') {
           this.$refs[step].setGrammar(this.grammar)
@@ -108,6 +123,12 @@ export default {
       if (step === 'GrammarInput') {
         return
       }
+      if (step === 'ExtractLeftFactor') {
+        return
+      }
+      let elf = new ExtractLeftFactorAlgorithm(this.rawGrammar)
+      let { newGrammar } = elf.run()
+      this.grammar = newGrammar
       if (step === 'FirstSet') {
         return
       }

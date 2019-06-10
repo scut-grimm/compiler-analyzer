@@ -2,6 +2,7 @@
   <div class="grammar-step">
     <el-steps direction="vertical" :active="active">
       <el-step title="拟定文法" description="输入文法规则"></el-step>
+      <el-step title="提取左因子" description="提取左公因子"></el-step>
       <el-step title="First集" description="计算文法的First集合"></el-step>
       <el-step title="Follow集" description="计算文法的follow集"></el-step>
       <el-step title="判断符合LL(1)文法" description="判断文法是否符合LL(1)文法"></el-step>
@@ -19,16 +20,18 @@ export default {
       switch(this.curStep){
         case 'GrammarInput':
           return 0
-        case 'FirstSet':
+        case 'ExtractLeftFactor':
           return 1
-        case 'FollowSet':
+        case 'FirstSet':
           return 2
-        case 'IsLL1':
+        case 'FollowSet':
           return 3
-        case 'PredictiveParsingTable':
+        case 'IsLL1':
           return 4
-        case 'ParsingStack':
+        case 'PredictiveParsingTable':
           return 5
+        case 'ParsingStack':
+          return 6
       }
     }
   }
