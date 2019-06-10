@@ -223,7 +223,7 @@ export default {
             }
           } else {
             console.log(i)
-            this.$message("输入了文法中不存在的符号，请重新修改")
+            this.$message("输入了文法中不存在的符号，请重新输入")
             return false
           }
         }
