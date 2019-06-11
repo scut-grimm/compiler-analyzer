@@ -1,6 +1,7 @@
 import assert from 'assert'
 import Grammar from '../grammar'
 import Production from '../production'
+import Sign from '../sign'
 class Stack {
   constructor() {
     this.data = Array.of()
@@ -32,6 +33,9 @@ class Stack {
   getData() {
     return this.data
   }
+  getDataViaIndex(index) {
+    return this.data[index]
+  }
 }
 class EliminateLeftRecursion {
   immedationRecursion = Array.of() // 记录立即左递归的产生式
@@ -41,9 +45,10 @@ class EliminateLeftRecursion {
   derivationStack = new Stack() // 推导栈，记录当前推导链上的产生式，压栈之前先检测栈中是否存在左递归
   eliminatingEmptyGrammar = new Grammar() // 消除ε-production以后的新文法
   eliminatingCyclesGrammar = new Grammar() // 消除环以后的新文法
+  eliminateLeftRecursionGrammar = new Grammar() // 消除左递归后的新文法
   constructor(grammar) {
     this.grammar = grammar
-    this.scanImmedationLeftRecursion()
+    this.immedationRecursion = this.scanImmedationLeftRecursion(this.grammar.getProductions())
     const startProductions = this.grammar.getDerivations(this.grammar.getStartSign())
     const frame = {
       productions: Array.of(),
@@ -59,75 +64,106 @@ class EliminateLeftRecursion {
     this.derivationStack.push(frame.productions[frame.index]) // 推导栈初始化
     this.scanIndirectLeftRecursion(this.solutionSpace, this.derivationStack)
 
-    this.eliminatingEmptyProduction()
-    // console.log('消除ε产生式后的文法')
-    // console.log('Start symbol: ' + this.eliminatingEmptyGrammar.getStartSign().getString())
-    // console.log('Productions')
-    // this.eliminatingEmptyGrammar.productions.forEach(e => {
-    //   console.log(e.getHeadString() + '->' + e.getBodyString())
-    // })
-    // let nonterminals = ''
-    // this.eliminatingEmptyGrammar.getNonterminals().forEach(e => {
-    //   nonterminals += e.getString() + ' '
-    // })
-    // console.log('Nonterminals: ' + nonterminals)
-    // let terminals = ''
-    // this.eliminatingEmptyGrammar.getTerminals().forEach(e => {
-    //   terminals += e.getString() + ' '
-    // })
-    // console.log('Terminals: ' + terminals)
+    this.eliminatingEmptyGrammar = this.eliminatingEmptyProduction(this.grammar)
+    // {
+    //   console.log('消除ε产生式后的文法')
+    //   const tempGrammar = this.eliminatingEmptyGrammar
+    //   console.log('Start symbol: ' + tempGrammar.getStartSign().getString())
+    //   console.log('Productions')
+    //   tempGrammar.productions.forEach(e => {
+    //     console.log(e.getHeadString() + '->' + e.getBodyString())
+    //   })
+    //   let Nonterminals = ''
+    //   tempGrammar.getNonterminals().forEach(e => {
+    //     Nonterminals += e.getString() + ' '
+    //   })
+    //   console.log('Nonterminals: ' + Nonterminals)
+    //   let Terminals = ''
+    //   tempGrammar.getTerminals().forEach(e => {
+    //     Terminals += e.getString() + ' '
+    //   })
+    //   console.log('Terminals: ' + Terminals)
+    // }
 
-    this.eliminatingCycles()
-    // console.log('消除环后的文法')
-    // console.log('Start symbol: ' + this.eliminatingCyclesGrammar.getStartSign().getString())
-    // console.log('Productions')
-    // this.eliminatingCyclesGrammar.productions.forEach(e => {
-    //   console.log(e.getHeadString() + '->' + e.getBodyString())
-    // })
-    // let eliminatingCyclesNonterminals = ''
-    // this.eliminatingCyclesGrammar.getNonterminals().forEach(e => {
-    //   eliminatingCyclesNonterminals += e.getString() + ' '
-    // })
-    // console.log('Nonterminals: ' + eliminatingCyclesNonterminals)
-    // let eliminatingCyclesTerminals = ''
-    // this.eliminatingCyclesGrammar.getTerminals().forEach(e => {
-    //   eliminatingCyclesTerminals += e.getString() + ' '
-    // })
-    // console.log('Terminals: ' + eliminatingCyclesTerminals)
+    this.eliminatingCyclesGrammar = this.eliminatingCycles(this.eliminatingEmptyGrammar)
+    // {
+    //   console.log('消除环后的文法')
+    //   const tempGrammar = this.eliminatingCyclesGrammar
+    //   console.log('Start symbol: ' + tempGrammar.getStartSign().getString())
+    //   console.log('Productions')
+    //   tempGrammar.productions.forEach(e => {
+    //     console.log(e.getHeadString() + '->' + e.getBodyString())
+    //   })
+    //   let Nonterminals = ''
+    //   tempGrammar.getNonterminals().forEach(e => {
+    //     Nonterminals += e.getString() + ' '
+    //   })
+    //   console.log('Nonterminals: ' + Nonterminals)
+    //   let Terminals = ''
+    //   tempGrammar.getTerminals().forEach(e => {
+    //     Terminals += e.getString() + ' '
+    //   })
+    //   console.log('Terminals: ' + Terminals)
+    // }
+
+    this.eliminateLeftRecursionGrammar = this.eliminatingLeftRecursion(this.eliminatingCyclesGrammar)
+    // {
+    //   console.log('消除左递归后的文法')
+    //   const tempGrammar = this.eliminateLeftRecursionGrammar
+    //   console.log('Start symbol: ' + tempGrammar.getStartSign().getString())
+    //   console.log('Productions')
+    //   tempGrammar.productions.forEach(e => {
+    //     console.log(e.getHeadString() + '->' + e.getBodyString())
+    //   })
+    //   let Nonterminals = ''
+    //   tempGrammar.getNonterminals().forEach(e => {
+    //     Nonterminals += e.getString() + ' '
+    //   })
+    //   console.log('Nonterminals: ' + Nonterminals)
+    //   let Terminals = ''
+    //   tempGrammar.getTerminals().forEach(e => {
+    //     Terminals += e.getString() + ' '
+    //   })
+    //   console.log('Terminals: ' + Terminals)
+    // }
   }
   // 扫描立即左递归
-  scanImmedationLeftRecursion() {
-    const productions = this.grammar.getProductions()
+  scanImmedationLeftRecursion(productions) {
+    const immedationRecursion = []
     for (let i = 0; i < productions.length; i++) {
       if (productions[i].getHead() === productions[i].getBody()[0]) {
-        this.immedationRecursion.push(productions[i])
+        immedationRecursion.push(productions[i])
       }
     }
+    return immedationRecursion
   }
-  // 递归实现的回溯法扫描间接左递归
+  // 扫描间接左递归
+  // 递归实现的回溯法
   scanIndirectLeftRecursion(solutionSpace, derivationStack) {
-    console.log('-----------------------------------')
-    const temp = solutionSpace.getData()
-    for (const i of temp) {
-      let tempString = ''
-      for (let j = 0; j < i.productions.length; j++) {
-        tempString += i.productions[j].getString() + ', '
-      }
-      console.log(tempString + i.index.toString() + ', ' + i.bodySymbolIndex.toString())
-    }
-    console.log('************************************')
-    const tempDer = derivationStack.getData()
-    let tempString = ''
-    for (const i of tempDer) {
-      if (i !== undefined) {
-        tempString += i.getString() + ', '
-      } else {
-        tempString += 'undefined, '
-      }
-    }
-    tempString = tempString.slice(0, -2)
-    console.log(tempString)
-    console.log('-----------------------------------')
+    // {
+    //   console.log('-----------------------------------')
+    //   const temp = solutionSpace.getData()
+    //   for (const i of temp) {
+    //     let tempString = ''
+    //     for (let j = 0; j < i.productions.length; j++) {
+    //       tempString += i.productions[j].getString() + ', '
+    //     }
+    //     console.log(tempString + i.index.toString() + ', ' + i.bodySymbolIndex.toString())
+    //   }
+    //   console.log('************************************')
+    //   const tempDer = derivationStack.getData()
+    //   let tempString = ''
+    //   for (const i of tempDer) {
+    //     if (i !== undefined) {
+    //       tempString += i.getString() + ', '
+    //     } else {
+    //       tempString += 'undefined, '
+    //     }
+    //   }
+    //   tempString = tempString.slice(0, -2)
+    //   console.log(tempString)
+    //   console.log('-----------------------------------')
+    // }
     const bottom = solutionSpace.bottom()
     if (bottom.index === bottom.productions.length) { // 已经处理完解空间栈栈底产生式数组的最后一个产生式，算法结束
       return
@@ -193,7 +229,50 @@ class EliminateLeftRecursion {
                 derivationStack.push(frame.productions[frame.index])
                 this.scanIndirectLeftRecursion(solutionSpace, derivationStack)
               }
-            } else if (current.isEmpty()) { // 这里没有回溯到正确位置
+            } else if (current.isEmpty()) { // 处理涉及到ε产生式的间接左递归，这里没有回溯到正确位置，但是想不到解决方法了，勉强能用
+              // 先检查上一层处理的产生式是不是一个ε产生式
+              // 是的话，继续向上推，直到找到不是的那个栈帧
+              // 直接操作solutionSpace的data属性。说实话，这里已经不把solutionSpace当作栈来看待了，失败失败
+              // const data = solutionSpace.getData()
+              // for (let i = data.length; i >= 0; i--) { // 从后往前扫描data
+              //   const item = data[i] // item 是 data[i] 的引用
+              //   const production = item.productions[item.index] // 获取上一层正在处理的产生式
+              //   const body = production.getBody()
+              //   const symbol = body[item.bodySymbolIndex] // 获取正在处理的符号
+              //   if (!symbol.isEmpty()) { // symbol 不是 ε，则说明找到目标产生式了
+              //     item.bodySymbolIndex++
+              //     if (item.bodySymbolIndex === body.length) { // 目标产生式处理到最后一个字符了
+              //       // 这里solutionSpace和derivationStack都要弹栈，弹栈方式比较特殊
+              //       // solutionSpace 需要弹出当前栈帧之上的所有栈帧
+              //       // derivationStack 需要和 solutionSpace 同步弹栈
+              //     } else { // 向solutionSpace中压栈
+              //       const tempSymbol = body[item.bodySymbolIndex]
+              //       const tempProductions = this.grammar.getDerivations(tempSymbol)
+              //       if (tempProductions.length === 0) { // 这里说明 tempSymbol 是一个终止符号，不可能有左递归产生
+              //         // 这里solutionSpace和derivationStack都要弹栈，弹栈方式比较特殊
+              //         // solutionSpace 需要弹出当前栈帧之上的所有栈帧
+              //         // derivationStack 需要和 solutionSpace 同步弹栈
+              //       } else {
+              //         const newFrame = {
+              //           productions: Array.of(),
+              //           index: 0,
+              //           bodySymbolIndex: 0
+              //         }
+              //         for (const i of tempProductions) { // 排除所有立即左递归的产生式
+              //           if (!this.immedationRecursion.includes(i)) {
+              //             newFrame.productions.push(i)
+              //           }
+              //         }
+              //         solutionSpace.push(former)
+              //         solutionSpace.push(top)
+              //         solutionSpace.push(newFrame)
+              //         derivationStack.push(newFrame.productions[newFrame.index])
+              //         this.scanIndirectLeftRecursion(solutionSpace, derivationStack)
+              //       }
+              //     }
+              //     break // 这里一定要break
+              //   }
+              // }
               const former = solutionSpace.pop()
               former.bodySymbolIndex++
               if (former.bodySymbolIndex === former.productions[former.index].getBody().length) {
@@ -247,7 +326,8 @@ class EliminateLeftRecursion {
     let aim = derivationStack.top().getBody()[0]
     if (aim.isEmpty()) { // 目标符号是ε
       const solutionSpaceData = solutionSpace.getData()
-      const index = solutionSpaceData[solutionSpaceData.length - 2].bodySymbolIndex
+      // console.log(solutionSpaceData.length)
+      const index = solutionSpaceData[solutionSpaceData.length - 1].bodySymbolIndex
       if (index + 1 === data[data.length - 2].getBody().length) { // 如果下标加一后等于产生式体的长度，说明这不是左递归
         return false
       } else {
@@ -308,28 +388,30 @@ class EliminateLeftRecursion {
     }
     return nullableNonterminals
   }
-  // 消除ε产生式，形如 A->ε 的产生式称为 ε 产生式
-  eliminatingEmptyProduction() { // 保证消除后的文法没有ε产生式（一种情况除外：产生式 S->ε，S为开始符号）
-    this.eliminatingEmptyGrammar.setStartSign(this.eliminatingEmptyGrammar.getSign(this.grammar.getStartSign()))
-    const nullableNonterminals = this.findnullableNonterminals(this.grammar) // 找到 this.grammar 中所有可空非终止符号
+  // 消除ε产生式
+  // 形如 A->ε 的产生式称为 ε 产生式
+  eliminatingEmptyProduction(grammar) { // 保证消除后的文法没有ε产生式（一种情况除外：产生式 S->ε，S为开始符号）
+    const EEG = new Grammar()
+    EEG.setStartSign(EEG.getSign(grammar.getStartSign()))
+    const nullableNonterminals = this.findnullableNonterminals(grammar) // 找到 grammar 中所有可空非终止符号
     // console.log('可空非终止符号： ' + nullableNonterminals.map(e => e.getString()).join(', '))
-    const productions = this.grammar.getProductions()
+    const productions = grammar.getProductions()
     for (const production of productions) {
       // console.log('******************')
       // console.log(production.getString())
-      const head = this.eliminatingEmptyGrammar.getSign(production.getHead())
+      const head = EEG.getSign(production.getHead())
       const body = production.getBody()
       if (body[0].isEmpty()) { // 如果产生式体是ε，直接忽略
         continue
-      } else if (this.allBodySymbolNotNullable(this.grammar, body)) { // 如果产生式体中的符号都是不可空的，则将该产生式直接放入新的文法中
+      } else if (this.allBodySymbolNotNullable(grammar, body)) { // 如果产生式体中的符号都是不可空的，则将该产生式直接放入新的文法中
         const newBody = []
         for (const symbol of body) {
-          newBody.push(this.eliminatingEmptyGrammar.getSign(symbol))
+          newBody.push(EEG.getSign(symbol))
         }
         const tempProduction = new Production(head, newBody)
-        if (!this.existTheProduction(this.eliminatingEmptyGrammar, tempProduction) && newBody.length > 0) {
+        if (!this.existTheProduction(EEG, tempProduction) && newBody.length > 0) {
           // console.log(tempProduction.getString())
-          this.eliminatingEmptyGrammar.addProduction(head, newBody)
+          EEG.addProduction(head, newBody)
         }
       } else {
         // 处理另一种情况的步骤如下：
@@ -342,7 +424,7 @@ class EliminateLeftRecursion {
         // 生式，而这种情况应该忽略。
         // 可以通过循环2^n次来生成不同情况下的posArray,例如第5次循环生成的posArray为[{1,1},{3,0},{4,1}]。然后根据posArray
         // 生成新的body,例如根据[{1,1},{3,0},{4,1}]而得到新的body为"aAbAc"。
-        // 最后生成新产生式，并放入this.eliminatingEmptyGrammar中。为了避免产生式重复出现，加入之前先要判断产生式是否存在。
+        // 最后生成新产生式，并放入EEG中。为了避免产生式重复出现，加入之前先要判断产生式是否存在。
         let turn = 0
         const nullableSymbolIndex = [] // 记录可空符号在body中的下标，数组的长度表示可空符号的个数
         for (let i = 0; i < body.length; i++) {
@@ -380,7 +462,7 @@ class EliminateLeftRecursion {
           // 根据 posArray 生成新的 body
           const tempBody = [] // 一个临时的body
           for (const j of body) {
-            tempBody.push(this.eliminatingEmptyGrammar.getSign(j))
+            tempBody.push(EEG.getSign(j))
           }
           for (const pos of posArray) {
             if (pos.value === 0) {
@@ -390,22 +472,23 @@ class EliminateLeftRecursion {
           const newBody = [] // 新的body
           for (const j of tempBody) {
             if (j !== 0) {
-              newBody.push(this.eliminatingEmptyGrammar.getSign(j))
+              newBody.push(EEG.getSign(j))
             }
           }
           const tempProduction = new Production(head, newBody)
           // console.log(tempProduction.getString())
-          if (newBody.length !== 0 && !this.existTheProduction(this.eliminatingEmptyGrammar, tempProduction)) {
-            this.eliminatingEmptyGrammar.addProduction(head, newBody)
+          if (newBody.length !== 0 && !this.existTheProduction(EEG, tempProduction)) {
+            EEG.addProduction(head, newBody)
           }
         }
       }
     }
-    if (nullableNonterminals.includes(this.grammar.getStartSign())) { // 处理开始符号可空的情况
-      const head = this.eliminatingEmptyGrammar.getStartSign()
-      const body = [this.eliminatingEmptyGrammar.getEmptySign()]
-      this.eliminatingEmptyGrammar.addProduction(head, body)
+    if (nullableNonterminals.includes(grammar.getStartSign())) { // 处理开始符号可空的情况
+      const head = EEG.getStartSign()
+      const body = [EEG.getEmptySign()]
+      EEG.addProduction(head, body)
     }
+    return EEG
   }
   // 判断grammar中是否已经存在产生式production
   existTheProduction(grammar, production) {
@@ -427,11 +510,13 @@ class EliminateLeftRecursion {
     }
     return true
   }
-  // 消除环，形如 A (=>)+ A 的推导称为环
+  // 消除环
+  // 形如 A (=>)+ A 的推导称为环
   // 算法的实质是在消除ε产生式的基础上消除单产生式
-  eliminatingCycles() {
-    const EEG = this.eliminatingEmptyGrammar // 基于消除ε产生式后的文法
-    this.eliminatingCyclesGrammar.setStartSign(this.eliminatingCyclesGrammar.getSign(EEG.getStartSign()))
+  eliminatingCycles(grammar) {
+    const ECG = new Grammar()
+    const EEG = grammar // 基于消除ε产生式后的文法
+    ECG.setStartSign(ECG.getSign(EEG.getStartSign()))
     let heads = new Set()
     const EEGProductions = EEG.getProductions() // 获取无ε产生式文法的产生式
     for (const EEGProduction of EEGProductions) {
@@ -467,43 +552,139 @@ class EliminateLeftRecursion {
         item.done = true
       }
     }
-    for (const unitProduction of unitProductions) { // 遍历 unitProductions 为 this.eliminatingCyclesGrammar 添加产生式
-      const head = this.eliminatingCyclesGrammar.getSign(unitProduction.head) // 处理 head
+    // console.log(unitProductions)
+    for (const unitProduction of unitProductions) { // 遍历 unitProductions 为 ECG 添加产生式
+      const head = ECG.getSign(unitProduction.head) // 处理 head
       const EEGProductions = EEG.getDerivations(head)
       for (const EEGProduction of EEGProductions) {
         if (EEGProduction.getBody().length > 1 || (EEGProduction.getBody().length === 1 && !EEGProduction.getBody()[0].isNonterminal())) {
           const newBody = []
           for (const symbol of EEGProduction.getBody()) {
-            newBody.push(this.eliminatingCyclesGrammar.getSign(symbol))
+            newBody.push(ECG.getSign(symbol))
           }
           const tempProduction = new Production(head, newBody)
-          if (!this.existTheProduction(this.eliminatingCyclesGrammar, tempProduction) && newBody.length > 0) { // 确保不重复添加产生式
-            this.eliminatingCyclesGrammar.addProduction(head, newBody)
+          if (!this.existTheProduction(ECG, tempProduction) && newBody.length > 0) { // 确保不重复添加产生式
+            ECG.addProduction(head, newBody)
           }
         }
       }
       const body = unitProduction.body // 处理 body
       for (const symbol of body) {
-        const head = this.eliminatingCyclesGrammar.getSign(symbol)
         const EEGProductions = EEG.getDerivations(symbol)
         for (const EEGProduction of EEGProductions) {
           if (EEGProduction.getBody().length > 1 || (EEGProduction.getBody().length === 1 && !EEGProduction.getBody()[0].isNonterminal())) {
             const newBody = []
             const oldBody = EEGProduction.getBody()
             for (const oldSymbol of oldBody) {
-              newBody.push(this.eliminatingCyclesGrammar.getSign(oldSymbol))
+              newBody.push(ECG.getSign(oldSymbol))
             }
             const tempProduction = new Production(head, newBody)
-            if (!this.existTheProduction(this.eliminatingCyclesGrammar, tempProduction) && newBody.length > 0) { // 确保不重复添加产生式
-              this.eliminatingCyclesGrammar.addProduction(head, newBody)
+            if (!this.existTheProduction(ECG, tempProduction) && newBody.length > 0) { // 确保不重复添加产生式
+              ECG.addProduction(head, newBody)
             }
           }
         }
       }
     }
+    return ECG
+  }
+  // 消除左递归
+  // 输入：无 ε 产生式并且无环的文法
+  // 输出：一个等价的无左递归文法
+  eliminatingLeftRecursion(grammar) {
+    const EFRGrammar = new Grammar()
+    EFRGrammar.setStartSign(EFRGrammar.getSign(grammar.getStartSign()))
+    const nonterminals = grammar.getNonterminals()
+    for (let i = 0; i < nonterminals.length; i++) {
+      const iProductions = grammar.getDerivations(nonterminals[i])
+      const newProductions = []
+      if (i === 0) {
+        for (const production of iProductions) {
+          newProductions.push(production)
+        }
+      } else {
+        for (let j = 0; j < i; j++) {
+          for (const iProduction of iProductions) {
+            if (iProduction.getBody()[0] === nonterminals[j]) {
+              const head = nonterminals[i]
+              const jProductions = grammar.getDerivations(nonterminals[j])
+              for (const jProduction of jProductions) {
+                const newBody = []
+                for (const symbol of jProduction.getBody()) {
+                  newBody.push(symbol)
+                }
+                for (let k = 1; k < iProduction.getBody().length; k++) {
+                  newBody.push(iProduction.getBody()[k])
+                }
+                const newProduction = new Production(head, newBody)
+                newProductions.push(newProduction)
+              }
+            } else {
+              newProductions.push(iProduction)
+            }
+          }
+        }
+      }
+      // 消除 newProductions 中的立即左递归
+      // newProductions 中的产生式的 head 都是 nonterminals[i]
+      const immedationRecursion = this.scanImmedationLeftRecursion(newProductions)
+      if (immedationRecursion.length > 0) { // 如果 newProductions 中有左递归
+        const newSign = new Sign(nonterminals[i].getString() + '\'', 'Nonterminal')
+        for (const production of newProductions) {
+          if (immedationRecursion.includes(production)) {
+            const head = EFRGrammar.getSign(newSign)
+            const body = []
+            for (let i = 1; i < production.getBody().length; i++) {
+              body.push(EFRGrammar.getSign(production.getBody()[i]))
+            }
+            body.push(EFRGrammar.getSign(newSign))
+            const tempProduction = new Production(head, body)
+            if (!this.existTheProduction(EFRGrammar, tempProduction) && body.length > 0) {
+              EFRGrammar.addProduction(head, body)
+            }
+          } else {
+            const head = EFRGrammar.getSign(production.getHead())
+            const body = []
+            for (const symbol of production.getBody()) {
+              body.push(EFRGrammar.getSign(symbol))
+            }
+            body.push(EFRGrammar.getSign(newSign))
+            const tempProduction = new Production(head, body)
+            if (!this.existTheProduction(EFRGrammar, tempProduction) && body.length > 0) {
+              EFRGrammar.addProduction(head, body)
+            }
+          }
+        }
+        const head = EFRGrammar.getSign(newSign)
+        const body = [EFRGrammar.getEmptySign()]
+        const tempProduction = new Production(head, body)
+        if (!this.existTheProduction(EFRGrammar, tempProduction) && body.length > 0) {
+          EFRGrammar.addProduction(head, body)
+        }
+      } else {
+        for (const production of newProductions) {
+          const head = EFRGrammar.getSign(production.getHead())
+          const body = []
+          for (const symbol of production.getBody()) {
+            body.push(EFRGrammar.getSign(symbol))
+          }
+          const tempProduction = new Production(head, body)
+          if (!this.existTheProduction(EFRGrammar, tempProduction) && body.length > 0) {
+            EFRGrammar.addProduction(head, body)
+          }
+        }
+      }
+    }
+    return EFRGrammar
   }
 }
 export default function(grammar) {
   const ELR = new EliminateLeftRecursion(grammar)
-  return { immedationRecursion: ELR.immedationRecursion, indirectRecursion: ELR.indirectRecursion }
+  return {
+    immedationRecursion: ELR.immedationRecursion, // 导致立即左递归的产生式
+    indirectRecursion: ELR.indirectRecursion, // 导致间接左递归的产生式
+    eliminatingEmptyGrammar: ELR.eliminatingEmptyGrammar, // 消除 ε 产生式后的文法
+    eliminatingCyclesGrammar: ELR.eliminatingCyclesGrammar, // 消除环后的文法
+    eliminateLeftRecursionGrammar: ELR.eliminateLeftRecursionGrammar // 消除左递归后的文法
+  }
 }
