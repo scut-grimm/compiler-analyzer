@@ -24,8 +24,14 @@
         </template>
       </div>
       <div class="right">
-        <el-table :data="tableData" style="width: 100%">
-          <el-table-column label="文法符号" width="150">
+        <el-table
+          :data="tableData"
+          style="width: 100%"
+        >
+          <el-table-column
+            label="文法符号"
+            width="150"
+          >
             <template slot-scope="scope">
               <span>{{scope.row.symbol}}</span>
             </template>
@@ -43,23 +49,46 @@
         </el-table>
         <div class="button">
           <template v-if="started === false">
-            <el-button type="primary" @click="start">开始</el-button>
+            <el-button
+              type="primary"
+              @click="start"
+            >开始</el-button>
           </template>
           <template v-if="started === true && allDone === false">
-            <el-button type="success" @click="next">下一步</el-button>
-            <el-button type="warning" @click="skip">跳过</el-button>
-            <el-button type="info" @click="startAutorun" v-if="autoTimer === null">自动播放</el-button>
-            <el-button type="danger" @click="stopAutorun" v-if="autoTimer !== null">停止播放</el-button>
+            <el-button
+              type="success"
+              @click="next"
+            >下一步</el-button>
+            <el-button
+              type="warning"
+              @click="skip"
+            >跳过</el-button>
+            <el-button
+              type="info"
+              @click="startAutorun"
+              v-if="autoTimer === null"
+            >自动播放</el-button>
+            <el-button
+              type="danger"
+              @click="stopAutorun"
+              v-if="autoTimer !== null"
+            >停止播放</el-button>
           </template>
-          <el-button @click="start" v-if="started" type="primary">重新开始</el-button>
+          <el-button
+            @click="start"
+            v-if="started"
+            type="primary"
+          >重新开始</el-button>
+          <el-button type="primary" @click="finish">完成</el-button>
         </div>
       </div>
     </div>
+
   </div>
 </template>
 <script>
 import GrammarIndicator from "~/components/grammar-indicator";
-import FirstSet from "~/classes/algorithms/firstSet";
+import FirstSet from "~/classes/algorithms/generate-first-set";
 import Grammar from "~/classes/grammar";
 import AlgorithmWrapper from "~/classes/algorithm-wrapper";
 export default {
@@ -240,33 +269,17 @@ export default {
     },
     onChagneProduction(index) {
       this.activeProductionIndex = index;
+    },
+    setGrammar(grammar) {
+      this.grammar = grammar
+    },
+    finish(){
+      this.$eventbus.$emit('FinishFirstSet')
     }
   },
   mounted() {
-    let grammar = new Grammar();
-    const E = grammar.getSign("E", "Nonterminal");
-    const E1 = grammar.getSign("E'", "Nonterminal");
-    const T = grammar.getSign("T", "Nonterminal");
-    const T1 = grammar.getSign("T'", "Nonterminal");
-    const F = grammar.getSign("F", "Nonterminal");
-    const Plus = grammar.getSign("+", "Terminal");
-    const Multi = grammar.getSign("*", "Terminal");
-    const Id = grammar.getSign("id", "Terminal");
-    const LeftClose = grammar.getSign("(", "Terminal");
-    const RightClose = grammar.getSign(")", "Terminal");
-    const Empty = grammar.getEmptySign();
-    const End = grammar.getStackBottomSign();
-    grammar.addProduction(E, [T, E1]);
-    grammar.addProduction(E1, [Plus, T, E1]);
-    grammar.addProduction(E1, [Empty]);
-    grammar.addProduction(T, [F, T1]);
-    grammar.addProduction(T1, [Multi, F, T1]);
-    grammar.addProduction(T1, [Empty]);
-    grammar.addProduction(F, [LeftClose, E, RightClose]);
-    grammar.addProduction(F, [Id]);
-    grammar.setStartSign(E);
-    this.grammar = grammar;
-  }
+
+  },
 };
 </script>
 <style lang="scss" scoped>

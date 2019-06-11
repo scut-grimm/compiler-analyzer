@@ -104,14 +104,17 @@
       </el-row>
     </div>
     <div class="left">
-      <el-input
-        type="textarea"
-        autosize
-        placeholder="输入文法产生式"
-        v-model="userInputProductions"
-        class="production"
-        spellcheck="false"
-      ></el-input>
+      <el-form ref="ruleForm" :rules="rulesCFG" :model="ruleForm" label-width="0px">
+        <el-form-item prop="CFG">
+          <el-input
+            placeholder="请输入文法规则: 例子： A->B|c B->a|b"
+            type="textarea"
+            v-model="ruleForm.CFG"
+            autosize
+            spellcheck="false"
+          ></el-input>
+        </el-form-item>
+      </el-form>
       <el-button round size="medium" @click="getProductions">完成</el-button>
     </div>
     <!-- <div class="left">
@@ -141,6 +144,70 @@ export default {
     smithTag
   },
   data() {
+    var validateCFG = (rule, value, callback) => {
+      let productions = value.split(/\n/);
+      let empty = true;
+      for (let i = 0; i < productions.length; i++) {
+        if (productions[i] !== "") {
+          empty = false;
+          let production = productions[i].replace(/\s+/g, "");
+          try {
+            if (!this.headIsNonterminal(production[0])) {
+              callback(
+                new Error(
+                  "符号" +
+                    production[0] +
+                    "不是非终止字符，不可以放在产生式头部"
+                )
+              );
+            } else if (!(production[1] === "-" && production[2] === ">")) {
+              callback(
+                new Error(
+                  "第" + (i + 1).toString() + "条产生式缺少'->',请按格式输入"
+                )
+              );
+            } else {
+              production = production.split(/->|\|/);
+              for (let j = 1; j < production.length; j++) {
+                let body = production[j];
+                let start = 0;
+                let end = 1;
+                while (end <= body.length) {
+                  let symbol = body.slice(start, end);
+                  if (this.currentInputIslegal(symbol)) {
+                    start = end;
+                    end++;
+                  } else {
+                    end++;
+                  }
+                }
+                if (start !== body.length) {
+                  let errorSymbol = body.slice(start, end);
+                  callback(
+                    new Error(
+                      "字符 " +
+                        errorSymbol +
+                        " 不合法，请将该符号添加到符号表或重新输入"
+                    )
+                  );
+                }
+              }
+            }
+          } catch (e) {
+            callback(
+              new Error(
+                "第" + (i + 1).toString() + "条产生式不合法，请重新输入"
+              )
+            );
+          }
+        }
+      }
+      if (empty === true) {
+        callback(new Error("输入不能为空"));
+      } else {
+        callback();
+      }
+    };
     return {
       terminals: [
         new Sign("(", "Terminal"),
@@ -160,9 +227,17 @@ export default {
         new Sign("E", "Nonterminal")
       ],
       symbol: "",
-      userInputProductions: "",
       formalProductions: Array.of(),
-      tip: ""
+      tip: "",
+      rulesCFG: {
+        CFG: [
+          { max: 1200, message: "不能超过1200个字符", tirgger: "change" },
+          { validator: validateCFG, trigger: "change" }
+        ]
+      },
+      ruleForm: {
+        CFG: ""
+      }
     };
   },
   methods: {
@@ -201,8 +276,12 @@ export default {
       this.symbol = "";
     },
     getProductions() {
+      if (this.ruleForm.CFG.length === 0) {
+        this.$message("请输入产生式");
+        return;
+      }
       let productions = Array.of();
-      productions = this.userInputProductions.split(/\n/);
+      productions = this.ruleForm.CFG.split(/\n/);
       productions = productions.map(e => e.replace(/\s+/g, ""));
       productions = productions.map(e => e.split(/->|\|/));
       productions = productions.map(e => {
@@ -267,36 +346,47 @@ export default {
     },
     headIsNonterminal(val) {
       if (val === "") {
-        return;
+        return false;
       }
       for (let i of this.nonterminals) {
         if (val === i.getString()) {
-          return;
+          return true;
         }
       }
-      this.$message("符号" + val + "不是非终止字符，不可以放在产生式头部");
+      return false;
     },
     delectSymbol(val) {
       this.terminals = this.terminals.filter(e => e.getString() !== val);
       this.nonterminals = this.nonterminals.filter(e => e.getString() !== val);
     },
+
     generateGrammar() {
       let grammar = new GGFUI(this.formalProductions);
-      console.log("Start symbol: " + grammar.getStartSign().getString());
-      console.log("Productions");
-      grammar.productions.forEach(e => {
-        console.log(e.getHeadString() + "->" + e.getBodyString());
-      });
-      let nonterminals2 = "";
-      grammar.getNonterminals().forEach(e => {
-        nonterminals2 += e.getString() + " ";
-      });
-      console.log("Nonterminals: " + nonterminals2);
-      let terminals2 = "";
-      grammar.getTerminals().forEach(e => {
-        terminals2 += e.getString() + " ";
-      });
-      console.log("Terminals: " + terminals2);
+      let result = this.grammarIsLegal(grammar);
+      if(result){
+        this.$eventbus.$emit('FinishInputGrammar', grammar)
+      }
+    },
+    grammarIsLegal(grammar) {
+      if (grammar.getTerminals().length === 0) {
+        this.$message(
+          "当前文法没有终止符号，不是合法的上下文无关文法，请重新输入"
+        );
+        return false
+      }
+      if (grammar.getNonterminals().length === 0) {
+        this.$message(
+          "当前文法没有非终止符号，不是合法的上下文无关文法，请重新输入"
+        );
+        return false
+      }
+      if (grammar.getProductions().length === 0) {
+        this.$message(
+          "当前文法没有产生式，不是合法的上下文无关文法，请重新输入"
+        );
+        return false
+      }
+      return true
     },
     querySearch(queryString, cb) {
       let signs = [...this.terminals, ...this.nonterminals];
@@ -350,43 +440,7 @@ export default {
       return temp;
     }
   },
-  watch: {
-    userInputProductions: function() {
-      let productions;
-      productions = this.userInputProductions.split(/\n/);
-      productions = productions.map(e => e.replace(/\s+/g, ""));
-      productions = productions.map(e => e.split(/->|\|/));
-      for (let production of productions) {
-        for (let i = 0; i < production.length; i++) {
-          if (i === 0) {
-            let head = production[i];
-            this.headIsNonterminal(head);
-          } else {
-            let body = production[i];
-            let start = 0;
-            let end = 1;
-            while (end <= body.length) {
-              let symbol = body.slice(start, end);
-              if (this.currentInputIslegal(symbol)) {
-                start = end;
-                end++;
-              } else {
-                end++;
-              }
-            }
-            if (start !== body.length) {
-              let errorSymbol = body.slice(start, end);
-              this.$message(
-                "字符 " +
-                  errorSymbol +
-                  " 不合法，请将该符号添加到符号表或重新输入"
-              );
-            }
-          }
-        }
-      }
-    }
-  },
+  watch: {},
   mounted() {}
 };
 </script>
@@ -394,7 +448,7 @@ export default {
 .userinput {
   display: flex;
   position: relative;
-  top: 165px;
+  //top: 165px;
   .right {
     .table {
       width: 100%;

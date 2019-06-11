@@ -1,4 +1,5 @@
 import assert from 'assert'
+import MapSet from '../map-set'
 class FirstSet {
   allFirstSet = Array.of()
   allDone = true
@@ -31,7 +32,8 @@ class FirstSet {
 
   getInitContext() {
     return {
-      symbolIndex: 0
+      symbolIndex: 0,
+      firstSet: new MapSet()
     }
   }
 
@@ -78,16 +80,17 @@ class FirstSet {
     if (this.allDone) {
       return [true, currentContext]
     }
+    let { symbolIndex, firstSet } = currentContext
     const nextContext = {
-      symbolIndex: 0
+      symbolIndex: 0,
+      firstSet
     }
-    let { symbolIndex } = currentContext
     const symbol = this.allFirstSet[symbolIndex][0]
     if (symbol.isTerminal()) {
       if (!this.firstSetHasTheSymbol(this.allFirstSet[symbolIndex][2], symbol)) {
         this.allFirstSet[symbolIndex][2].push(symbol)
         this.allFirstSet[symbolIndex][1] = true
-        this.grammar.firstSet.add(symbol, symbol)
+        firstSet.add(symbol, symbol)
         yield {
           isTerminal: true,
           allFirstSet: this.allFirstSet,
@@ -158,7 +161,7 @@ class FirstSet {
             const newSymbol = i
             if (!this.firstSetHasTheSymbol(this.allFirstSet[symbolIndex][2], newSymbol)) {
               this.allFirstSet[symbolIndex][2].push(newSymbol)
-              this.grammar.firstSet.add(symbol, newSymbol)
+              firstSet.add(symbol, newSymbol)
               yield {
                 isTerminal: false,
                 allFirstSet: this.allFirstSet,
@@ -197,7 +200,7 @@ class FirstSet {
                   for (const newSymbol of this.allFirstSet[dependSymbolIndex][2]) {
                     if (!newSymbol.isEmpty() && !this.firstSetHasTheSymbol(this.allFirstSet[symbolIndex][2], newSymbol)) {
                       this.allFirstSet[symbolIndex][2].push(newSymbol)
-                      this.grammar.firstSet.add(symbol, newSymbol)
+                      firstSet.add(symbol, newSymbol)
                       yield {
                         isTerminal: false,
                         allFirstSet: this.allFirstSet,
@@ -218,7 +221,7 @@ class FirstSet {
                   for (const newSymbol of this.allFirstSet[dependSymbolIndex][2]) {
                     if (!this.firstSetHasTheSymbol(this.allFirstSet[symbolIndex][2], newSymbol)) {
                       this.allFirstSet[symbolIndex][2].push(newSymbol)
-                      this.grammar.firstSet.add(symbol, newSymbol)
+                      firstSet.add(symbol, newSymbol)
                       yield {
                         isTerminal: false,
                         allFirstSet: this.allFirstSet,
@@ -240,7 +243,7 @@ class FirstSet {
                 for (const newSymbol of this.allFirstSet[dependSymbolIndex][2]) {
                   if (!this.firstSetHasTheSymbol(this.allFirstSet[symbolIndex][2], newSymbol)) {
                     this.allFirstSet[symbolIndex][2].push(newSymbol)
-                    this.grammar.firstSet.add(symbol, newSymbol)
+                    firstSet.add(symbol, newSymbol)
                     yield {
                       isTerminal: false,
                       allFirstSet: this.allFirstSet,
@@ -274,6 +277,7 @@ class FirstSet {
           }
         }
         this.turn++
+
         nextContext.symbolIndex = 0
 
         // const terminals = this.grammar.getTerminals()
@@ -315,8 +319,8 @@ class FirstSet {
     return [false, nextContext]
   }
 
-  getCurResult({ symbolIndex }) {
-    return this.allFirstSet[symbolIndex]
+  getCurResult({ firstSet }) {
+    return firstSet
   }
 
   // 包装器，用于完整运行每一个epoch，返回[isFinish, nextContext]
@@ -335,7 +339,7 @@ class FirstSet {
     while (ret[0] === false) {
       ret = this.runEpoch(ret[1])
     }
-    return ret[1]
+    return this.getCurResult(ret[1])
   }
 }
 export default FirstSet

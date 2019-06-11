@@ -1,10 +1,12 @@
 export const state = () => {
   return {
-    productions: []
+    curStep: 'GrammarInput'
   }
 }
 export const mutations = {
-
+  setStep(state, step){
+    state.curStep = step
+  },
 }
 export const actions = {
 

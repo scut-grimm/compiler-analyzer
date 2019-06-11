@@ -1,28 +1,77 @@
 <template>
   <div class="analysis">
     <div class="left">
-      <userInput :grammar="grammar" @getInput="getData"></userInput>
-      <el-input type="textarea" :rows="12" placeholder="预测分析表"></el-input>
+      <userInput
+        :grammar="grammar"
+        @getInput="getData"
+      ></userInput>
+      <el-input
+        type="textarea"
+        :rows="12"
+        placeholder="预测分析表"
+      ></el-input>
       <div style="position: relative; bottom: 10px;left: 10px;">
         <template v-if="started === false">
-          <el-button type="primary" @click="start">开始</el-button>
+          <el-button
+            type="primary"
+            @click="start"
+          >开始</el-button>
         </template>
         <template v-if="started === true && isAllDone === false">
-          <el-button type="success" @click="next">下一步</el-button>
-          <el-button type="warning" @click="skip">跳过</el-button>
-          <el-button type="info" @click="startAutoPlay" v-if="autoTimer === null">自动播放</el-button>
-          <el-button type="danger" @click="stopAutoPlay" v-if="autoTimer !== null">停止播放</el-button>
+          <el-button
+            type="success"
+            @click="next"
+          >下一步</el-button>
+          <el-button
+            type="warning"
+            @click="skip"
+          >跳过</el-button>
+          <el-button
+            type="info"
+            @click="startAutoPlay"
+            v-if="autoTimer === null"
+          >自动播放</el-button>
+          <el-button
+            type="danger"
+            @click="stopAutoPlay"
+            v-if="autoTimer !== null"
+          >停止播放</el-button>
         </template>
-        <el-button @click="restart" v-if="started" type="primary">重新开始</el-button>
+        <el-button
+          @click="restart"
+          v-if="started"
+          type="primary"
+        >重新开始</el-button>
       </div>
     </div>
 
     <div class="right">
-      <el-table :data="stackData" style="width: 100%">
-        <el-table-column prop="matched" label="已匹配" width="180" align="right"></el-table-column>
-        <el-table-column prop="symbolStack" label="符号栈" width="180" align="right"></el-table-column>
-        <el-table-column prop="input" label="输入" align="right"></el-table-column>
-        <el-table-column prop="action" label="动作" align="right"></el-table-column>
+      <el-table
+        :data="stackData"
+        style="width: 100%"
+      >
+        <el-table-column
+          prop="matched"
+          label="已匹配"
+          width="180"
+          align="right"
+        ></el-table-column>
+        <el-table-column
+          prop="symbolStack"
+          label="符号栈"
+          width="180"
+          align="right"
+        ></el-table-column>
+        <el-table-column
+          prop="input"
+          label="输入"
+          align="right"
+        ></el-table-column>
+        <el-table-column
+          prop="action"
+          label="动作"
+          align="right"
+        ></el-table-column>
       </el-table>
     </div>
   </div>
@@ -36,6 +85,7 @@ import Grammar from "~/classes/grammar";
 import MapSet from "~/classes/map-set";
 import ParsingStack from "~/classes/parsing-stack";
 import GenerateParsingStack from "~/classes/algorithms/generate-parsing-stack";
+import sign from "../classes/sign";
 export default {
   components: {
     userInput
@@ -46,10 +96,11 @@ export default {
       grammar: new Grammar(),
       active: 0,
       parsingStack,
-      stack: this.parsingStack,
+      stack: parsingStack,
       PPT: "",
       PPTData: "",
       strToken: "",
+      tempInput: [],
       inputData: "",
       Production: "",
       stackData: [],
@@ -60,24 +111,26 @@ export default {
       curStep: -1,
       autoTime: 1000,
       autoTimer: null,
-      isAllDone: false
+      isAllDone: false,
     };
   },
   methods: {
     getData(val) {
-      if (val !== "") this.inputData = val;
+      this.tempInput = val
     },
     start() {
-      const algorithm = new GenerateParsingStack(
-        this.grammar,
-        this.PPT,
-        this.inputData
-      );
-      this.wrapper = new AlgorithmWrapper(algorithm);
-      this.wrapper.init();
-      this.started = true;
-      this.isAllDone = false;
-      this.next();
+      if (this.checkInput()) {
+        const algorithm = new GenerateParsingStack(
+          this.grammar,
+          this.PPT,
+          this.inputData
+        );
+        this.wrapper = new AlgorithmWrapper(algorithm);
+        this.wrapper.init();
+        this.started = true;
+        this.isAllDone = false;
+        this.next();
+      }
     },
     restart() {
       this.stackData = [];
@@ -92,7 +145,9 @@ export default {
         clearTimeout(this.autoTimer);
         this.autoTimer = null;
       }
+
       if (this.isAllDone) {
+        this.pushTable()
         if (this.strToken.length > 1) {
           this.$message("无法继续匹配");
           return;
@@ -100,18 +155,14 @@ export default {
           this.$message("匹配完成");
           return;
         }
+      }else{
+        this.pushTable(this.notice)
       }
 
-      // todo:测试用，待改
-      this.stackData.push({
-        matched: this.Production,
-        symbolStack: this.stack.getStringStack(),
-        input: this.strTokenData,
-        action: this.notice
-      });
+
     },
     next() {
-      let { Production, notice } = this.wrapper.next();
+      let {Production, notice} = this.wrapper.next();
       // this.pre_notice = this.notice
       this.notice = notice;
       this.Production = Production;
@@ -140,6 +191,48 @@ export default {
       while (!this.isAllDone) {
         this.next();
       }
+    },
+    setGrammar(grammar) {
+      this.grammar = grammar
+      this.PPT = grammar.PPT
+    },
+    pushTable(notice=""){
+      this.stackData.push({
+        matched: this.Production,
+        symbolStack: this.stack.getStringStack(),
+        input: this.strTokenData,
+        action: notice
+      });
+    },
+    checkInput() {
+      let val = this.tempInput
+      let result = []
+      if (val.length > 0) {
+        for (let i of val) {
+          if (this.grammar.checkSignsExist([i])) {
+            try {
+              let temp = this.grammar.getSign(i)
+              if (temp.isNonterminal()){
+                this.$message("输中存在非终结符，请重新输入")
+                return false
+              }else {
+                result.push(temp)
+              }
+            } catch (e) {
+              console.log(e)
+            }
+          } else {
+            console.log(i)
+            this.$message("输入了文法中不存在的符号，请重新输入")
+            return false
+          }
+        }
+      }
+      if(result.length==0){
+        return false
+      }
+      this.inputData = result
+      return true
     }
   },
   computed: {
@@ -152,80 +245,6 @@ export default {
     }
   },
   mounted() {
-    const grammar = this.grammar;
-    const E = grammar.getSign("E", "Nonterminal");
-    const E1 = grammar.getSign("E'", "Nonterminal");
-    const T = grammar.getSign("T", "Nonterminal");
-    const T1 = grammar.getSign("T'", "Nonterminal");
-    const F = grammar.getSign("F", "Nonterminal");
-    const Plus = grammar.getSign("+", "Terminal");
-    const Multi = grammar.getSign("*", "Terminal");
-    const Id = grammar.getSign("id", "Terminal");
-    const LeftClose = grammar.getSign("(", "Terminal");
-    const RightClose = grammar.getSign(")", "Terminal");
-    const Empty = grammar.getEmptySign();
-    const End = grammar.getStackBottomSign();
-    grammar.addProduction(E, [T, E1]);
-    grammar.addProduction(E1, [Plus, T, E1]);
-    grammar.addProduction(E1, [Empty]);
-    grammar.addProduction(T, [F, T1]);
-    grammar.addProduction(T1, [Multi, F, T1]);
-    grammar.addProduction(T1, [Empty]);
-    grammar.addProduction(F, [LeftClose, E, RightClose]);
-    grammar.addProduction(F, [Id]);
-
-    const firstSet = new MapSet();
-    const followSet = new MapSet();
-    firstSet.add(E, LeftClose);
-    firstSet.add(E, Id);
-
-    firstSet.add(T, LeftClose);
-    firstSet.add(T, Id);
-
-    firstSet.add(F, LeftClose);
-    firstSet.add(F, Id);
-
-    firstSet.add(E1, Plus);
-    firstSet.add(E1, Empty);
-
-    firstSet.add(T1, Multi);
-    firstSet.add(T1, Empty);
-
-    followSet.add(E, RightClose);
-    followSet.add(E, End);
-
-    followSet.add(E1, RightClose);
-    followSet.add(E1, End);
-
-    followSet.add(T, Plus);
-    followSet.add(T, RightClose);
-    followSet.add(T, End);
-
-    followSet.add(T1, Plus);
-    followSet.add(T1, RightClose);
-    followSet.add(T1, End);
-
-    followSet.add(F, Plus);
-    followSet.add(F, Multi);
-    followSet.add(F, RightClose);
-    followSet.add(F, End);
-
-    grammar.firstSet = firstSet;
-    grammar.followSet = followSet;
-
-    // console.log("------------------------------------------------")
-    this.PPT = new GeneratePredictiveParsingTable(grammar).run();
-    this.strToken = [
-      grammar.getSign("id", "Terminal"),
-      grammar.getSign("*", "Terminal"),
-      grammar.getSign("id", "Terminal")
-    ];
-    this.inputData = [
-      grammar.getSign("id", "Terminal"),
-      grammar.getSign("*", "Terminal"),
-      grammar.getSign("id", "Terminal")
-    ];
-    console.log(this.PPT.getTableData());
   }
 };
 </script>
