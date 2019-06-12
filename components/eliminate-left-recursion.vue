@@ -87,7 +87,45 @@ export default {
         this.fourth = true;
         return;
       }
+      if(this.buttonMessage === '完成'){
+        this.$eventbus.$emit('FinishEliminateLeftRecursion')
+        return
+      }
+    },
+    setGrammar(grammar){
+    this.grammar = grammar;
+    this.ELR = new ELR(this.grammar);
+
+    this.immedationRecursionProductions = this.ELR.immedationRecursion;
+    this.grammarProductions = this.grammar.getProductions();
+    this.EEGProductions = this.ELR.eliminatingEmptyGrammar.getProductions();
+    this.ECGProductions = this.ELR.eliminatingCyclesGrammar.getProductions();
+    this.ELRGProductions = this.ELR.eliminateLeftRecursionGrammar.getProductions();
+    const disjointSet = new DisjointSet();
+    for (const item of this.ELR.indirectRecursion) {
+      const tempProduction0 = new Production(
+        item[0].getHead(),
+        item[0].getBody()
+      );
+      this.indirectRecursionProductions.push(tempProduction0);
+      disjointSet.add(tempProduction0);
+      for (let i = 1; i < item.length; i++) {
+        const tempProduction = new Production(
+          item[i].getHead(),
+          item[i].getBody()
+        );
+        this.indirectRecursionProductions.push(tempProduction);
+        disjointSet.disjoint(tempProduction0, tempProduction);
+      }
     }
+    this.indirectRecursionDisjointSet = disjointSet;
+    if (this.immedationRecursionProductions.length > 0) {
+      this.hasImmedationRecursionProduction = true;
+    }
+    if (this.indirectRecursionProductions.length > 0) {
+      this.hasIndirectRecursionProduction = true;
+    }
+  },
   },
   // computed: {
   //   ELR() {
@@ -146,7 +184,8 @@ export default {
   //     this.ELR.eliminateLeftRecursionGrammar.getProductions();
   //   }
   // },
-  mounted() {
+
+  _test() {
     let grammar = new Grammar();
     const E = grammar.getSign("E", "Nonterminal");
     // const E1 = grammar.getSign("E'", "Nonterminal");

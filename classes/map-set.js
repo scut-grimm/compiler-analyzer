@@ -5,6 +5,12 @@ class MapSet {
     this.dirty = false
   }
   get(key) {
+    if(this.map.has(key) === false){
+      console.log(key)
+      console.log(this)
+      debugger;
+    }
+
     assert.strictEqual(this.map.has(key), true)
     return this.map.get(key)
   }

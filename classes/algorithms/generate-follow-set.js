@@ -15,6 +15,7 @@ class GenerateFollowSet {
   // 由于每个算法循环中都包含几个步骤，考虑到前端的展示需求，在需要前端展示变化的时候，通过yield返回视图上所需的变化
   * epoch(curContext) {
     const firstset = this.grammar.firstset
+    console.log(this.grammar)
     const { followset ,first, pass_results } = curContext
     followset.clearDirty()
     const stackBottomSign = this.grammar.getStackBottomSign()
@@ -34,6 +35,7 @@ class GenerateFollowSet {
       followset.add(startSign, stackBottomSign)
     }
     for(const production of this.grammar.getProductions()){
+
       // yield {
       //   production,
       //   notice: '分析产生式(' + production.getString() + ')',
@@ -94,10 +96,13 @@ class GenerateFollowSet {
               active,
               gettingFirst: [production.getHead()]
             }
-            const toAdd = [...followset.get(production.getHead())]
-            for(const item of toAdd){
-              followset.add(sign, item)
+            if(followset.has(production.getHead())){
+              const toAdd = [...followset.get(production.getHead())]
+              for(const item of toAdd){
+                followset.add(sign, item)
+              }
             }
+
           }
         }
       }
