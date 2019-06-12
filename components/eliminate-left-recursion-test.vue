@@ -21,6 +21,10 @@ export default {
     const LeftClose = grammar.getSign("(", "Terminal");
     const RightClose = grammar.getSign(")", "Terminal");
     const G = grammar.getSign("G", "Nonterminal");
+    const A = grammar.getSign("A", "Nonterminal");
+    const B = grammar.getSign("B", "Nonterminal");
+    const C = grammar.getSign("C", "Nonterminal");
+    const D = grammar.getSign("D", "Nonterminal");
     const Empty = grammar.getEmptySign();
     grammar.setStartSign(E);
     //@test只有立即左递归的文法
@@ -52,8 +56,19 @@ export default {
     grammar.addProduction(F, [E]);
     //@test加包含ε的产生式T=>G G=>ε
     // grammar.addProduction(T, [G]);
-    //@test加包含ε的间接左递归T=>GGGGE=>E G=>ε
-    // grammar.addProduction(T, [G, G, G, G, E]);
+    // @test加包含ε的间接左递归T=>GGGGE=>E G=>ε
+    grammar.addProduction(T, [G, G, G, G, E]);
+    {
+      // @test加包含ε的间接左递归T=>ABCDE=>E A=>ε B=>ε C=>ε D=>ε
+      grammar.addProduction(T, [A, B, C, D, E]);
+      grammar.addProduction(A, [Empty]);
+      grammar.addProduction(B, [Empty]);
+      grammar.addProduction(C, [Empty]);
+      grammar.addProduction(D, [Empty]);
+      // @test加包含ε的间接左递归T=>ABCDE A=>ε B=>ε C=>E
+      grammar.addProduction(C, [E]);
+    }
+
     {
       console.log("用户输入的文法");
       const tempGrammar = grammar;
@@ -95,63 +110,63 @@ export default {
     for (const i of immedationRecursion) {
       console.log(i.getString());
     }
-    {
-      console.log("消除ε产生式后的文法");
-      const tempGrammar = eliminatingEmptyGrammar;
-      console.log("Start symbol: " + tempGrammar.getStartSign().getString());
-      console.log("Productions");
-      tempGrammar.productions.forEach(e => {
-        console.log(e.getHeadString() + "->" + e.getBodyString());
-      });
-      let Nonterminals = "";
-      tempGrammar.getNonterminals().forEach(e => {
-        Nonterminals += e.getString() + " ";
-      });
-      console.log("Nonterminals: " + Nonterminals);
-      let Terminals = "";
-      tempGrammar.getTerminals().forEach(e => {
-        Terminals += e.getString() + " ";
-      });
-      console.log("Terminals: " + Terminals);
-    }
-    {
-      console.log("消除环后的文法");
-      const tempGrammar = eliminatingCyclesGrammar;
-      console.log("Start symbol: " + tempGrammar.getStartSign().getString());
-      console.log("Productions");
-      tempGrammar.productions.forEach(e => {
-        console.log(e.getHeadString() + "->" + e.getBodyString());
-      });
-      let Nonterminals = "";
-      tempGrammar.getNonterminals().forEach(e => {
-        Nonterminals += e.getString() + " ";
-      });
-      console.log("Nonterminals: " + Nonterminals);
-      let Terminals = "";
-      tempGrammar.getTerminals().forEach(e => {
-        Terminals += e.getString() + " ";
-      });
-      console.log("Terminals: " + Terminals);
-    }
-    {
-      console.log("消除左递归后的文法");
-      const tempGrammar = eliminateLeftRecursionGrammar;
-      console.log("Start symbol: " + tempGrammar.getStartSign().getString());
-      console.log("Productions");
-      tempGrammar.productions.forEach(e => {
-        console.log(e.getHeadString() + "->" + e.getBodyString());
-      });
-      let Nonterminals = "";
-      tempGrammar.getNonterminals().forEach(e => {
-        Nonterminals += e.getString() + " ";
-      });
-      console.log("Nonterminals: " + Nonterminals);
-      let Terminals = "";
-      tempGrammar.getTerminals().forEach(e => {
-        Terminals += e.getString() + " ";
-      });
-      console.log("Terminals: " + Terminals);
-    }
+    // {
+    //   console.log("消除ε产生式后的文法");
+    //   const tempGrammar = eliminatingEmptyGrammar;
+    //   console.log("Start symbol: " + tempGrammar.getStartSign().getString());
+    //   console.log("Productions");
+    //   tempGrammar.productions.forEach(e => {
+    //     console.log(e.getHeadString() + "->" + e.getBodyString());
+    //   });
+    //   let Nonterminals = "";
+    //   tempGrammar.getNonterminals().forEach(e => {
+    //     Nonterminals += e.getString() + " ";
+    //   });
+    //   console.log("Nonterminals: " + Nonterminals);
+    //   let Terminals = "";
+    //   tempGrammar.getTerminals().forEach(e => {
+    //     Terminals += e.getString() + " ";
+    //   });
+    //   console.log("Terminals: " + Terminals);
+    // }
+    // {
+    //   console.log("消除环后的文法");
+    //   const tempGrammar = eliminatingCyclesGrammar;
+    //   console.log("Start symbol: " + tempGrammar.getStartSign().getString());
+    //   console.log("Productions");
+    //   tempGrammar.productions.forEach(e => {
+    //     console.log(e.getHeadString() + "->" + e.getBodyString());
+    //   });
+    //   let Nonterminals = "";
+    //   tempGrammar.getNonterminals().forEach(e => {
+    //     Nonterminals += e.getString() + " ";
+    //   });
+    //   console.log("Nonterminals: " + Nonterminals);
+    //   let Terminals = "";
+    //   tempGrammar.getTerminals().forEach(e => {
+    //     Terminals += e.getString() + " ";
+    //   });
+    //   console.log("Terminals: " + Terminals);
+    // }
+    // {
+    //   console.log("消除左递归后的文法");
+    //   const tempGrammar = eliminateLeftRecursionGrammar;
+    //   console.log("Start symbol: " + tempGrammar.getStartSign().getString());
+    //   console.log("Productions");
+    //   tempGrammar.productions.forEach(e => {
+    //     console.log(e.getHeadString() + "->" + e.getBodyString());
+    //   });
+    //   let Nonterminals = "";
+    //   tempGrammar.getNonterminals().forEach(e => {
+    //     Nonterminals += e.getString() + " ";
+    //   });
+    //   console.log("Nonterminals: " + Nonterminals);
+    //   let Terminals = "";
+    //   tempGrammar.getTerminals().forEach(e => {
+    //     Terminals += e.getString() + " ";
+    //   });
+    //   console.log("Terminals: " + Terminals);
+    // }
   }
 };
 </script>

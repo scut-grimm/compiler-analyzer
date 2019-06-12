@@ -169,7 +169,7 @@ class EliminateLeftRecursion {
       return
     } else {
       const top = solutionSpace.pop()
-      if (top.index === top.productions.length) { // 已经处理到解空间栈栈顶产生式数组的最后一个产生式，将下一层的记录位加一，更新推导栈
+      if (top.index >= top.productions.length) { // 已经处理完解空间栈栈顶产生式数组的最后一个产生式，将下一层的记录位加一，更新推导栈
         const former = solutionSpace.pop()
         former.index++
         former.bodySymbolIndex = 0
@@ -177,143 +177,150 @@ class EliminateLeftRecursion {
         derivationStack.pop()
         derivationStack.push(former.productions[former.index])
         solutionSpace.push(former)
-        this.scanIndirectLeftRecursion(solutionSpace, derivationStack)
+        return this.scanIndirectLeftRecursion(solutionSpace, derivationStack)
       } else {
         // 检测推导栈中是否含有左递归
-        if (this.hasLeftRecursionInDerivationStack(solutionSpace, derivationStack)) {
+        if (this.hasLeftRecursionInDerivationStack(derivationStack)) {
+          if (!derivationStack.top().getBody()[0].isEmpty()) { // 如果推导栈的栈顶不是一个ε产生式，则回溯
+            top.index++
+            derivationStack.pop()
+            derivationStack.push(top.productions[top.index])
+            solutionSpace.push(top)
+            return this.scanIndirectLeftRecursion(solutionSpace, derivationStack)
+          }
+        }
+        const handleProduction = top.productions[top.index]
+        // console.log('当前产生式' + handleProduction.getString())
+        if (top.bodySymbolIndex === handleProduction.getBody().length) { // 已经扫描到产生式体的最后一个符号，回溯
           top.index++
+          top.bodySymbolIndex = 0
           derivationStack.pop()
           derivationStack.push(top.productions[top.index])
           solutionSpace.push(top)
-          this.scanIndirectLeftRecursion(solutionSpace, derivationStack)
+          return this.scanIndirectLeftRecursion(solutionSpace, derivationStack)
         } else {
-          const handleProduction = top.productions[top.index]
-          if (top.bodySymbolIndex === handleProduction.getBody().length) { // 已经扫描到产生式体的最后一个符号
+          const current = handleProduction.getBody()[top.bodySymbolIndex]
+          if (current.isTerminal()) { // 当前符号是终止符号，不可能是左递归，回溯
             top.index++
             top.bodySymbolIndex = 0
             derivationStack.pop()
             derivationStack.push(top.productions[top.index])
             solutionSpace.push(top)
-            this.scanIndirectLeftRecursion(solutionSpace, derivationStack)
-          } else {
-            const current = handleProduction.getBody()[top.bodySymbolIndex]
-            if (current.isTerminal()) { // 当前符号是终止符号，不可能是左递归
+            return this.scanIndirectLeftRecursion(solutionSpace, derivationStack)
+          } else if (current.isNonterminal()) { // 当前符号是非终止符号
+            const frame = {
+              productions: Array.of(),
+              index: 0,
+              bodySymbolIndex: 0
+            }
+            const tempProductions = this.grammar.getDerivations(current)
+            for (let i = 0; i < tempProductions.length; i++) { // 把不是立即左递归的产生式放入 frame.productions 中
+              if (!this.immedationRecursion.includes(tempProductions[i])) { // 检测产生式是否是立即左递归的
+                frame.productions.push(tempProductions[i])
+              }
+            }
+            if (frame.productions.length === 0) { // 没有以当前符号为头部的产生式或以当前符号为头部的产生式都是立即左递归
               top.index++
               top.bodySymbolIndex = 0
               derivationStack.pop()
               derivationStack.push(top.productions[top.index])
               solutionSpace.push(top)
-              this.scanIndirectLeftRecursion(solutionSpace, derivationStack)
-            } else if (current.isNonterminal()) {
-              const frame = {
-                productions: Array.of(),
-                index: 0,
-                bodySymbolIndex: 0
-              }
-              const tempProductions = this.grammar.getDerivations(current)
-              for (let i = 0; i < tempProductions.length; i++) { // 检测产生式是否是立即左递归的
-                if (!this.immedationRecursion.includes(tempProductions[i])) {
-                  frame.productions.push(tempProductions[i])
-                }
-              }
-              if (frame.productions.length === 0) { // 没有以当前符号为头部的产生式
-                top.index++
-                top.bodySymbolIndex = 0
-                derivationStack.pop()
-                derivationStack.push(top.productions[top.index])
-                solutionSpace.push(top)
-                this.scanIndirectLeftRecursion(solutionSpace, derivationStack)
-              } else {
-                solutionSpace.push(top)
-                solutionSpace.push(frame)
-                derivationStack.push(frame.productions[frame.index])
-                this.scanIndirectLeftRecursion(solutionSpace, derivationStack)
-              }
-            } else if (current.isEmpty()) { // 处理涉及到ε产生式的间接左递归，这里没有回溯到正确位置，但是想不到解决方法了，勉强能用
-              // 先检查上一层处理的产生式是不是一个ε产生式
-              // 是的话，继续向上推，直到找到不是的那个栈帧
-              // 直接操作solutionSpace的data属性。说实话，这里已经不把solutionSpace当作栈来看待了，失败失败
-              // const data = solutionSpace.getData()
-              // for (let i = data.length; i >= 0; i--) { // 从后往前扫描data
-              //   const item = data[i] // item 是 data[i] 的引用
-              //   const production = item.productions[item.index] // 获取上一层正在处理的产生式
-              //   const body = production.getBody()
-              //   const symbol = body[item.bodySymbolIndex] // 获取正在处理的符号
-              //   if (!symbol.isEmpty()) { // symbol 不是 ε，则说明找到目标产生式了
-              //     item.bodySymbolIndex++
-              //     if (item.bodySymbolIndex === body.length) { // 目标产生式处理到最后一个字符了
-              //       // 这里solutionSpace和derivationStack都要弹栈，弹栈方式比较特殊
-              //       // solutionSpace 需要弹出当前栈帧之上的所有栈帧
-              //       // derivationStack 需要和 solutionSpace 同步弹栈
-              //     } else { // 向solutionSpace中压栈
-              //       const tempSymbol = body[item.bodySymbolIndex]
-              //       const tempProductions = this.grammar.getDerivations(tempSymbol)
-              //       if (tempProductions.length === 0) { // 这里说明 tempSymbol 是一个终止符号，不可能有左递归产生
-              //         // 这里solutionSpace和derivationStack都要弹栈，弹栈方式比较特殊
-              //         // solutionSpace 需要弹出当前栈帧之上的所有栈帧
-              //         // derivationStack 需要和 solutionSpace 同步弹栈
-              //       } else {
-              //         const newFrame = {
-              //           productions: Array.of(),
-              //           index: 0,
-              //           bodySymbolIndex: 0
-              //         }
-              //         for (const i of tempProductions) { // 排除所有立即左递归的产生式
-              //           if (!this.immedationRecursion.includes(i)) {
-              //             newFrame.productions.push(i)
-              //           }
-              //         }
-              //         solutionSpace.push(former)
-              //         solutionSpace.push(top)
-              //         solutionSpace.push(newFrame)
-              //         derivationStack.push(newFrame.productions[newFrame.index])
-              //         this.scanIndirectLeftRecursion(solutionSpace, derivationStack)
-              //       }
-              //     }
-              //     break // 这里一定要break
-              //   }
-              // }
-              const former = solutionSpace.pop()
-              former.bodySymbolIndex++
-              if (former.bodySymbolIndex === former.productions[former.index].getBody().length) {
-                top.index++
-                top.bodySymbolIndex = 0
-                former.bodySymbolIndex--
-                solutionSpace.push(former)
-                solutionSpace.push(top)
-                derivationStack.pop()
-                derivationStack.push(top.productions[top.index])
-                this.scanIndirectLeftRecursion(solutionSpace, derivationStack)
-              } else {
-                const tempSymbol = former.productions[former.index].getBody()[former.bodySymbolIndex]
-                const tempProductions = this.grammar.getDerivations(tempSymbol)
-                if (tempProductions.length === 0) {
-                  top.index++
-                  top.bodySymbolIndex = 0
-                  former.bodySymbolIndex--
-                  solutionSpace.push(former)
-                  solutionSpace.push(top)
-                  derivationStack.pop()
-                  derivationStack.push(top.productions[top.index])
-                  this.scanIndirectLeftRecursion(solutionSpace, derivationStack)
-                } else {
-                  const newFrame = {
-                    productions: Array.of(),
-                    index: 0,
-                    bodySymbolIndex: 0
+              return this.scanIndirectLeftRecursion(solutionSpace, derivationStack)
+            } else {
+              solutionSpace.push(top)
+              solutionSpace.push(frame)
+              derivationStack.push(frame.productions[frame.index])
+              return this.scanIndirectLeftRecursion(solutionSpace, derivationStack)
+            }
+          } else if (current.isEmpty()) { // 处理涉及到ε产生式的间接左递归
+            // 先检查上一层处理的产生式是不是一个ε产生式
+            // 是的话，继续向上推，直到找到不是的那个栈帧
+            // 直接操作solutionSpace的data属性。说实话，这里已经不把solutionSpace当作栈来看待了，失败失败
+            const data = solutionSpace.getData()
+            let emptyDerivationNum = 1 // 记录ε推导的个数，当前情况就是一次ε推导
+            for (let i = data.length - 1; i >= 0; i--) { // 从后往前扫描data
+              const item = data[i] // item 是 data[i] 的引用
+              const production = item.productions[item.index] // 获取正在处理的产生式
+              const body = production.getBody()
+              const symbol = body[item.bodySymbolIndex] // 获取正在处理的符号
+              if (!symbol.isEmpty()) { // symbol 不是 ε，则说明找到目标产生式了
+                item.bodySymbolIndex++
+                if (item.bodySymbolIndex === body.length) { // 目标产生式处理完最后一个字符了，回溯
+                  // 这里solutionSpace和derivationStack都要弹栈，弹栈方式比较特殊
+                  // solutionSpace 需要弹出当前栈帧之上的所有栈帧
+                  // derivationStack 需要和 solutionSpace 同步弹栈
+                  for (let i = 1; i < emptyDerivationNum; i++) {
+                    solutionSpace.pop()
                   }
-                  for (const i of tempProductions) {
-                    if (!this.immedationRecursion.includes(i)) {
-                      newFrame.productions.push(i)
+                  for (let i = 0; i < emptyDerivationNum; i++) {
+                    derivationStack.pop()
+                  }
+                  const newTop = solutionSpace.pop() // 更新 top
+                  newTop.index++
+                  newTop.bodySymbolIndex = 0
+                  derivationStack.pop()
+                  derivationStack.push(newTop.productions[newTop.index])
+                  solutionSpace.push(newTop)
+                  return this.scanIndirectLeftRecursion(solutionSpace, derivationStack)
+                } else { // 向solutionSpace中压栈
+                  const tempSymbol = body[item.bodySymbolIndex]
+                  const tempProductions = this.grammar.getDerivations(tempSymbol)
+                  if (tempProductions.length === 0) { // 这里说明 tempSymbol 是一个终止符号，不可能有左递归产生
+                    // 这里solutionSpace和derivationStack都要弹栈，弹栈方式比较特殊
+                    // solutionSpace 需要弹出当前栈帧之上的所有栈帧
+                    // derivationStack 需要和 solutionSpace 同步弹栈
+                    for (let i = 1; i < emptyDerivationNum; i++) {
+                      solutionSpace.pop()
+                    }
+                    for (let i = 0; i < emptyDerivationNum; i++) {
+                      derivationStack.pop()
+                    }
+                    const newTop = solutionSpace.pop() // 更新 top
+                    newTop.index++
+                    newTop.bodySymbolIndex = 0
+                    derivationStack.pop()
+                    derivationStack.push(newTop.productions[newTop.index])
+                    solutionSpace.push(newTop)
+                    return this.scanIndirectLeftRecursion(solutionSpace, derivationStack)
+                  } else {
+                    const newFrame = {
+                      productions: Array.of(),
+                      index: 0,
+                      bodySymbolIndex: 0
+                    }
+                    for (const i of tempProductions) { // 排除所有立即左递归的产生式
+                      if (!this.immedationRecursion.includes(i)) {
+                        newFrame.productions.push(i)
+                      }
+                    }
+                    if (newFrame.productions.length === 0) { // 说明以 tempSymbol 为头部的产生式都是立即左递归
+                      // 这里solutionSpace和derivationStack都要弹栈，弹栈方式比较特殊
+                      // solutionSpace 需要弹出当前栈帧之上的所有栈帧
+                      // derivationStack 需要和 solutionSpace 同步弹栈
+                      for (let i = 1; i < emptyDerivationNum; i++) {
+                        solutionSpace.pop()
+                      }
+                      for (let i = 0; i < emptyDerivationNum; i++) {
+                        derivationStack.pop()
+                      }
+                      const newTop = solutionSpace.pop() // 更新 top
+                      newTop.index++
+                      newTop.bodySymbolIndex = 0
+                      derivationStack.pop()
+                      derivationStack.push(newTop.productions[newTop.index])
+                      solutionSpace.push(newTop)
+                      return this.scanIndirectLeftRecursion(solutionSpace, derivationStack)
+                    } else {
+                      solutionSpace.push(top)
+                      solutionSpace.push(newFrame)
+                      derivationStack.push(newFrame.productions[newFrame.index])
+                      return this.scanIndirectLeftRecursion(solutionSpace, derivationStack)
                     }
                   }
-                  solutionSpace.push(former)
-                  solutionSpace.push(top)
-                  solutionSpace.push(newFrame)
-                  derivationStack.push(newFrame.productions[newFrame.index])
-                  this.scanIndirectLeftRecursion(solutionSpace, derivationStack)
                 }
+                // 这里不用 break 了，因为前面 return 了
               }
+              emptyDerivationNum++ // 是ε推导，计数器加一
             }
           }
         }
@@ -321,18 +328,25 @@ class EliminateLeftRecursion {
     }
   }
   // 判断当前推导链中是否有左递归
-  hasLeftRecursionInDerivationStack(solutionSpace, derivationStack) {
+  hasLeftRecursionInDerivationStack(derivationStack) {
     const data = derivationStack.getData()
     let aim = derivationStack.top().getBody()[0]
     if (aim.isEmpty()) { // 目标符号是ε
-      const solutionSpaceData = solutionSpace.getData()
-      // console.log(solutionSpaceData.length)
-      const index = solutionSpaceData[solutionSpaceData.length - 1].bodySymbolIndex
-      if (index + 1 === data[data.length - 2].getBody().length) { // 如果下标加一后等于产生式体的长度，说明这不是左递归
+      // 在 derivationStack 中从后向前扫描，找到不是ε产生式的那个产生式
+      let nonemptyProductionIndex = data.length - 1
+      let emptyDerivationNum = 0 // ε推导的个数
+      for (; nonemptyProductionIndex >= 0; nonemptyProductionIndex--) {
+        if (!data[nonemptyProductionIndex].getBody()[0].isEmpty()) {
+          break
+        }
+        emptyDerivationNum++
+      }
+      const nonemptyProduction = data[nonemptyProductionIndex]
+      if (emptyDerivationNum === nonemptyProduction.getBody().length) { // ε推导的个数等于非空产生式体的长度，说明这不是左递归
         return false
-      } else {
-        aim = data[data.length - 2].getBody()[index + 1]
-        for (let i = data.length - 3; i >= 0; i--) {
+      } else { // 否则，更新目标符号
+        aim = nonemptyProduction.getBody()[emptyDerivationNum]
+        for (let i = nonemptyProductionIndex; i >= 0; i--) {
           const tempSymbol = data[i].getHead()
           if (tempSymbol === aim) {
             const temp = Array.of() // 该数组记录了间接左递归涉及到的产生式
@@ -340,7 +354,7 @@ class EliminateLeftRecursion {
               temp.push(data[j])
             }
             this.indirectRecursion.push(temp)
-            return false // 这里return false是为了重复使用 head->ε 这种产生式
+            return true
           }
         }
         return false
