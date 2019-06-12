@@ -180,10 +180,8 @@ export default {
       }
       let isLL1 = IsLL1Algorithm(this.grammar)
       if (isLL1.isLL1 === false) {
-        if (this.rawGrammar.getProductions().length === 0) {
-          this.jumptTo('IsLL1')
-          throw new Error('该文法不是LL1, 无法进入下一步骤')
-        }
+        this.jumptTo('IsLL1')
+        throw new Error('该文法不是LL1, 无法进入下一步骤')
       }
       if (step === 'PredictiveParsingTable') {
         return
