@@ -215,7 +215,10 @@ export default {
               if (temp.isNonterminal()){
                 this.$message("输中存在非终结符，请重新输入")
                 return false
-              }else {
+              }else if(temp === this.grammar.getEmptySign() || temp === this.grammar.getStackBottomSign()){
+                this.$message("栈底符号$和空符ε不能作为输入")
+                return false
+              } else {
                 result.push(temp)
               }
             } catch (e) {
