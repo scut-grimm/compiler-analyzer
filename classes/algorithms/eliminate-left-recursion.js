@@ -1,7 +1,6 @@
 import assert from 'assert'
 import Grammar from '../grammar'
 import Production from '../production'
-import Sign from '../sign'
 class Stack {
   constructor() {
     this.data = Array.of()
@@ -643,15 +642,14 @@ class EliminateLeftRecursion {
       // newProductions 中的产生式的 head 都是 nonterminals[i]
       const immedationRecursion = this.scanImmedationLeftRecursion(newProductions)
       if (immedationRecursion.length > 0) { // 如果 newProductions 中有左递归
-        const newSign = new Sign(nonterminals[i].getString() + '\'', 'Nonterminal')
         for (const production of newProductions) {
           if (immedationRecursion.includes(production)) {
-            const head = EFRGrammar.getSign(newSign)
+            const head = EFRGrammar.getSign(nonterminals[i].getString() + '\'', 'Nonterminal')
             const body = []
             for (let i = 1; i < production.getBody().length; i++) {
               body.push(EFRGrammar.getSign(production.getBody()[i]))
             }
-            body.push(EFRGrammar.getSign(newSign))
+            body.push(EFRGrammar.getSign(nonterminals[i].getString() + '\'', 'Nonterminal'))
             const tempProduction = new Production(head, body)
             if (!this.existTheProduction(EFRGrammar, tempProduction) && body.length > 0) {
               EFRGrammar.addProduction(head, body)
@@ -662,14 +660,14 @@ class EliminateLeftRecursion {
             for (const symbol of production.getBody()) {
               body.push(EFRGrammar.getSign(symbol))
             }
-            body.push(EFRGrammar.getSign(newSign))
+            body.push(EFRGrammar.getSign(nonterminals[i].getString() + '\'', 'Nonterminal'))
             const tempProduction = new Production(head, body)
             if (!this.existTheProduction(EFRGrammar, tempProduction) && body.length > 0) {
               EFRGrammar.addProduction(head, body)
             }
           }
         }
-        const head = EFRGrammar.getSign(newSign)
+        const head = EFRGrammar.getSign(nonterminals[i].getString() + '\'', 'Nonterminal')
         const body = [EFRGrammar.getEmptySign()]
         const tempProduction = new Production(head, body)
         if (!this.existTheProduction(EFRGrammar, tempProduction) && body.length > 0) {

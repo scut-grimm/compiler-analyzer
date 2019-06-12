@@ -136,7 +136,6 @@
   </div>
 </template>
 <script>
-import Sign from "~/classes/sign";
 import GGFUI from "~/classes/algorithms/generate-grammar-from-user-input";
 import smithTag from "~/components/smith-tag";
 export default {
@@ -209,23 +208,8 @@ export default {
       }
     };
     return {
-      terminals: [
-        new Sign("(", "Terminal"),
-        new Sign(")", "Terminal"),
-        new Sign("+", "Terminal"),
-        new Sign("-", "Terminal"),
-        new Sign("*", "Terminal"),
-        new Sign("a", "Terminal"),
-        new Sign("b", "Terminal"),
-        new Sign("c", "Terminal")
-      ],
-      nonterminals: [
-        new Sign("A", "Nonterminal"),
-        new Sign("B", "Nonterminal"),
-        new Sign("C", "Nonterminal"),
-        new Sign("D", "Nonterminal"),
-        new Sign("E", "Nonterminal")
-      ],
+      terminals: ["(", ")", "+", "-", "*", "a", "b", "c"],
+      nonterminals: ["A", "B", "C", "D", "E"],
       symbol: "",
       formalProductions: Array.of(),
       tip: "",
@@ -242,15 +226,15 @@ export default {
   },
   methods: {
     addTerminal() {
-      let newTerminal = new Sign(this.symbol, "Terminal");
+      let newTerminal = this.symbol;
       for (let i of this.terminals) {
-        if (i.getString() === newTerminal.getString()) {
+        if (i === newTerminal) {
           this.$message("终止符号已存在");
           return;
         }
       }
       for (let i of this.nonterminals) {
-        if (i.getString() === newTerminal.getString()) {
+        if (i === newTerminal) {
           this.$message("该符号是一个已存在的非终止符号");
           return;
         }
@@ -259,15 +243,15 @@ export default {
       this.symbol = "";
     },
     addNonterminal() {
-      let newNonterminal = new Sign(this.symbol, "Nonterminal");
+      let newNonterminal = this.symbol;
       for (let i of this.nonterminals) {
-        if (i.getString() === newNonterminal.getString()) {
+        if (i === newNonterminal) {
           this.$message("非终止符号已存在");
           return;
         }
       }
       for (let i of this.terminals) {
-        if (i.getString() === newNonterminal.getString()) {
+        if (i === newNonterminal) {
           this.$message("该符号是一个已存在的终止符号");
           return;
         }
@@ -308,21 +292,22 @@ export default {
         return production;
       });
       this.formalProductions = [...productions];
+      console.log(this.formalProductions);
       this.generateGrammar();
     },
     charToSign(val) {
       for (let i of this.terminals) {
-        if (val === i.getString()) {
-          return i;
+        if (val === i) {
+          return { symbol: i, type: "Terminal" };
         }
       }
       for (let i of this.nonterminals) {
-        if (val === i.getString()) {
-          return i;
+        if (val === i) {
+          return { symbol: i, type: "Nonterminal" };
         }
       }
       if (val === "ε") {
-        return new Sign("ε", "Empty");
+        return { symbol: "ε", type: "Empty" };
       }
       this.$message("不存在符号 " + val + " ，请将符号添加至符号表或重新输入");
     },
@@ -333,12 +318,12 @@ export default {
         return true;
       }
       for (let i of this.terminals) {
-        if (val === i.getString()) {
+        if (val === i) {
           return true;
         }
       }
       for (let i of this.nonterminals) {
-        if (val === i.getString()) {
+        if (val === i) {
           return true;
         }
       }
@@ -349,22 +334,39 @@ export default {
         return false;
       }
       for (let i of this.nonterminals) {
-        if (val === i.getString()) {
+        if (val === i) {
           return true;
         }
       }
       return false;
     },
     delectSymbol(val) {
-      this.terminals = this.terminals.filter(e => e.getString() !== val);
-      this.nonterminals = this.nonterminals.filter(e => e.getString() !== val);
+      this.terminals = this.terminals.filter(e => e !== val);
+      this.nonterminals = this.nonterminals.filter(e => e !== val);
     },
-
     generateGrammar() {
       let grammar = new GGFUI(this.formalProductions);
+      {
+        console.log("Start symbol: " + grammar.getStartSign().getString());
+        console.log("Productions");
+        grammar.productions.forEach(e => {
+          console.log(e.getHeadString() + "->" + e.getBodyString());
+        });
+        let nonterminals2 = "";
+        grammar.getNonterminals().forEach(e => {
+          nonterminals2 += e.getString() + " ";
+        });
+        console.log("Nonterminals: " + nonterminals2);
+        let terminals2 = "";
+        grammar.getTerminals().forEach(e => {
+          terminals2 += e.getString() + " ";
+        });
+        console.log("Terminals: " + terminals2);
+      }
+
       let result = this.grammarIsLegal(grammar);
-      if(result){
-        this.$eventbus.$emit('FinishInputGrammar', grammar)
+      if (result) {
+        this.$eventbus.$emit("FinishInputGrammar", grammar);
       }
     },
     grammarIsLegal(grammar) {
@@ -372,27 +374,27 @@ export default {
         this.$message(
           "当前文法没有终止符号，不是合法的上下文无关文法，请重新输入"
         );
-        return false
+        return false;
       }
       if (grammar.getNonterminals().length === 0) {
         this.$message(
           "当前文法没有非终止符号，不是合法的上下文无关文法，请重新输入"
         );
-        return false
+        return false;
       }
       if (grammar.getProductions().length === 0) {
         this.$message(
           "当前文法没有产生式，不是合法的上下文无关文法，请重新输入"
         );
-        return false
+        return false;
       }
-      return true
+      return true;
     },
     querySearch(queryString, cb) {
       let signs = [...this.terminals, ...this.nonterminals];
       signs = signs.map(e => {
         let temp = {};
-        temp.symbol = e.getString();
+        temp.symbol = e;
         return temp;
       });
       let results = queryString
@@ -415,8 +417,6 @@ export default {
     tableData() {
       let terminals = [...this.terminals];
       let nonterminals = [...this.nonterminals];
-      terminals = terminals.map(e => e.getString());
-      nonterminals = nonterminals.map(e => e.getString());
       let temp = Array.of();
       let terminalIndex = 0;
       let nonterminalIndex = 0;
