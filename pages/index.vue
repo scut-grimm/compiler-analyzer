@@ -42,6 +42,7 @@ import ExtractLeftFactorAlgorithm from "~/classes/algorithms/extract-left-factor
 import FirstSet from "~/components/first-set";
 import FollowSet from "~/components/follow-set";
 import IsLL1 from '~/components/isll1';
+import IsLL1Algorithm from "~/classes/algorithms/is-LL1";
 import ParsingStack from '~/components/parsing-stack'
 import PredictiveParsingTable from "~/components/predictive-parsing-table";
 import Grammar from "~/classes/grammar";
@@ -93,48 +94,64 @@ export default {
     this.$eventbus.$on('FinishPPT', () => {
       this.jumptTo('ParsingStack')
     })
+    this.$eventbus.$on('goto', (step) => {
+      this.jumptTo(step)
+    })
   },
   methods: {
     jumptTo(step) {
-      this.regenerate(step)
-      this.$store.commit('global/setStep',step)
-      if (step === 'GrammarInput') {
-        this.grammar = new Grammar()
-        this.rawGrammar = new Grammar()
-      }
-      this.curStep = step
-      this.$nextTick(() => {
+      try {
+        this.regenerate(step)
+        this.$store.commit('global/setStep', step)
         if (step === 'GrammarInput') {
+          this.grammar = new Grammar()
+          this.rawGrammar = new Grammar()
+        }
+        this.curStep = step
+        this.$nextTick(() => {
+          if (step === 'GrammarInput') {
 
-        }
-        if (step === 'EliminateLeftRecursion') {
-          this.$refs[step].setGrammar(this.rawGrammar)
-        }
-        if (step === 'ExtractLeftFactor') {
-          this.$refs[step].setGrammar(this.grammar)
-        }
-        if (step === 'FirstSet') {
-          this.$refs[step].setGrammar(this.grammar)
-        }
-        if (step === 'FollowSet') {
-          this.$refs[step].setGrammar(this.grammar)
-        }
-        if (step === 'IsLL1') {
-          this.$refs[step].setGrammar(this.grammar)
-        }
-        if (step === 'PredictiveParsingTable') {
-          this.$refs[step].setGrammar(this.grammar)
-        }
-        if (step === 'ParsingStack') {
-          this.$refs[step].setGrammar(this.grammar)
-        }
-      })
+          }
+          if (step === 'EliminateLeftRecursion') {
+            this.$refs[step].setGrammar(this.rawGrammar)
+          }
+          if (step === 'ExtractLeftFactor') {
+            this.$refs[step].setGrammar(this.grammar)
+          }
+          if (step === 'FirstSet') {
+            this.$refs[step].setGrammar(this.grammar)
+          }
+          if (step === 'FollowSet') {
+            this.$refs[step].setGrammar(this.grammar)
+          }
+          if (step === 'IsLL1') {
+            this.$refs[step].setGrammar(this.grammar)
+          }
+          if (step === 'PredictiveParsingTable') {
+            this.$refs[step].setGrammar(this.grammar)
+          }
+          if (step === 'ParsingStack') {
+            this.$refs[step].setGrammar(this.grammar)
+          }
+        })
+      } catch (e) {
+        console.log(e)
+        this.$alert(e.message, '错误', {
+          confirmButtonText: '确定',
+          type:'error'
+        });
+      }
+
 
 
     },
     regenerate(step) {
       if (step === 'GrammarInput') {
         return
+      }
+      if (this.rawGrammar.getProductions().length === 0) {
+        this.jumptTo('GrammarInput')
+        throw new Error('请先拟定文法')
       }
       if (step === 'EliminateLeftRecursion') {
         return
@@ -160,6 +177,13 @@ export default {
       this.grammar.setFollowSet(followSet.run())
       if (step === 'IsLL1') {
         return
+      }
+      let isLL1 = IsLL1Algorithm(this.grammar)
+      if (isLL1.isLL1 === false) {
+        if (this.rawGrammar.getProductions().length === 0) {
+          this.jumptTo('IsLL1')
+          throw new Error('该文法不是LL1, 无法进入下一步骤')
+        }
       }
       if (step === 'PredictiveParsingTable') {
         return

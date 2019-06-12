@@ -1,6 +1,6 @@
 <template></template>
 <script>
-import IsLL1 from "~/classes/algorithms/is-ll1";
+import IsLL1 from "~/classes/algorithms/is-LL1";
 import Grammar from "~/classes/grammar";
 import MapSet from "~/classes/map-set";
 export default {

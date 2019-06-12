@@ -248,6 +248,17 @@ export default {
         }
       }
     },
+    runAll(restart = true){
+      if(restart){
+        this.start()
+      }
+      if(this.allDone === false){
+        this.skip()
+        this.$nextTick(() => {
+          this.runAll(false)
+        })
+      }
+    },
     startAutorun() {
       this.autoTimer = setTimeout(() => {
         this.autorun();
@@ -272,6 +283,7 @@ export default {
     },
     setGrammar(grammar) {
       this.grammar = grammar
+      this.runAll()
     },
     finish(){
       this.$eventbus.$emit('FinishFirstSet')

@@ -56,5 +56,12 @@ class AlgorithmWrapper {
       }
     }
   }
+  // run(){
+  //   let ret = null
+  //   while(this.isAllDone === false){
+  //     ret = this.next()
+  //   }
+  //   return ret
+  // }
 }
 export default AlgorithmWrapper

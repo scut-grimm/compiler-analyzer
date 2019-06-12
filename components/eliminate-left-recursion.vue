@@ -65,9 +65,10 @@ export default {
       ECGProductions: null,
       ELRGProductions: null,
       buttonMessage: "消除ε产生式",
-      second: false,
-      thrid: false,
-      fourth: false
+      //buttonMessage: "完成",
+      second: true,
+      thrid: true,
+      fourth: true
     };
   },
   methods: {
@@ -263,6 +264,10 @@ export default {
     if (this.indirectRecursionProductions.length > 0) {
       this.hasIndirectRecursionProduction = true;
     }
+    this.changeButton()
+    this.changeButton()
+    this.changeButton()
+    this.changeButton()
   }
 };
 </script>

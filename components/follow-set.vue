@@ -208,6 +208,17 @@ export default {
       clearTimeout(this.autoTimer);
       this.autoTimer = null;
     },
+    runAll(restart = true){
+      if(restart){
+        this.start()
+      }
+      if(this.isAllDone === false){
+        this.skip()
+        this.$nextTick(() => {
+          this.runAll(false)
+        })
+      }
+    },
     autoloop() {
       this.next();
       if (this.isAllDone) {
@@ -220,6 +231,7 @@ export default {
     },
     setGrammar(grammar) {
       this.grammar = grammar
+      this.runAll()
     },
     finish(){
       this.$eventbus.$emit('FinishFollowSet')
