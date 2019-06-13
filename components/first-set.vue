@@ -24,14 +24,8 @@
         </template>
       </div>
       <div class="right">
-        <el-table
-          :data="tableData"
-          style="width: 100%"
-        >
-          <el-table-column
-            label="文法符号"
-            width="150"
-          >
+        <el-table :data="tableData" style="width: 100%">
+          <el-table-column label="文法符号" width="150">
             <template slot-scope="scope">
               <span>{{scope.row.symbol}}</span>
             </template>
@@ -49,41 +43,19 @@
         </el-table>
         <div class="button">
           <template v-if="started === false">
-            <el-button
-              type="primary"
-              @click="start"
-            >开始</el-button>
+            <el-button type="primary" @click="start">开始</el-button>
           </template>
           <template v-if="started === true && allDone === false">
-            <el-button
-              type="success"
-              @click="next"
-            >下一步</el-button>
-            <el-button
-              type="warning"
-              @click="skip"
-            >跳过</el-button>
-            <el-button
-              type="info"
-              @click="startAutorun"
-              v-if="autoTimer === null"
-            >自动播放</el-button>
-            <el-button
-              type="danger"
-              @click="stopAutorun"
-              v-if="autoTimer !== null"
-            >停止播放</el-button>
+            <el-button type="success" @click="next">下一步</el-button>
+            <el-button type="warning" @click="skip">跳过</el-button>
+            <el-button type="info" @click="startAutorun" v-if="autoTimer === null">自动播放</el-button>
+            <el-button type="danger" @click="stopAutorun" v-if="autoTimer !== null">停止播放</el-button>
           </template>
-          <el-button
-            @click="start"
-            v-if="started"
-            type="primary"
-          >重新开始</el-button>
+          <el-button @click="start" v-if="started" type="primary">重新开始</el-button>
           <el-button type="primary" @click="finish">完成</el-button>
         </div>
       </div>
     </div>
-
   </div>
 </template>
 <script>
@@ -219,7 +191,6 @@ export default {
         this.activeProductionIndex = this.wrapperReturn.productionIndex;
       } else {
         this.notice = "first集合计算完成";
-        this.getFirstSet();
         this.dependSymbolIndex = null;
       }
       if (this.autoTimer !== null) {
@@ -251,15 +222,15 @@ export default {
         }
       }
     },
-    runAll(restart = true){
-      if(restart){
-        this.start()
+    runAll(restart = true) {
+      if (restart) {
+        this.start();
       }
-      if(this.allDone === false){
-        this.skip()
+      if (this.allDone === false) {
+        this.skip();
         this.$nextTick(() => {
-          this.runAll(false)
-        })
+          this.runAll(false);
+        });
       }
     },
     startAutorun() {
@@ -285,16 +256,14 @@ export default {
       this.activeProductionIndex = index;
     },
     setGrammar(grammar) {
-      this.grammar = grammar
-      this.runAll()
+      this.grammar = grammar;
+      this.runAll();
     },
-    finish(){
-      this.$eventbus.$emit('FinishFirstSet')
+    finish() {
+      this.$eventbus.$emit("FinishFirstSet");
     }
   },
-  mounted() {
-
-  },
+  mounted() {}
 };
 </script>
 <style lang="scss" scoped>
