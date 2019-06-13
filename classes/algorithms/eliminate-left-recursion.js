@@ -64,67 +64,67 @@ class EliminateLeftRecursion {
     this.scanIndirectLeftRecursion(this.solutionSpace, this.derivationStack)
 
     this.eliminatingEmptyGrammar = this.eliminatingEmptyProduction(this.grammar)
-    // {
-    //   console.log('消除ε产生式后的文法')
-    //   const tempGrammar = this.eliminatingEmptyGrammar
-    //   console.log('Start symbol: ' + tempGrammar.getStartSign().getString())
-    //   console.log('Productions')
-    //   tempGrammar.productions.forEach(e => {
-    //     console.log(e.getHeadString() + '->' + e.getBodyString())
-    //   })
-    //   let Nonterminals = ''
-    //   tempGrammar.getNonterminals().forEach(e => {
-    //     Nonterminals += e.getString() + ' '
-    //   })
-    //   console.log('Nonterminals: ' + Nonterminals)
-    //   let Terminals = ''
-    //   tempGrammar.getTerminals().forEach(e => {
-    //     Terminals += e.getString() + ' '
-    //   })
-    //   console.log('Terminals: ' + Terminals)
-    // }
+    {
+      console.log('消除ε产生式后的文法')
+      const tempGrammar = this.eliminatingEmptyGrammar
+      console.log('Start symbol: ' + tempGrammar.getStartSign().getString())
+      console.log('Productions')
+      tempGrammar.productions.forEach(e => {
+        console.log(e.getHeadString() + '->' + e.getBodyString())
+      })
+      let Nonterminals = ''
+      tempGrammar.getNonterminals().forEach(e => {
+        Nonterminals += e.getString() + ' '
+      })
+      console.log('Nonterminals: ' + Nonterminals)
+      let Terminals = ''
+      tempGrammar.getTerminals().forEach(e => {
+        Terminals += e.getString() + ' '
+      })
+      console.log('Terminals: ' + Terminals)
+    }
 
     this.eliminatingCyclesGrammar = this.eliminatingCycles(this.eliminatingEmptyGrammar)
-    // {
-    //   console.log('消除环后的文法')
-    //   const tempGrammar = this.eliminatingCyclesGrammar
-    //   console.log('Start symbol: ' + tempGrammar.getStartSign().getString())
-    //   console.log('Productions')
-    //   tempGrammar.productions.forEach(e => {
-    //     console.log(e.getHeadString() + '->' + e.getBodyString())
-    //   })
-    //   let Nonterminals = ''
-    //   tempGrammar.getNonterminals().forEach(e => {
-    //     Nonterminals += e.getString() + ' '
-    //   })
-    //   console.log('Nonterminals: ' + Nonterminals)
-    //   let Terminals = ''
-    //   tempGrammar.getTerminals().forEach(e => {
-    //     Terminals += e.getString() + ' '
-    //   })
-    //   console.log('Terminals: ' + Terminals)
-    // }
+    {
+      console.log('消除环后的文法')
+      const tempGrammar = this.eliminatingCyclesGrammar
+      console.log('Start symbol: ' + tempGrammar.getStartSign().getString())
+      console.log('Productions')
+      tempGrammar.productions.forEach(e => {
+        console.log(e.getHeadString() + '->' + e.getBodyString())
+      })
+      let Nonterminals = ''
+      tempGrammar.getNonterminals().forEach(e => {
+        Nonterminals += e.getString() + ' '
+      })
+      console.log('Nonterminals: ' + Nonterminals)
+      let Terminals = ''
+      tempGrammar.getTerminals().forEach(e => {
+        Terminals += e.getString() + ' '
+      })
+      console.log('Terminals: ' + Terminals)
+    }
 
     this.eliminateLeftRecursionGrammar = this.eliminatingLeftRecursion(this.eliminatingCyclesGrammar)
-    // {
-    //   console.log('消除左递归后的文法')
-    //   const tempGrammar = this.eliminateLeftRecursionGrammar
-    //   console.log('Start symbol: ' + tempGrammar.getStartSign().getString())
-    //   console.log('Productions')
-    //   tempGrammar.productions.forEach(e => {
-    //     console.log(e.getHeadString() + '->' + e.getBodyString())
-    //   })
-    //   let Nonterminals = ''
-    //   tempGrammar.getNonterminals().forEach(e => {
-    //     Nonterminals += e.getString() + ' '
-    //   })
-    //   console.log('Nonterminals: ' + Nonterminals)
-    //   let Terminals = ''
-    //   tempGrammar.getTerminals().forEach(e => {
-    //     Terminals += e.getString() + ' '
-    //   })
-    //   console.log('Terminals: ' + Terminals)
-    // }
+    {
+      console.log('消除左递归后的文法')
+      const tempGrammar = this.eliminateLeftRecursionGrammar
+      console.log('Start symbol: ' + tempGrammar.getStartSign().getString())
+      console.log('Productions')
+      tempGrammar.productions.forEach(e => {
+        console.log(e.getHeadString() + '->' + e.getBodyString())
+      })
+      let Nonterminals = ''
+      tempGrammar.getNonterminals().forEach(e => {
+        Nonterminals += e.getString() + ' '
+      })
+      console.log('Nonterminals: ' + Nonterminals)
+      let Terminals = ''
+      tempGrammar.getTerminals().forEach(e => {
+        Terminals += e.getString() + ' '
+      })
+      console.log('Terminals: ' + Terminals)
+    }
   }
   // 扫描立即左递归
   scanImmedationLeftRecursion(productions) {
@@ -642,6 +642,14 @@ class EliminateLeftRecursion {
       // newProductions 中的产生式的 head 都是 nonterminals[i]
       const immedationRecursion = this.scanImmedationLeftRecursion(newProductions)
       if (immedationRecursion.length > 0) { // 如果 newProductions 中有左递归
+        if (newProductions.length === immedationRecursion.length) { // 产生式都是左递归的，则应该添加产生式 A->A'
+          const head = EFRGrammar.getSign(nonterminals[i].getString())
+          const body = [EFRGrammar.getSign(nonterminals[i].getString() + '\'', 'Nonterminal')]
+          const tempProduction = new Production(head, body)
+          if (!this.existTheProduction(EFRGrammar, tempProduction) && body.length > 0) {
+            EFRGrammar.addProduction(head, body)
+          }
+        }
         for (const production of newProductions) {
           if (immedationRecursion.includes(production)) {
             const head = EFRGrammar.getSign(nonterminals[i].getString() + '\'', 'Nonterminal')
