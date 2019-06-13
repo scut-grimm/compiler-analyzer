@@ -24,8 +24,14 @@
         </template>
       </div>
       <div class="right">
-        <el-table :data="tableData" style="width: 100%">
-          <el-table-column label="文法符号" width="150">
+        <el-table
+          :data="tableData"
+          style="width: 100%"
+        >
+          <el-table-column
+            label="文法符号"
+            width="150"
+          >
             <template slot-scope="scope">
               <span>{{scope.row.symbol}}</span>
             </template>
@@ -43,23 +49,46 @@
         </el-table>
         <div class="button">
           <template v-if="started === false">
-            <el-button type="primary" @click="start">开始</el-button>
+            <el-button
+              type="primary"
+              @click="start"
+            >开始</el-button>
           </template>
           <template v-if="started === true && allDone === false">
-            <el-button type="success" @click="next">下一步</el-button>
-            <el-button type="warning" @click="skip">跳过</el-button>
-            <el-button type="info" @click="startAutorun" v-if="autoTimer === null">自动播放</el-button>
-            <el-button type="danger" @click="stopAutorun" v-if="autoTimer !== null">停止播放</el-button>
+            <el-button
+              type="success"
+              @click="next"
+            >下一步</el-button>
+            <el-button
+              type="warning"
+              @click="skip"
+            >跳过</el-button>
+            <el-button
+              type="info"
+              @click="startAutorun"
+              v-if="autoTimer === null"
+            >自动播放</el-button>
+            <el-button
+              type="danger"
+              @click="stopAutorun"
+              v-if="autoTimer !== null"
+            >停止播放</el-button>
           </template>
-          <el-button @click="start" v-if="started" type="primary">重新开始</el-button>
+          <el-button
+            @click="start"
+            v-if="started"
+            type="primary"
+          >重新开始</el-button>
+          <el-button type="primary" @click="finish">完成</el-button>
         </div>
       </div>
     </div>
+
   </div>
 </template>
 <script>
 import GrammarIndicator from "~/components/grammar-indicator";
-import FirstSet from "~/classes/algorithms/firstSet";
+import FirstSet from "~/classes/algorithms/generate-first-set";
 import Grammar from "~/classes/grammar";
 import AlgorithmWrapper from "~/classes/algorithm-wrapper";
 import MapSet from "~/classes/map-set";
@@ -207,11 +236,8 @@ export default {
       while (true) {
         let firstSetSymbolIndex = this.wrapper.getContext().symbolIndex; //当前正在计算first集合的文法符号在this.allFirstSet中的下标
         this.allDone = this.wrapper.isAllDone();
-        console.log("All done " + this.allDone);
         if (!this.allDone) {
           let wrapperSkipReturn = this.wrapper.skip(); //this.wrapper.skip()的返回值
-          console.log("当前符号" + firstSetSymbolIndex);
-          console.log(wrapperSkipReturn.symbolIndex);
           if (firstSetSymbolIndex === wrapperSkipReturn.symbolIndex) {
             //如果两者相等，则说明first集合有变化，正在计算的文法符号的first集合中添加了新的元素
             this.wrapperReturn = wrapperSkipReturn; //更新组件的this.wrapperReturn
@@ -223,6 +249,17 @@ export default {
           this.sync();
           break;
         }
+      }
+    },
+    runAll(restart = true){
+      if(restart){
+        this.start()
+      }
+      if(this.allDone === false){
+        this.skip()
+        this.$nextTick(() => {
+          this.runAll(false)
+        })
       }
     },
     startAutorun() {
@@ -247,41 +284,17 @@ export default {
     onChagneProduction(index) {
       this.activeProductionIndex = index;
     },
-    getFirstSet() {
-      const firstSet = new MapSet();
-      for (let i of this.allFirstSet) {
-        for (let j of i[2]) {
-          firstSet.add(i[0], j);
-        }
-      }
-      this.firstSet = firstSet;
+    setGrammar(grammar) {
+      this.grammar = grammar
+      this.runAll()
+    },
+    finish(){
+      this.$eventbus.$emit('FinishFirstSet')
     }
   },
   mounted() {
-    let grammar = new Grammar();
-    const E = grammar.getSign("E", "Nonterminal");
-    const E1 = grammar.getSign("E'", "Nonterminal");
-    const T = grammar.getSign("T", "Nonterminal");
-    const T1 = grammar.getSign("T'", "Nonterminal");
-    const F = grammar.getSign("F", "Nonterminal");
-    const Plus = grammar.getSign("+", "Terminal");
-    const Multi = grammar.getSign("*", "Terminal");
-    const Id = grammar.getSign("id", "Terminal");
-    const LeftClose = grammar.getSign("(", "Terminal");
-    const RightClose = grammar.getSign(")", "Terminal");
-    const Empty = grammar.getEmptySign();
-    const End = grammar.getStackBottomSign();
-    grammar.addProduction(E, [T, E1]);
-    grammar.addProduction(E1, [Plus, T, E1]);
-    grammar.addProduction(E1, [Empty]);
-    grammar.addProduction(T, [F, T1]);
-    grammar.addProduction(T1, [Multi, F, T1]);
-    grammar.addProduction(T1, [Empty]);
-    grammar.addProduction(F, [LeftClose, E, RightClose]);
-    grammar.addProduction(F, [Id]);
-    grammar.setStartSign(E);
-    this.grammar = grammar;
-  }
+
+  },
 };
 </script>
 <style lang="scss" scoped>

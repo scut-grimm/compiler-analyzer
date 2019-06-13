@@ -15,7 +15,7 @@ class GenerateParsingStack {
     return {
       cur_index: 0,
       // stack: new ParsingStack().push(this.grammar.getSign('$','Terminal')).push(this.grammar.getStartSign())
-      stack: new ParsingStack().push(this.end).push([this.grammar.getSign('E', 'Nonterminal')])
+      stack: new ParsingStack().push(this.end).push([this.grammar.getStartSign()])
     }
   }
 
@@ -40,7 +40,7 @@ class GenerateParsingStack {
       this.started = true
     }
 
-    while (X !== p) {
+    while (X !== p ) {
       if (X.isTerminal()) {
         console.log('栈顶：', X.getString(), '\t字符：', p.getString())
         return this.error()
@@ -69,12 +69,11 @@ class GenerateParsingStack {
       return [true, true]
     }
 
-    // todo:debug
-    stack.pop() // 匹配非终结符号
     yield {
       Production: null,
       notice: `匹配${X.getString()}`
     }
+    stack.pop() // 匹配非终结符号
 
     const nextContext = {
       cur_index: cur_index + 1,

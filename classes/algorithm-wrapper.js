@@ -26,7 +26,7 @@ class AlgorithmWrapper {
       const [alldone, nextContext] = value
       if (alldone) {
         this.alldone = true
-        return false
+        return this.lastvalue
       } else {
         this.context = nextContext
         this.epoch = this.algorithm.epoch(nextContext)
@@ -56,5 +56,12 @@ class AlgorithmWrapper {
       }
     }
   }
+  // run(){
+  //   let ret = null
+  //   while(this.isAllDone === false){
+  //     ret = this.next()
+  //   }
+  //   return ret
+  // }
 }
 export default AlgorithmWrapper

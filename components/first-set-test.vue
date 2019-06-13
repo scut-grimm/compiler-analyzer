@@ -6,7 +6,7 @@
   </div>
 </template>
 <script>
-import FirstSet from "~/classes/algorithms/firstSet";
+import FirstSet from "~/classes/algorithms/generate-first-set";
 import Grammar from "~/classes/grammar";
 import AlgorithmWrapper from "~/classes/algorithm-wrapper";
 export default {

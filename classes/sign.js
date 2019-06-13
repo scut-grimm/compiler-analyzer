@@ -5,11 +5,13 @@ const Types = {
   Empty: 3,
   StackBottom: 4
 }
+let i=0
 class Sign {
   constructor(symbol, type) {
     assert.notEqual(Types[type], undefined, 'type is not defined')
     this.symbol = symbol
     this.type = type
+    this.i = i++
   }
   getString() {
     return this.symbol
