@@ -114,41 +114,45 @@ class FirstSet {
             i[3] = i[2].length
           }
         }
+        // {
+        //   console.log('turn: ' + this.turn)
+        //   const terminals = this.grammar.getTerminals()
+        //   const nonterminals = this.grammar.getNonterminals()
+        //   for (const terminal of terminals) {
+        //     const index = this.getIndex(terminal)
+        //     const firstSet = this.allFirstSet[index][2]
+        //     let firstSetString = ''
+        //     firstSet.forEach(e => {
+        //       firstSetString += e.getString() + ','
+        //     })
+        //     firstSetString = firstSetString.slice(0, -1)
+        //     let done = ''
+        //     if (this.allFirstSet[this.getIndex(terminal)][1]) {
+        //       done = 'true'
+        //     } else {
+        //       done = 'false'
+        //     }
+        //     console.log(`first(${terminal.getString()})={${firstSetString}} Done: ${done}`)
+        //   }
+        //   for (const nonterminal of nonterminals) {
+        //     const index = this.getIndex(nonterminal)
+        //     const firstSet = this.allFirstSet[index][2]
+        //     let firstSetString = ''
+        //     firstSet.forEach(e => {
+        //       firstSetString += e.getString() + ','
+        //     })
+        //     firstSetString = firstSetString.slice(0, -1)
+        //     let done = ''
+        //     if (this.allFirstSet[this.getIndex(nonterminal)][1]) {
+        //       done = 'true'
+        //     } else {
+        //       done = 'false'
+        //     }
+        //     console.log(`first(${nonterminal.getString()})={${firstSetString}} Done: ${done}`)
+        //   }
+        // }
         this.turn++
         nextContext.symbolIndex = 0
-
-        // const terminals = this.grammar.getTerminals()
-        // const nonterminals = this.grammar.getNonterminals()
-        // for (const terminal of terminals) {
-        //   const firstSet = this.grammar.getSignFirstSet(terminal)
-        //   let firstSetString = ''
-        //   firstSet.forEach(e => {
-        //     firstSetString += e.getString() + ','
-        //   })
-        //   firstSetString = firstSetString.slice(0, -1)
-        //   let done = ''
-        //   if (this.allFirstSet[this.getIndex(terminal)][1]) {
-        //     done = 'true'
-        //   } else {
-        //     done = 'false'
-        //   }
-        //   console.log(`first(${terminal.getString()})={${firstSetString}} Done: ${done}`)
-        // }
-        // for (const nonterminal of nonterminals) {
-        //   const firstSet = this.grammar.getSignFirstSet(nonterminal)
-        //   let firstSetString = ''
-        //   firstSet.forEach(e => {
-        //     firstSetString += e.getString() + ','
-        //   })
-        //   firstSetString = firstSetString.slice(0, -1)
-        //   let done = ''
-        //   if (this.allFirstSet[this.getIndex(nonterminal)][1]) {
-        //     done = 'true'
-        //   } else {
-        //     done = 'false'
-        //   }
-        //   console.log(`first(${nonterminal.getString()})={${firstSetString}} Done: ${done}`)
-        // }
       } else {
         nextContext.symbolIndex = ++symbolIndex
       }
@@ -276,42 +280,45 @@ class FirstSet {
             i[3] = i[2].length
           }
         }
+        // {
+        //   console.log('turn: ' + this.turn)
+        //   const terminals = this.grammar.getTerminals()
+        //   const nonterminals = this.grammar.getNonterminals()
+        //   for (const terminal of terminals) {
+        //     const index = this.getIndex(terminal)
+        //     const firstSet = this.allFirstSet[index][2]
+        //     let firstSetString = ''
+        //     firstSet.forEach(e => {
+        //       firstSetString += e.getString() + ','
+        //     })
+        //     firstSetString = firstSetString.slice(0, -1)
+        //     let done = ''
+        //     if (this.allFirstSet[this.getIndex(terminal)][1]) {
+        //       done = 'true'
+        //     } else {
+        //       done = 'false'
+        //     }
+        //     console.log(`first(${terminal.getString()})={${firstSetString}} Done:${done}`)
+        //   }
+        //   for (const nonterminal of nonterminals) {
+        //     const index = this.getIndex(nonterminal)
+        //     const firstSet = this.allFirstSet[index][2]
+        //     let firstSetString = ''
+        //     firstSet.forEach(e => {
+        //       firstSetString += e.getString() + ','
+        //     })
+        //     firstSetString = firstSetString.slice(0, -1)
+        //     let done = ''
+        //     if (this.allFirstSet[this.getIndex(nonterminal)][1]) {
+        //       done = 'true'
+        //     } else {
+        //       done = 'false'
+        //     }
+        //     console.log(`first(${nonterminal.getString()})={${firstSetString}} Done:${done}`)
+        //   }
+        // }
         this.turn++
-
         nextContext.symbolIndex = 0
-
-        // const terminals = this.grammar.getTerminals()
-        // const nonterminals = this.grammar.getNonterminals()
-        // for (const terminal of terminals) {
-        //   const firstSet = this.grammar.getSignFirstSet(terminal)
-        //   let firstSetString = ''
-        //   firstSet.forEach(e => {
-        //     firstSetString += e.getString() + ','
-        //   })
-        //   firstSetString = firstSetString.slice(0, -1)
-        //   let done = ''
-        //   if (this.allFirstSet[this.getIndex(terminal)][1]) {
-        //     done = 'true'
-        //   } else {
-        //     done = 'false'
-        //   }
-        //   console.log(`first(${terminal.getString()})={${firstSetString}} Done:${done}`)
-        // }
-        // for (const nonterminal of nonterminals) {
-        //   const firstSet = this.grammar.getSignFirstSet(nonterminal)
-        //   let firstSetString = ''
-        //   firstSet.forEach(e => {
-        //     firstSetString += e.getString() + ','
-        //   })
-        //   firstSetString = firstSetString.slice(0, -1)
-        //   let done = ''
-        //   if (this.allFirstSet[this.getIndex(nonterminal)][1]) {
-        //     done = 'true'
-        //   } else {
-        //     done = 'false'
-        //   }
-        //   console.log(`first(${nonterminal.getString()})={${firstSetString}} Done:${done}`)
-        // }
       } else {
         nextContext.symbolIndex = ++symbolIndex
       }

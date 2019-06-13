@@ -83,7 +83,7 @@ export default {
       productionIndex: null, //计算当前文法符号的first集合所依赖的产生式在grammar.productions中的下标
       firstSetSymbol: null, //当前正在计算first集合的文法符号
       firstSetSymbolIndex: null, //当前正在计算first集合的文法符号在allFirstSet中的下标
-      turn: null,
+      newTurn: null,
       oldTableData: null,
       oldTableColumnIndex: [],
       wrapper: null,
@@ -91,7 +91,8 @@ export default {
       allDone: false,
       autoTimer: null,
       autoTime: 1000,
-      firstSet: null
+      firstSet: null,
+      oldTurn: 1
     };
   },
   computed: {
@@ -125,17 +126,22 @@ export default {
           firstSet += e.getString() + "  ";
         });
         firstSet = firstSet.slice(0, -2);
-        for (let i = 0; i < this.oldTableData.length; i++) {
-          if (i === this.firstSetSymbolIndex) {
-            this.$set(this.oldTableData[i], [this.turn], firstSet); //Vue教程的深入响应式原理有详解
-          } else {
-            if (this.turn > 1) {
+        if (this.newTurn !== this.oldTurn) {
+          // 如果轮次更新了，就先把上一轮的结果复制到本轮
+          for (let i = 0; i < this.oldTableData.length; i++) {
+            if (i !== this.firstSetSymbolIndex) {
               this.$set(
                 this.oldTableData[i],
-                [this.turn],
-                this.oldTableData[i][this.turn - 1]
+                [this.newTurn],
+                this.oldTableData[i][this.newTurn - 1]
               ); //Vue教程的深入响应式原理有详解
             }
+          }
+          this.oldTurn = this.newTurn;
+        }
+        for (let i = 0; i < this.oldTableData.length; i++) {
+          if (i === this.firstSetSymbolIndex) {
+            this.$set(this.oldTableData[i], [this.newTurn], firstSet); //Vue教程的深入响应式原理有详解
           }
         }
       }
@@ -143,7 +149,7 @@ export default {
     },
     tableColumnIndex() {
       if (this.started) {
-        let currentTurn = this.turn;
+        let currentTurn = this.newTurn;
         if (
           currentTurn !==
           this.oldTableColumnIndex[this.oldTableColumnIndex.length - 1]
@@ -187,7 +193,7 @@ export default {
         this.production = this.wrapperReturn.production;
         this.firstSetSymbolIndex = this.wrapperReturn.symbolIndex;
         this.firstSetSymbol = this.wrapperReturn.symbol;
-        this.turn = this.wrapperReturn.turn;
+        this.newTurn = this.wrapperReturn.turn;
         this.activeProductionIndex = this.wrapperReturn.productionIndex;
       } else {
         this.notice = "first集合计算完成";
