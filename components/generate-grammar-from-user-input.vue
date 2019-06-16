@@ -107,7 +107,7 @@
       <el-form ref="ruleForm" :rules="rulesCFG" :model="ruleForm" label-width="0px">
         <el-form-item prop="CFG">
           <el-input
-            placeholder="请输入文法规则: 例子： A->B|c B->a|b"
+            placeholder="请输入文法规则: 例子： A -> a b c 将产生式中的符号用空格隔开"
             type="textarea"
             v-model="ruleForm.CFG"
             autosize
@@ -149,50 +149,45 @@ export default {
       for (let i = 0; i < productions.length; i++) {
         if (productions[i] !== "") {
           empty = false;
-          let production = productions[i].replace(/\s+/g, "");
+          // let production = productions[i].replace(/\s+/g, ""); // 忽略一条产生式中的空白字符
+          let production = productions[i];
           try {
-            if (!this.headIsNonterminal(production[0])) {
+            //首先检测产生式中是否有且仅有一个 -> 字符
+            const arrow = /->/g;
+            if (
+              production.match(arrow) === null ||
+              production.match(arrow).length !== 1
+            ) {
               callback(
                 new Error(
-                  "符号" +
-                    production[0] +
-                    "不是非终止字符，不可以放在产生式头部"
+                  "第" + (i + 1).toString() + "条产生式格式错误,请按格式输入"
                 )
               );
-            } else if (!(production[1] === "-" && production[2] === ">")) {
+            }
+            production = production.split(/->/); // 把产生式以箭头符号为界限分为两部分，前为head后为body
+            let head = production[0]; // head是一个完整的字符
+            head = head.replace(/\s+/, ""); // 忽略head中的空格
+            let bodys = production[1].split(/\|/); // 把body按照 | 符号分开
+            if (!this.headIsNonterminal(head)) {
               callback(
                 new Error(
-                  "第" + (i + 1).toString() + "条产生式缺少'->',请按格式输入"
+                  "符号" + head + "不是非终止字符，不可以放在产生式头部"
                 )
               );
-            } else {
-              production = production.split(/->|\|/);
-              for (let j = 1; j < production.length; j++) {
-                let body = production[j];
-                let start = 0;
-                let end = 1;
-                while (end <= body.length) {
-                  let symbol = body.slice(start, end);
-                  if (this.currentInputIslegal(symbol)) {
-                    start = end;
-                    end++;
-                  } else {
-                    end++;
-                  }
-                }
-                if (start !== body.length) {
-                  let errorSymbol = body.slice(start, end);
-                  callback(
-                    new Error(
-                      "字符 " +
-                        errorSymbol +
-                        " 不合法，请将该符号添加到符号表或重新输入"
-                    )
-                  );
+            }
+            for (let body of bodys) {
+              let symbols = body.match(/\S+/g);
+              if (symbols === null || symbols.lenght === 0) {
+                callback(new Error("产生式体不能为空"));
+              }
+              for (let symbol of symbols) {
+                if (!this.currentInputIslegal(symbol)) {
+                  callback(new Error(`符号 ${symbol} 未定义`));
                 }
               }
             }
           } catch (e) {
+            console.log(e.message);
             callback(
               new Error(
                 "第" + (i + 1).toString() + "条产生式不合法，请重新输入"
@@ -226,38 +221,45 @@ export default {
   },
   methods: {
     addTerminal() {
-      let newTerminal = this.symbol;
-      for (let i of this.terminals) {
-        if (i === newTerminal) {
-          this.$message("终止符号已存在");
-          return;
-        }
+      if (!this.newSymbolLegal(this.symbol)) {
+        return;
       }
-      for (let i of this.nonterminals) {
-        if (i === newTerminal) {
-          this.$message("该符号是一个已存在的非终止符号");
-          return;
-        }
-      }
-      this.terminals.push(newTerminal);
+      this.terminals.push(this.symbol);
       this.symbol = "";
     },
     addNonterminal() {
-      let newNonterminal = this.symbol;
+      if (!this.newSymbolLegal(this.symbol)) {
+        return;
+      }
+      this.nonterminals.push(this.symbol);
+      this.symbol = "";
+    },
+    newSymbolLegal(newSymbol) {
+      // 判断新添加的文法符号是否合法
+      let symbol = newSymbol;
+      symbol = symbol.replace(/\s+/g, ""); // 忽略符号中的空白字符
+      if (symbol.length === 0) {
+        this.$message("请输入非空符号");
+        return false;
+      }
+      const illegalSymbol = /(-|>|\||\$)+/;
+      if (illegalSymbol.test(symbol)) {
+        this.$message(`符号 ${symbol} 不可定义为文法符号`);
+        return false;
+      }
       for (let i of this.nonterminals) {
-        if (i === newNonterminal) {
-          this.$message("非终止符号已存在");
-          return;
+        if (i === symbol) {
+          this.$message("该符号是一个已存在的非终止符号");
+          return false;
         }
       }
       for (let i of this.terminals) {
-        if (i === newNonterminal) {
+        if (i === symbol) {
           this.$message("该符号是一个已存在的终止符号");
-          return;
+          return false;
         }
       }
-      this.nonterminals.push(newNonterminal);
-      this.symbol = "";
+      return true;
     },
     getProductions() {
       if (this.ruleForm.CFG.length === 0) {
@@ -266,34 +268,71 @@ export default {
       }
       let productions = Array.of();
       productions = this.ruleForm.CFG.split(/\n/);
-      productions = productions.map(e => e.replace(/\s+/g, ""));
-      productions = productions.map(e => e.split(/->|\|/));
-      productions = productions.map(e => {
-        let production = Array.of();
-        let head = e[0];
-        production.push(this.charToSign(head));
-        for (let i = 1; i < e.length; i++) {
-          let bodyString = e[i];
-          let bodySign = Array.of();
-          let start = 0;
-          let end = 1;
-          while (end <= bodyString.length) {
-            let symbol = bodyString.slice(start, end);
-            if (this.currentInputIslegal(symbol)) {
-              bodySign.push(this.charToSign(symbol));
-              start = end;
-              end++;
-            } else {
-              end++;
+      console.log(productions);
+      if (this.productionsIsLegal(productions)) {
+        const formalPros = [];
+        for (const production of productions) {
+          if (production !== "") {
+            let tempPro = production.split(/->/);
+            let head = tempPro[0].replace(/\s+/g, "");
+            let bodys = tempPro[1].split(/\|/);
+            for (let body of bodys) {
+              const formalPro = [];
+              formalPro.push(this.charToSign(head));
+              const formalBody = [];
+              let symbols = body.match(/\S+/g);
+              for (let symbol of symbols) {
+                formalBody.push(this.charToSign(symbol));
+              }
+              formalPro.push(formalBody);
+              formalPros.push(formalPro);
             }
           }
-          production.push(bodySign);
         }
-        return production;
-      });
-      this.formalProductions = [...productions];
-      console.log(this.formalProductions);
-      this.generateGrammar();
+        this.formalProductions = formalPros;
+        console.log(this.formalProductions);
+        this.generateGrammar();
+      } else {
+        this.$message("产生式中存在问题，请修改产生式");
+      }
+    },
+    productionsIsLegal(productions) {
+      let emptyLine = 0; // 空行
+      for (let production of productions) {
+        if (production !== "") {
+          if (
+            production.match(/->/g) === null ||
+            production.match(/->/g).length !== 1
+          ) {
+            return false;
+          }
+          let headAndBodys = production.split(/->/);
+          let head = headAndBodys[0].replace(/\s+/g, "");
+          let bodys = headAndBodys[1].split(/\|/);
+          if (!this.headIsNonterminal(head)) {
+            return false;
+          }
+          for (let body of bodys) {
+            let symbols = body.match(/\S+/g);
+            if (symbols === null) {
+              return false;
+            }
+            for (let symbol of symbols) {
+              if (!this.currentInputIslegal(symbol)) {
+                return false;
+              }
+            }
+          }
+        } else {
+          emptyLine++;
+        }
+      }
+      if (emptyLine === productions.length) {
+        // 空行的个数等于产生式的个数
+        this.$message("请输入产生式");
+        return false;
+      }
+      return true;
     },
     charToSign(val) {
       for (let i of this.terminals) {
