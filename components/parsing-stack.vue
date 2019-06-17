@@ -1,15 +1,36 @@
 <template>
   <div class="analysis">
     <div class="left">
+      <div class="user-input">
       <userInput
         :grammar="grammar"
         @getInput="getData"
       ></userInput>
-      <el-input
-        type="textarea"
-        :rows="12"
-        placeholder="预测分析表"
-      ></el-input>
+      </div>
+
+      <div class="PPT">
+      <el-table :data="tableData" style="width: 100%">
+        <el-table-column label="Non Terminal" width="100%">
+          <template slot-scope="scope">
+            <span>{{scope.row.nonterminal}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="Input Symbol"
+        width="100%">
+          <el-table-column
+            v-for="(terminal,index) in tableTerminals"
+            :key="index"
+            :label="terminal"
+            width="100%"
+          >
+            <template slot-scope="scope" style="width: 100%">
+              <span>{{scope.row[terminal]}}</span>
+            </template>
+          </el-table-column>
+        </el-table-column>
+      </el-table>
+      </div>
+
       <div style="position: relative; bottom: 10px;left: 10px;">
         <template v-if="started === false">
           <el-button
@@ -97,7 +118,7 @@ export default {
       active: 0,
       parsingStack,
       stack: parsingStack,
-      PPT: "",
+      PPT: new PredictiveParsingTable(),
       PPTData: "",
       strToken: "",
       tempInput: [],
@@ -239,6 +260,31 @@ export default {
     }
   },
   computed: {
+    tableTerminals() {
+      const { nonterminals, terminals, table } = this.PPT.getTableData();
+      return terminals.filter(e => !e.isEmpty()).map(e => e.getString());
+    },
+    tableData() {
+      const { nonterminals, terminals, table } = this.PPT.getTableData();
+      let ret = [];
+      let i = 0;
+      for (let nonterminal of nonterminals) {
+        let tmp = {
+          nonterminal: nonterminal.getString()
+        };
+        for (let j in table[i]) {
+          let terminal = terminals[j];
+          if (table[i][j] === null) {
+            tmp[terminal.getString()] = "";
+          } else {
+            tmp[terminal.getString()] = table[i][j].getString();
+          }
+        }
+        ret.push(tmp);
+        i++;
+      }
+      return ret;
+    },
     strTokenData() {
       let result = "";
       for (let i of this.strToken) {
@@ -255,10 +301,13 @@ export default {
 <style lang="scss" scoped>
 .analysis {
   display: flex;
-  width: 70%;
+  width: 90%;
   margin: 30px auto;
   .left {
     width: 30%;
+    .PPT{
+      width: 100%;
+    }
     * {
       margin-bottom: 30px;
     }

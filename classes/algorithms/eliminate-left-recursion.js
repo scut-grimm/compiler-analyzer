@@ -1,3 +1,5 @@
+/* eslint-disable no-lone-blocks */
+/* eslint-env es6*/
 import assert from 'assert'
 import Grammar from '../grammar'
 import Production from '../production'
@@ -62,68 +64,110 @@ class EliminateLeftRecursion {
     this.solutionSpace.push(frame) // 解空间初始化
     this.derivationStack.push(frame.productions[frame.index]) // 推导栈初始化
     this.scanIndirectLeftRecursion(this.solutionSpace, this.derivationStack)
-
-    this.eliminatingEmptyGrammar = this.eliminatingEmptyProduction(this.grammar)
     {
-      console.log('消除ε产生式后的文法')
-      const tempGrammar = this.eliminatingEmptyGrammar
-      console.log('Start symbol: ' + tempGrammar.getStartSign().getString())
-      console.log('Productions')
-      tempGrammar.productions.forEach(e => {
-        console.log(e.getHeadString() + '->' + e.getBodyString())
-      })
-      let Nonterminals = ''
-      tempGrammar.getNonterminals().forEach(e => {
-        Nonterminals += e.getString() + ' '
-      })
-      console.log('Nonterminals: ' + Nonterminals)
-      let Terminals = ''
-      tempGrammar.getTerminals().forEach(e => {
-        Terminals += e.getString() + ' '
-      })
-      console.log('Terminals: ' + Terminals)
+      console.log('Indirect left recursion')
+      for (const i of this.indirectRecursion) {
+        let tempString = ''
+        for (const j of i) {
+          tempString += j.getString() + ', '
+        }
+        tempString = tempString.slice(0, -2)
+        console.log(tempString)
+      }
+      console.log('Immedation left recursion')
+      for (const i of this.immedationRecursion) {
+        console.log(i.getString())
+      }
     }
+    // 先检查当前文法有没有间接左递归
+    if (this.indirectRecursion.length !== 0) { // 当前文法有间接左递归
+      this.eliminatingEmptyGrammar = this.eliminatingEmptyProduction(this.grammar)
+      {
+        console.log('消除ε产生式后的文法')
+        const tempGrammar = this.eliminatingEmptyGrammar
+        console.log('Start symbol: ' + tempGrammar.getStartSign().getString())
+        console.log('Productions')
+        tempGrammar.productions.forEach(e => {
+          console.log(e.getHeadString() + '->' + e.getBodyString())
+        })
+        let Nonterminals = ''
+        tempGrammar.getNonterminals().forEach(e => {
+          Nonterminals += e.getString() + ' '
+        })
+        console.log('Nonterminals: ' + Nonterminals)
+        let Terminals = ''
+        tempGrammar.getTerminals().forEach(e => {
+          Terminals += e.getString() + ' '
+        })
+        console.log('Terminals: ' + Terminals)
+      }
 
-    this.eliminatingCyclesGrammar = this.eliminatingCycles(this.eliminatingEmptyGrammar)
-    {
-      console.log('消除环后的文法')
-      const tempGrammar = this.eliminatingCyclesGrammar
-      console.log('Start symbol: ' + tempGrammar.getStartSign().getString())
-      console.log('Productions')
-      tempGrammar.productions.forEach(e => {
-        console.log(e.getHeadString() + '->' + e.getBodyString())
-      })
-      let Nonterminals = ''
-      tempGrammar.getNonterminals().forEach(e => {
-        Nonterminals += e.getString() + ' '
-      })
-      console.log('Nonterminals: ' + Nonterminals)
-      let Terminals = ''
-      tempGrammar.getTerminals().forEach(e => {
-        Terminals += e.getString() + ' '
-      })
-      console.log('Terminals: ' + Terminals)
-    }
+      this.eliminatingCyclesGrammar = this.eliminatingCycles(this.eliminatingEmptyGrammar)
+      {
+        console.log('消除环后的文法')
+        const tempGrammar = this.eliminatingCyclesGrammar
+        console.log('Start symbol: ' + tempGrammar.getStartSign().getString())
+        console.log('Productions')
+        tempGrammar.productions.forEach(e => {
+          console.log(e.getHeadString() + '->' + e.getBodyString())
+        })
+        let Nonterminals = ''
+        tempGrammar.getNonterminals().forEach(e => {
+          Nonterminals += e.getString() + ' '
+        })
+        console.log('Nonterminals: ' + Nonterminals)
+        let Terminals = ''
+        tempGrammar.getTerminals().forEach(e => {
+          Terminals += e.getString() + ' '
+        })
+        console.log('Terminals: ' + Terminals)
+      }
 
-    this.eliminateLeftRecursionGrammar = this.eliminatingLeftRecursion(this.eliminatingCyclesGrammar)
-    {
-      console.log('消除左递归后的文法')
-      const tempGrammar = this.eliminateLeftRecursionGrammar
-      console.log('Start symbol: ' + tempGrammar.getStartSign().getString())
-      console.log('Productions')
-      tempGrammar.productions.forEach(e => {
-        console.log(e.getHeadString() + '->' + e.getBodyString())
-      })
-      let Nonterminals = ''
-      tempGrammar.getNonterminals().forEach(e => {
-        Nonterminals += e.getString() + ' '
-      })
-      console.log('Nonterminals: ' + Nonterminals)
-      let Terminals = ''
-      tempGrammar.getTerminals().forEach(e => {
-        Terminals += e.getString() + ' '
-      })
-      console.log('Terminals: ' + Terminals)
+      this.eliminateLeftRecursionGrammar = this.eliminatingLeftRecursion(this.eliminatingCyclesGrammar)
+      {
+        console.log('消除左递归后的文法')
+        const tempGrammar = this.eliminateLeftRecursionGrammar
+        console.log('Start symbol: ' + tempGrammar.getStartSign().getString())
+        console.log('Productions')
+        tempGrammar.productions.forEach(e => {
+          console.log(e.getHeadString() + '->' + e.getBodyString())
+        })
+        let Nonterminals = ''
+        tempGrammar.getNonterminals().forEach(e => {
+          Nonterminals += e.getString() + ' '
+        })
+        console.log('Nonterminals: ' + Nonterminals)
+        let Terminals = ''
+        tempGrammar.getTerminals().forEach(e => {
+          Terminals += e.getString() + ' '
+        })
+        console.log('Terminals: ' + Terminals)
+      }
+    } else { // 当前文法没有间接左递归，则检测当前文法有没有直接左递归
+      if (this.immedationRecursion.length !== 0) { // 当前文法有直接左递归
+        this.eliminateLeftRecursionGrammar = this.eliminatingImmedationRecursion(this.grammar)
+        {
+          console.log('消除左递归后的文法')
+          const tempGrammar = this.eliminateLeftRecursionGrammar
+          console.log('Start symbol: ' + tempGrammar.getStartSign().getString())
+          console.log('Productions')
+          tempGrammar.productions.forEach(e => {
+            console.log(e.getHeadString() + '->' + e.getBodyString())
+          })
+          let Nonterminals = ''
+          tempGrammar.getNonterminals().forEach(e => {
+            Nonterminals += e.getString() + ' '
+          })
+          console.log('Nonterminals: ' + Nonterminals)
+          let Terminals = ''
+          tempGrammar.getTerminals().forEach(e => {
+            Terminals += e.getString() + ' '
+          })
+          console.log('Terminals: ' + Terminals)
+        }
+      } else { // 当前文法没有直接左递归
+        this.eliminateLeftRecursionGrammar = this.grammar
+      }
     }
   }
   // 扫描立即左递归
@@ -339,6 +383,9 @@ class EliminateLeftRecursion {
           break
         }
         emptyDerivationNum++
+      }
+      if (nonemptyProductionIndex < 0) { // 说明推导链前面的产生式全是ε产生式，这一定不是左递归
+        return false
       }
       const nonemptyProduction = data[nonemptyProductionIndex]
       if (emptyDerivationNum === nonemptyProduction.getBody().length) { // ε推导的个数等于非空产生式体的长度，说明这不是左递归
@@ -601,101 +648,182 @@ class EliminateLeftRecursion {
     }
     return ECG
   }
-  // 消除左递归
+  // 消除左递归（包括间接左递归和立即左递归）
   // 输入：无 ε 产生式并且无环的文法
   // 输出：一个等价的无左递归文法
   eliminatingLeftRecursion(grammar) {
     const EFRGrammar = new Grammar()
-    EFRGrammar.setStartSign(EFRGrammar.getSign(grammar.getStartSign()))
-    const nonterminals = grammar.getNonterminals()
-    for (let i = 0; i < nonterminals.length; i++) {
-      const iProductions = grammar.getDerivations(nonterminals[i])
-      const newProductions = []
-      if (i === 0) {
-        for (const production of iProductions) {
-          newProductions.push(production)
-        }
-      } else {
-        for (let j = 0; j < i; j++) {
+    // 消除左递归之前先判断有没有左递归
+    if (this.immedationRecursion.length === 0 && this.indirectRecursion.length === 0) {
+      EFRGrammar.setStartSign(EFRGrammar.getSign(grammar.getStartSign()))
+      for (const production of grammar.getProductions()) {
+        const head = EFRGrammar.getSign(production.getHead())
+        const body = production.getBody().map(e => EFRGrammar.getSign(e))
+        EFRGrammar.addProduction(head, body)
+      }
+    } else {
+      EFRGrammar.setStartSign(EFRGrammar.getSign(grammar.getStartSign()))
+      const nonterminals = grammar.getNonterminals()
+      for (let i = 0; i < nonterminals.length; i++) {
+        const iProductions = grammar.getDerivations(nonterminals[i])
+        const newProductions = []
+        if (i === 0) {
+          for (const production of iProductions) {
+            newProductions.push(production)
+          }
+        } else {
           for (const iProduction of iProductions) {
-            if (iProduction.getBody()[0] === nonterminals[j]) {
-              const head = nonterminals[i]
-              const jProductions = grammar.getDerivations(nonterminals[j])
-              for (const jProduction of jProductions) {
-                const newBody = []
-                for (const symbol of jProduction.getBody()) {
-                  newBody.push(symbol)
+            let change = false // 记录当前产生式是否被改变了
+            for (let j = 0; j < i; j++) {
+              if (iProduction.getBody()[0] === nonterminals[j]) {
+                change = true
+                const head = nonterminals[i]
+                const jProductions = grammar.getDerivations(nonterminals[j])
+                for (const jProduction of jProductions) {
+                  const newBody = []
+                  for (const symbol of jProduction.getBody()) {
+                    newBody.push(symbol)
+                  }
+                  for (let k = 1; k < iProduction.getBody().length; k++) {
+                    newBody.push(iProduction.getBody()[k])
+                  }
+                  const newProduction = new Production(head, newBody)
+                  newProductions.push(newProduction)
                 }
-                for (let k = 1; k < iProduction.getBody().length; k++) {
-                  newBody.push(iProduction.getBody()[k])
-                }
-                const newProduction = new Production(head, newBody)
-                newProductions.push(newProduction)
+                break
               }
-            } else {
+            }
+            if (!change) {
               newProductions.push(iProduction)
             }
           }
         }
-      }
-      // 消除 newProductions 中的立即左递归
-      // newProductions 中的产生式的 head 都是 nonterminals[i]
-      const immedationRecursion = this.scanImmedationLeftRecursion(newProductions)
-      if (immedationRecursion.length > 0) { // 如果 newProductions 中有左递归
-        if (newProductions.length === immedationRecursion.length) { // 产生式都是左递归的，则应该添加产生式 A->A'
-          const head = EFRGrammar.getSign(nonterminals[i].getString())
-          const body = [EFRGrammar.getSign(nonterminals[i].getString() + '\'', 'Nonterminal')]
-          const tempProduction = new Production(head, body)
-          if (!this.existTheProduction(EFRGrammar, tempProduction) && body.length > 0) {
-            EFRGrammar.addProduction(head, body)
-          }
-        }
-        for (const production of newProductions) {
-          if (immedationRecursion.includes(production)) {
-            const head = EFRGrammar.getSign(nonterminals[i].getString() + '\'', 'Nonterminal')
-            const body = []
-            for (let i = 1; i < production.getBody().length; i++) {
-              body.push(EFRGrammar.getSign(production.getBody()[i]))
-            }
-            body.push(EFRGrammar.getSign(nonterminals[i].getString() + '\'', 'Nonterminal'))
+        // 消除 newProductions 中的立即左递归
+        // newProductions 中的产生式的 head 都是 nonterminals[i]
+        const immedationRecursion = this.scanImmedationLeftRecursion(newProductions)
+        if (immedationRecursion.length > 0) { // 如果 newProductions 中有左递归
+          if (newProductions.length === immedationRecursion.length) { // 产生式都是左递归的，则应该添加产生式 A->A'
+            const head = EFRGrammar.getSign(nonterminals[i].getString())
+            const body = [EFRGrammar.getSign(nonterminals[i].getString() + '\'', 'Nonterminal')]
             const tempProduction = new Production(head, body)
             if (!this.existTheProduction(EFRGrammar, tempProduction) && body.length > 0) {
               EFRGrammar.addProduction(head, body)
             }
-          } else {
+          }
+          for (const production of newProductions) {
+            if (immedationRecursion.includes(production)) {
+              const head = EFRGrammar.getSign(nonterminals[i].getString() + '\'', 'Nonterminal')
+              const body = []
+              for (let i = 1; i < production.getBody().length; i++) {
+                body.push(EFRGrammar.getSign(production.getBody()[i]))
+              }
+              body.push(EFRGrammar.getSign(nonterminals[i].getString() + '\'', 'Nonterminal'))
+              const tempProduction = new Production(head, body)
+              if (!this.existTheProduction(EFRGrammar, tempProduction) && body.length > 0) {
+                EFRGrammar.addProduction(head, body)
+              }
+            } else {
+              const head = EFRGrammar.getSign(production.getHead())
+              const body = []
+              for (const symbol of production.getBody()) {
+                body.push(EFRGrammar.getSign(symbol))
+              }
+              body.push(EFRGrammar.getSign(nonterminals[i].getString() + '\'', 'Nonterminal'))
+              const tempProduction = new Production(head, body)
+              if (!this.existTheProduction(EFRGrammar, tempProduction) && body.length > 0) {
+                EFRGrammar.addProduction(head, body)
+              }
+            }
+          }
+          const head = EFRGrammar.getSign(nonterminals[i].getString() + '\'', 'Nonterminal')
+          const body = [EFRGrammar.getEmptySign()]
+          const tempProduction = new Production(head, body)
+          if (!this.existTheProduction(EFRGrammar, tempProduction) && body.length > 0) {
+            EFRGrammar.addProduction(head, body)
+          }
+        } else {
+          for (const production of newProductions) {
             const head = EFRGrammar.getSign(production.getHead())
             const body = []
             for (const symbol of production.getBody()) {
               body.push(EFRGrammar.getSign(symbol))
             }
-            body.push(EFRGrammar.getSign(nonterminals[i].getString() + '\'', 'Nonterminal'))
             const tempProduction = new Production(head, body)
             if (!this.existTheProduction(EFRGrammar, tempProduction) && body.length > 0) {
               EFRGrammar.addProduction(head, body)
             }
           }
         }
-        const head = EFRGrammar.getSign(nonterminals[i].getString() + '\'', 'Nonterminal')
-        const body = [EFRGrammar.getEmptySign()]
-        const tempProduction = new Production(head, body)
-        if (!this.existTheProduction(EFRGrammar, tempProduction) && body.length > 0) {
-          EFRGrammar.addProduction(head, body)
-        }
-      } else {
-        for (const production of newProductions) {
-          const head = EFRGrammar.getSign(production.getHead())
-          const body = []
-          for (const symbol of production.getBody()) {
-            body.push(EFRGrammar.getSign(symbol))
+      }
+    }
+    return EFRGrammar
+  }
+  // 消除立即左递归
+  // 输入：一个有立即左递归，无间接左递归的文法
+  // 输出：一个等价的无左递归的文法
+  eliminatingImmedationRecursion(grammar) {
+    const newG = new Grammar()
+    newG.setStartSign(newG.getSign(grammar.getStartSign()))
+    for (const nonterminal of grammar.getNonterminals()) {
+      const productions = grammar.getDerivations(nonterminal)
+      if (productions.length !== 0) {
+        const immedationRecursion = this.scanImmedationLeftRecursion(productions)
+        if (immedationRecursion.length > 0) {
+          if (immedationRecursion.length === productions.length) {
+            const head = newG.getSign(nonterminal)
+            const body = [newG.getSign(nonterminal.getString() + "\'", 'Nonterminal')]
+            const tempProduction = new Production(head, body)
+            if (!this.existTheProduction(newG, tempProduction) && body.length > 0) {
+              newG.addProduction(head, body)
+            }
           }
+          for (const production of productions) {
+            if (immedationRecursion.includes(production)) {
+              const head = newG.getSign(nonterminal.getString() + '\'', 'Nonterminal')
+              const body = []
+              for (let i = 1; i < production.getBody().length; i++) {
+                body.push(newG.getSign(production.getBody()[i]))
+              }
+              body.push(newG.getSign(nonterminal.getString() + '\'', 'Nonterminal'))
+              const tempProduction = new Production(head, body)
+              if (!this.existTheProduction(newG, tempProduction) && body.length > 0) {
+                newG.addProduction(head, body)
+              }
+            } else {
+              const head = newG.getSign(production.getHead())
+              const body = []
+              for (const symbol of production.getBody()) {
+                body.push(newG.getSign(symbol))
+              }
+              body.push(newG.getSign(nonterminal.getString() + '\'', 'Nonterminal'))
+              const tempProduction = new Production(head, body)
+              if (!this.existTheProduction(newG, tempProduction) && body.length > 0) {
+                newG.addProduction(head, body)
+              }
+            }
+          }
+          const head = newG.getSign(nonterminal.getString() + '\'', 'Nonterminal')
+          const body = [newG.getEmptySign()]
           const tempProduction = new Production(head, body)
-          if (!this.existTheProduction(EFRGrammar, tempProduction) && body.length > 0) {
-            EFRGrammar.addProduction(head, body)
+          if (!this.existTheProduction(newG, tempProduction) && body.length > 0) {
+            newG.addProduction(head, body)
+          }
+        } else {
+          for (const production of productions) {
+            const head = newG.getSign(production.getHead())
+            const body = []
+            for (const symbol of production.getBody()) {
+              body.push(newG.getSign(symbol))
+            }
+            const tempProduction = new Production(head, body)
+            if (!this.existTheProduction(newG, tempProduction) && body.length > 0) {
+              newG.addProduction(head, body)
+            }
           }
         }
       }
     }
-    return EFRGrammar
+    return newG
   }
 }
 export default function(grammar) {

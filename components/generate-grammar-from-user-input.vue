@@ -194,7 +194,7 @@ export default {
     };
     return {
       terminals: ["(", ")", "+", "-", "*", "a", "b", "c", "id"],
-      nonterminals: ["A", "B", "C", "D", "E", "F", "E'"],
+      nonterminals: ["A", "B", "C", "D", "E", "F", "T"],
       symbol: "",
       formalProductions: Array.of(),
       tip: "",
@@ -263,7 +263,7 @@ export default {
       }
       let productions = Array.of();
       productions = this.ruleForm.CFG.split(/\n/);
-      console.log(productions);
+      // console.log(productions);
       if (this.productionsIsLegal(productions)) {
         const formalPros = [];
         for (const production of productions) {
@@ -285,7 +285,7 @@ export default {
           }
         }
         this.formalProductions = formalPros;
-        console.log(this.formalProductions);
+        // console.log(this.formalProductions);
         this.generateGrammar();
       } else {
         this.$message("产生式中存在问题，请修改产生式");
