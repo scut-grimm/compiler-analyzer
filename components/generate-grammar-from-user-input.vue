@@ -203,8 +203,8 @@ export default {
       }
     };
     return {
-      terminals: ["(", ")", "+", "-", "*", "a", "b", "c"],
-      nonterminals: ["A", "B", "C", "D", "E"],
+      terminals: ["(", ")", "+", "-", "*", "a", "b", "c","id"],
+      nonterminals: ["A", "B", "C", "D", "E","F","T"],
       symbol: "",
       formalProductions: Array.of(),
       tip: "",
