@@ -120,7 +120,7 @@ export default {
       stack: parsingStack,
       PPT: new PredictiveParsingTable(),
       PPTData: "",
-      strToken: "",
+      strToken: [],
       tempInput: [],
       inputData: "",
       Production: "",
@@ -160,7 +160,6 @@ export default {
     sync() {
       let Result = this.wrapper.getCurResult();
       this.stack = Result.stack;
-      this.strToken = Result.strToken;
       this.isAllDone = this.wrapper.isAllDone();
       if (this.isAllDone && this.autoTimer !== null) {
         clearTimeout(this.autoTimer);
@@ -168,7 +167,6 @@ export default {
       }
 
       if (this.isAllDone) {
-        this.pushTable()
         if (this.strToken.length > 1) {
           this.$message("无法继续匹配");
           return;
@@ -183,10 +181,11 @@ export default {
 
     },
     next() {
-      let {Production, notice} = this.wrapper.next();
+      let {Production, notice, token} = this.wrapper.next();
       // this.pre_notice = this.notice
       this.notice = notice;
       this.Production = Production;
+      this.strToken = token
       this.sync();
     },
     startAutoPlay() {
