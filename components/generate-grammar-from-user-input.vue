@@ -1,9 +1,9 @@
 <template>
   <div class="userinput">
-    <div class="right">
-      <el-table :data="tableData" class="table">
-        <el-table-column label="终止符号" class="terminal">
-          <el-table-column class="terminalColumn">
+    <div class="left">
+      <el-table :data="tableData" class="table" border :header-cell-style="combineHeadCells">
+        <el-table-column label="终止符号" class="terminal" align="center">
+          <el-table-column class="terminalColumn" label="hide" align="center">
             <template slot-scope="scope">
               <el-button
                 type="text"
@@ -12,7 +12,7 @@
               >{{scope.row.terminal0}}</el-button>
             </template>
           </el-table-column>
-          <el-table-column class="terminalColumn">
+          <el-table-column class="terminalColumn" label="hide" align="center">
             <template slot-scope="scope">
               <el-button
                 type="text"
@@ -21,7 +21,7 @@
               >{{scope.row.terminal1}}</el-button>
             </template>
           </el-table-column>
-          <el-table-column class="terminalColumn">
+          <el-table-column class="terminalColumn" label="hide" align="center">
             <template slot-scope="scope">
               <el-button
                 type="text"
@@ -30,7 +30,7 @@
               >{{scope.row.terminal2}}</el-button>
             </template>
           </el-table-column>
-          <el-table-column class="terminalColumn">
+          <el-table-column class="terminalColumn" label="hide" align="center">
             <template slot-scope="scope">
               <el-button
                 type="text"
@@ -39,7 +39,7 @@
               >{{scope.row.terminal3}}</el-button>
             </template>
           </el-table-column>
-          <el-table-column class="terminalColumn">
+          <el-table-column class="terminalColumn" label="hide" align="center">
             <template slot-scope="scope">
               <el-button
                 type="text"
@@ -49,8 +49,8 @@
             </template>
           </el-table-column>
         </el-table-column>
-        <el-table-column label="非终止符号" class="nonterminal">
-          <el-table-column class="nonterminalColumn">
+        <el-table-column label="非终止符号" class="nonterminal" align="center">
+          <el-table-column class="nonterminalColumn" label="hide" align="center">
             <template slot-scope="scope">
               <el-button
                 type="text"
@@ -59,7 +59,7 @@
               >{{scope.row.nonterminal0}}</el-button>
             </template>
           </el-table-column>
-          <el-table-column class="nonterminalColumn">
+          <el-table-column class="nonterminalColumn" label="hide" align="center">
             <template slot-scope="scope">
               <el-button
                 type="text"
@@ -68,7 +68,7 @@
               >{{scope.row.nonterminal1}}</el-button>
             </template>
           </el-table-column>
-          <el-table-column class="nonterminalColumn">
+          <el-table-column class="nonterminalColumn" label="hide" align="center">
             <template slot-scope="scope">
               <el-button
                 type="text"
@@ -77,7 +77,7 @@
               >{{scope.row.nonterminal2}}</el-button>
             </template>
           </el-table-column>
-          <el-table-column class="nonterminalColumn">
+          <el-table-column class="nonterminalColumn" label="hide" align="center">
             <template slot-scope="scope">
               <el-button
                 type="text"
@@ -86,7 +86,7 @@
               >{{scope.row.nonterminal3}}</el-button>
             </template>
           </el-table-column>
-          <el-table-column class="nonterminalColumn">
+          <el-table-column class="nonterminalColumn" label="hide" align="center">
             <template slot-scope="scope">
               <el-button
                 type="text"
@@ -103,8 +103,14 @@
         <el-button round size="medium" @click="addNonterminal">添加非终止符号</el-button>
       </el-row>
     </div>
-    <div class="left">
-      <el-form ref="ruleForm" :rules="rulesCFG" :model="ruleForm" label-width="0px">
+    <div class="right">
+      <el-form
+        ref="ruleForm"
+        :rules="rulesCFG"
+        :model="ruleForm"
+        label-width="0px"
+        class="production"
+      >
         <el-form-item prop="CFG">
           <el-input
             placeholder="请输入文法规则: 例子： A -> a b c 将产生式中的符号用空格隔开"
@@ -117,22 +123,6 @@
       </el-form>
       <el-button round size="medium" @click="getProductions">完成</el-button>
     </div>
-    <!-- <div class="left">
-      <smithTag></smithTag>
-    </div>-->
-    <!-- <div class="left">
-      <el-autocomplete
-        v-model="tip"
-        :fetch-suggestions="querySearch"
-        placeholder="请输入产生式"
-        :trigger-on-focus="false"
-        @select="handleSelect"
-      >
-        <template slot-scope="{item}">
-          <span>{{item.symbol}}</span>
-        </template>
-      </el-autocomplete>
-    </div>-->
   </div>
 </template>
 <script>
@@ -203,8 +193,8 @@ export default {
       }
     };
     return {
-      terminals: ["(", ")", "+", "-", "*", "a", "b", "c"],
-      nonterminals: ["A", "B", "C", "D", "E"],
+      terminals: ["(", ")", "+", "-", "*", "a", "b", "c", "id"],
+      nonterminals: ["A", "B", "C", "D", "E", "F", "E'"],
       symbol: "",
       formalProductions: Array.of(),
       tip: "",
@@ -220,6 +210,11 @@ export default {
     };
   },
   methods: {
+    combineHeadCells({ row, column, rowIndex, columnIndex }) {
+      if (rowIndex === 1) {
+        return { display: "none" };
+      }
+    },
     addTerminal() {
       if (!this.newSymbolLegal(this.symbol)) {
         return;
@@ -242,7 +237,7 @@ export default {
         this.$message("请输入非空符号");
         return false;
       }
-      const illegalSymbol = /(-|>|\||\$)+/;
+      const illegalSymbol = /(-|>|\||\$|ε)+/;
       if (illegalSymbol.test(symbol)) {
         this.$message(`符号 ${symbol} 不可定义为文法符号`);
         return false;
@@ -486,9 +481,13 @@ export default {
 <style lang="scss" scoped>
 .userinput {
   display: flex;
+  flex-direction: row;
   position: relative;
+  align-items: flex-start;
+  justify-content: space-between;
   //top: 165px;
-  .right {
+  .left {
+    flex: 0 0 auto;
     .table {
       width: 100%;
       .terminal {
@@ -509,7 +508,8 @@ export default {
       max-width: 20%;
     }
   }
-  .left {
+  .right {
+    flex: 1 0 auto;
     .production {
       width: 100%;
     }
