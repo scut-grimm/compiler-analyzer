@@ -642,9 +642,11 @@ class EliminateLeftRecursion {
             newProductions.push(production)
           }
         } else {
-          for (let j = 0; j < i; j++) {
-            for (const iProduction of iProductions) {
+          for (const iProduction of iProductions) {
+            let change = false // 记录当前产生式是否被改变了
+            for (let j = 0; j < i; j++) {
               if (iProduction.getBody()[0] === nonterminals[j]) {
+                change = true
                 const head = nonterminals[i]
                 const jProductions = grammar.getDerivations(nonterminals[j])
                 for (const jProduction of jProductions) {
@@ -658,9 +660,11 @@ class EliminateLeftRecursion {
                   const newProduction = new Production(head, newBody)
                   newProductions.push(newProduction)
                 }
-              } else {
-                newProductions.push(iProduction)
+                break
               }
+            }
+            if (!change) {
+              newProductions.push(iProduction)
             }
           }
         }
