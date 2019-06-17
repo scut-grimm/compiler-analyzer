@@ -1,12 +1,5 @@
 <template>
   <div class="first-set">
-    <div class="algorithm-notice">
-      <div class="left"></div>
-      <div class="right">
-        <p class="title">提示</p>
-        <p class="notice">啦啦啦啦</p>
-      </div>
-    </div>
     <div class="algorithm-show">
       <div class="left">
         <GrammarIndicator
