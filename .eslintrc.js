@@ -188,6 +188,7 @@ module.exports = {
       objectsInObjects: false
     }],
     'array-bracket-spacing': [2, 'never'],
-    'no-constant-condition': ["error", { "checkLoops": false }]
+    'no-constant-condition': ["error", { "checkLoops": false }],
+    "parserOptions": { "sourceType": "module" }
   }
 };

@@ -21,22 +21,13 @@
       </div>
     </div>
     <div class="second" v-show="second">
-      <!-- <div class="tipes">
-        <h3>形如A->ε的产生式称为ε产生式</h3>
-      </div>-->
       <HighlightProduction :productions="EEGProductions" title="消除ε产生式"></HighlightProduction>
     </div>
     <div class="thrid" v-show="thrid">
-      <!-- <div class="tipes">
-        <h3>形如A(=>)*A的推导称为环</h3>
-      </div>-->
       <HighlightProduction :productions="ECGProductions" title="消除环"></HighlightProduction>
     </div>
     <div class="fourth" v-show="fourth">
-      <!-- <div class="tipes">
-        <h3>在消除ε产生式和环的基础上消除左递归</h3>
-      </div>-->
-      <HighlightProduction :productions="ELRGProductions" title="消除左递归"></HighlightProduction>
+      <HighlightProduction :productions="ELRGProductions" :title="titleMessage"></HighlightProduction>
     </div>
   </div>
 </template>
@@ -64,128 +55,70 @@ export default {
       EEGProductions: null,
       ECGProductions: null,
       ELRGProductions: null,
-      buttonMessage: "消除ε产生式",
+      buttonMessage: "完成",
       //buttonMessage: "完成",
-      second: true,
-      thrid: true,
-      fourth: true
+      second: false,
+      thrid: false,
+      fourth: true,
+      titleMessage: ""
     };
   },
   methods: {
     changeButton() {
-      if (this.buttonMessage === "消除ε产生式") {
-        this.buttonMessage = "消除环";
-        this.second = true;
+      if (this.buttonMessage === "完成") {
+        this.$eventbus.$emit("FinishEliminateLeftRecursion");
         return;
-      }
-      if (this.buttonMessage === "消除环") {
-        this.buttonMessage = "消除左递归";
-        this.thrid = true;
-        return;
-      }
-      if (this.buttonMessage === "消除左递归") {
-        this.buttonMessage = "完成";
-        this.fourth = true;
-        return;
-      }
-      if(this.buttonMessage === '完成'){
-        this.$eventbus.$emit('FinishEliminateLeftRecursion')
-        return
       }
     },
-    setGrammar(grammar){
-    this.grammar = grammar;
-    this.ELR = new ELR(this.grammar);
+    setGrammar(grammar) {
+      this.grammar = grammar;
+      this.ELR = new ELR(this.grammar);
 
-    this.immedationRecursionProductions = this.ELR.immedationRecursion;
-    this.grammarProductions = this.grammar.getProductions();
-    this.EEGProductions = this.ELR.eliminatingEmptyGrammar.getProductions();
-    this.ECGProductions = this.ELR.eliminatingCyclesGrammar.getProductions();
-    this.ELRGProductions = this.ELR.eliminateLeftRecursionGrammar.getProductions();
-    const disjointSet = new DisjointSet();
-    for (const item of this.ELR.indirectRecursion) {
-      const tempProduction0 = new Production(
-        item[0].getHead(),
-        item[0].getBody()
-      );
-      this.indirectRecursionProductions.push(tempProduction0);
-      disjointSet.add(tempProduction0);
-      for (let i = 1; i < item.length; i++) {
-        const tempProduction = new Production(
-          item[i].getHead(),
-          item[i].getBody()
+      this.immedationRecursionProductions = this.ELR.immedationRecursion;
+      this.grammarProductions = this.grammar.getProductions();
+      this.EEGProductions = this.ELR.eliminatingEmptyGrammar.getProductions();
+      this.ECGProductions = this.ELR.eliminatingCyclesGrammar.getProductions();
+      this.ELRGProductions = this.ELR.eliminateLeftRecursionGrammar.getProductions();
+      const disjointSet = new DisjointSet();
+      for (const item of this.ELR.indirectRecursion) {
+        const tempProduction0 = new Production(
+          item[0].getHead(),
+          item[0].getBody()
         );
-        this.indirectRecursionProductions.push(tempProduction);
-        disjointSet.disjoint(tempProduction0, tempProduction);
+        this.indirectRecursionProductions.push(tempProduction0);
+        disjointSet.add(tempProduction0);
+        for (let i = 1; i < item.length; i++) {
+          const tempProduction = new Production(
+            item[i].getHead(),
+            item[i].getBody()
+          );
+          this.indirectRecursionProductions.push(tempProduction);
+          disjointSet.disjoint(tempProduction0, tempProduction);
+        }
+      }
+      this.indirectRecursionDisjointSet = disjointSet;
+      if (this.immedationRecursionProductions.length > 0) {
+        this.hasImmedationRecursionProduction = true;
+      }
+      if (this.indirectRecursionProductions.length > 0) {
+        // 当前文法含有间接左递归
+        this.hasIndirectRecursionProduction = true;
+      }
+      if (this.hasIndirectRecursionProduction) {
+        this.second = true;
+        this.thrid = true;
+        this.titleMessage = "消除左递归";
+      } else if (this.hasImmedationRecursionProduction) {
+        this.second = false;
+        this.thrid = false;
+        this.titleMessage = "消除立即左递归";
+      } else {
+        this.second = false;
+        this.thrid = false;
+        this.titleMessage = "当前文法无左递归";
       }
     }
-    this.indirectRecursionDisjointSet = disjointSet;
-    if (this.immedationRecursionProductions.length > 0) {
-      this.hasImmedationRecursionProduction = true;
-    }
-    if (this.indirectRecursionProductions.length > 0) {
-      this.hasIndirectRecursionProduction = true;
-    }
   },
-  },
-  // computed: {
-  //   ELR() {
-  //     return new ELR(this.grammar);
-  //   },
-  //   immedationRecursionProductions() {
-  //     if (this.ELR.immedationRecursion.length !== 0) {
-  //       this.hasImmedationRecursionProduction = true;
-  //     }
-  //     return this.ELR.immedationRecursion;
-  //   },
-  //   indirectRecursionProductions() {
-  //     const disjointSet = new DisjointSet();
-  //     const indirectRecursionProductions = [];
-  //     for (const item of this.ELR.indirectRecursion) {
-  //       const tempProduction0 = new Production(
-  //         item[0].getHead(),
-  //         item[0].getBody()
-  //       );
-  //       indirectRecursionProductions.push(tempProduction0);
-  //       disjointSet.add(tempProduction0);
-  //       for (let i = 1; i < item.length; i++) {
-  //         const tempProduction = new Production(
-  //           item[i].getHead(),
-  //           item[i].getBody()
-  //         );
-  //         indirectRecursionProductions.push(tempProduction);
-  //         disjointSet.disjoint(tempProduction0, tempProduction);
-  //       }
-  //     }
-  //     this.indirectRecursionDisjointSet = disjointSet;
-  //     if (indirectRecursionProductions.length !== 0) {
-  //       this.hasIndirectRecursionProduction = true;
-  //     }
-  //     return indirectRecursionProductions;
-  //   },
-  //   indirectRecursionDisjointSet: {
-  //     disjointSet: "",
-  //     set: function(val) {
-  //       disjointSet = val;
-  //     },
-  //     get: function() {
-  //       return disjointSet;
-  //     }
-  //   },
-  //   grammarProductions() {
-  //     return this.grammar.getProductions();
-  //   },
-  //   EEGProductions() {
-  //     this.ELR.eliminatingEmptyGrammar.getProductions();
-  //   },
-  //   ECGProductions() {
-  //     this.ELR.eliminatingCyclesGrammar.getProductions();
-  //   },
-  //   ELRGProductions() {
-  //     this.ELR.eliminateLeftRecursionGrammar.getProductions();
-  //   }
-  // },
-
   _test() {
     let grammar = new Grammar();
     const E = grammar.getSign("E", "Nonterminal");
@@ -264,10 +197,10 @@ export default {
     if (this.indirectRecursionProductions.length > 0) {
       this.hasIndirectRecursionProduction = true;
     }
-    this.changeButton()
-    this.changeButton()
-    this.changeButton()
-    this.changeButton()
+    this.changeButton();
+    this.changeButton();
+    this.changeButton();
+    this.changeButton();
   }
 };
 </script>
