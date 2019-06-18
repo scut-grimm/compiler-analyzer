@@ -1,133 +1,179 @@
 <template>
-  <div class="userinput">
-    <div class="left">
-      <el-table :data="tableData" class="table" border :header-cell-style="combineHeadCells">
-        <el-table-column label="终止符号" class="terminal" align="center">
-          <el-table-column class="terminalColumn" label="hide" align="center">
+  <div class="inputAndGrammar">
+    <div class="userinput">
+      <div class="left">
+        <el-table :data="tableData" class="table" border :header-cell-style="combineHeadCells">
+          <el-table-column label="终止符号" class="terminal" align="center">
+            <el-table-column class="terminalColumn" label="hide" align="center">
+              <template slot-scope="scope">
+                <el-button
+                  type="danger"
+                  size="small"
+                  style="font-size:20px"
+                  v-if="scope.row.terminal0"
+                  @click="delectSymbol(scope.row.terminal0)"
+                >{{scope.row.terminal0}}</el-button>
+              </template>
+            </el-table-column>
+            <el-table-column class="terminalColumn" label="hide" align="center">
+              <template slot-scope="scope">
+                <el-button
+                  type="danger"
+                  size="small"
+                  style="font-size:20px"
+                  v-if="scope.row.terminal1"
+                  @click="delectSymbol(scope.row.terminal1)"
+                >{{scope.row.terminal1}}</el-button>
+              </template>
+            </el-table-column>
+            <el-table-column class="terminalColumn" label="hide" align="center">
+              <template slot-scope="scope">
+                <el-button
+                  type="danger"
+                  size="small"
+                  style="font-size:20px"
+                  v-if="scope.row.terminal2"
+                  @click="delectSymbol(scope.row.terminal2)"
+                >{{scope.row.terminal2}}</el-button>
+              </template>
+            </el-table-column>
+            <el-table-column class="terminalColumn" label="hide" align="center">
+              <template slot-scope="scope">
+                <el-button
+                  type="danger"
+                  size="small"
+                  style="font-size:20px"
+                  v-if="scope.row.terminal3"
+                  @click="delectSymbol(scope.row.terminal3)"
+                >{{scope.row.terminal3}}</el-button>
+              </template>
+            </el-table-column>
+            <el-table-column class="terminalColumn" label="hide" align="center">
+              <template slot-scope="scope">
+                <el-button
+                  type="danger"
+                  size="small"
+                  style="font-size:20px"
+                  v-if="scope.row.terminal4"
+                  @click="delectSymbol(scope.row.terminal4)"
+                >{{scope.row.terminal4}}</el-button>
+              </template>
+            </el-table-column>
+          </el-table-column>
+          <el-table-column label="非终止符号" class="nonterminal" align="center">
+            <el-table-column class="nonterminalColumn" label="hide" align="center">
+              <template slot-scope="scope">
+                <el-button
+                  type="primary"
+                  v-if="scope.row.nonterminal0"
+                  size="small"
+                  style="font-size:20px"
+                  @click="delectSymbol(scope.row.nonterminal0)"
+                >{{scope.row.nonterminal0}}</el-button>
+              </template>
+            </el-table-column>
+            <el-table-column class="nonterminalColumn" label="hide" align="center">
+              <template slot-scope="scope">
+                <el-button
+                  type="primary"
+                  v-if="scope.row.nonterminal1"
+                  size="small"
+                  style="font-size:20px"
+                  @click="delectSymbol(scope.row.nonterminal1)"
+                >{{scope.row.nonterminal1}}</el-button>
+              </template>
+            </el-table-column>
+            <el-table-column class="nonterminalColumn" label="hide" align="center">
+              <template slot-scope="scope">
+                <el-button
+                  type="primary"
+                  v-if="scope.row.nonterminal2"
+                  size="small"
+                  style="font-size:20px"
+                  @click="delectSymbol(scope.row.nonterminal2)"
+                >{{scope.row.nonterminal2}}</el-button>
+              </template>
+            </el-table-column>
+            <el-table-column class="nonterminalColumn" label="hide" align="center">
+              <template slot-scope="scope">
+                <el-button
+                  type="primary"
+                  v-if="scope.row.nonterminal3"
+                  size="small"
+                  style="font-size:20px"
+                  @click="delectSymbol(scope.row.nonterminal3)"
+                >{{scope.row.nonterminal3}}</el-button>
+              </template>
+            </el-table-column>
+            <el-table-column class="nonterminalColumn" label="hide" align="center">
+              <template slot-scope="scope">
+                <el-button
+                  type="primary"
+                  v-if="scope.row.nonterminal4"
+                  size="small"
+                  style="font-size:20px"
+                  @click="delectSymbol(scope.row.nonterminal4)"
+                >{{scope.row.nonterminal4}}</el-button>
+              </template>
+            </el-table-column>
+          </el-table-column>
+        </el-table>
+        <el-row class="bottom">
+          <el-input placeholder="请输入自定义文法符号" v-model="symbol" clearable class="symbol"></el-input>
+          <el-button round size="medium" @click="addTerminal" class="addSymbolButton">添加终止符号</el-button>
+          <el-button round size="medium" @click="addNonterminal" class="addSymbolButton">添加非终止符号</el-button>
+        </el-row>
+      </div>
+      <div class="right">
+        <el-form
+          ref="ruleForm"
+          :rules="rulesCFG"
+          :model="ruleForm"
+          label-width="0px"
+          class="production"
+        >
+          <el-form-item prop="CFG">
+            <el-input
+              placeholder="请输入文法规则: 例子： A -> a b c 将产生式中的符号用空格隔开"
+              type="textarea"
+              v-model="ruleForm.CFG"
+              :autosize="{minRows:5}"
+              spellcheck="false"
+            ></el-input>
+          </el-form-item>
+        </el-form>
+        <el-button round size="medium" @click="generateGrammar">完成</el-button>
+        <el-button round size="medium" @click="showGrammar">查看当前文法</el-button>
+      </div>
+    </div>
+    <div class="currentGrammar" v-if="showCurrentGrammar">
+      <el-table
+        :data="currentGrammar"
+        class="grammarTable"
+        border
+        :span-method="grammarTableRowSpan"
+        :header-cell-style="combineHeadCells"
+      >
+        <el-table-column label="当前文法" align="center">
+          <el-table-column label="hide" align="center">
             <template slot-scope="scope">
-              <el-button
-                type="text"
-                size="small"
-                @click="delectSymbol(scope.row.terminal0)"
-              >{{scope.row.terminal0}}</el-button>
+              <el-tag style="font-size: 20px">{{scope.row.name}}</el-tag>
             </template>
           </el-table-column>
-          <el-table-column class="terminalColumn" label="hide" align="center">
+          <el-table-column label="hide" align="center">
             <template slot-scope="scope">
-              <el-button
-                type="text"
-                size="small"
-                @click="delectSymbol(scope.row.terminal1)"
-              >{{scope.row.terminal1}}</el-button>
-            </template>
-          </el-table-column>
-          <el-table-column class="terminalColumn" label="hide" align="center">
-            <template slot-scope="scope">
-              <el-button
-                type="text"
-                size="small"
-                @click="delectSymbol(scope.row.terminal2)"
-              >{{scope.row.terminal2}}</el-button>
-            </template>
-          </el-table-column>
-          <el-table-column class="terminalColumn" label="hide" align="center">
-            <template slot-scope="scope">
-              <el-button
-                type="text"
-                size="small"
-                @click="delectSymbol(scope.row.terminal3)"
-              >{{scope.row.terminal3}}</el-button>
-            </template>
-          </el-table-column>
-          <el-table-column class="terminalColumn" label="hide" align="center">
-            <template slot-scope="scope">
-              <el-button
-                type="text"
-                size="small"
-                @click="delectSymbol(scope.row.terminal4)"
-              >{{scope.row.terminal4}}</el-button>
-            </template>
-          </el-table-column>
-        </el-table-column>
-        <el-table-column label="非终止符号" class="nonterminal" align="center">
-          <el-table-column class="nonterminalColumn" label="hide" align="center">
-            <template slot-scope="scope">
-              <el-button
-                type="text"
-                size="small"
-                @click="delectSymbol(scope.row.nonterminal0)"
-              >{{scope.row.nonterminal0}}</el-button>
-            </template>
-          </el-table-column>
-          <el-table-column class="nonterminalColumn" label="hide" align="center">
-            <template slot-scope="scope">
-              <el-button
-                type="text"
-                size="small"
-                @click="delectSymbol(scope.row.nonterminal1)"
-              >{{scope.row.nonterminal1}}</el-button>
-            </template>
-          </el-table-column>
-          <el-table-column class="nonterminalColumn" label="hide" align="center">
-            <template slot-scope="scope">
-              <el-button
-                type="text"
-                size="small"
-                @click="delectSymbol(scope.row.nonterminal2)"
-              >{{scope.row.nonterminal2}}</el-button>
-            </template>
-          </el-table-column>
-          <el-table-column class="nonterminalColumn" label="hide" align="center">
-            <template slot-scope="scope">
-              <el-button
-                type="text"
-                size="small"
-                @click="delectSymbol(scope.row.nonterminal3)"
-              >{{scope.row.nonterminal3}}</el-button>
-            </template>
-          </el-table-column>
-          <el-table-column class="nonterminalColumn" label="hide" align="center">
-            <template slot-scope="scope">
-              <el-button
-                type="text"
-                size="small"
-                @click="delectSymbol(scope.row.nonterminal4)"
-              >{{scope.row.nonterminal4}}</el-button>
+              <el-tag style="font-size: 20px">{{scope.row.data}}</el-tag>
             </template>
           </el-table-column>
         </el-table-column>
       </el-table>
-      <el-row>
-        <el-input placeholder="请输入自定义文法符号" v-model="symbol" clearable class="symbol"></el-input>
-        <el-button round size="medium" @click="addTerminal">添加终止符号</el-button>
-        <el-button round size="medium" @click="addNonterminal">添加非终止符号</el-button>
-      </el-row>
-    </div>
-    <div class="right">
-      <el-form
-        ref="ruleForm"
-        :rules="rulesCFG"
-        :model="ruleForm"
-        label-width="0px"
-        class="production"
-      >
-        <el-form-item prop="CFG">
-          <el-input
-            placeholder="请输入文法规则: 例子： A -> a b c 将产生式中的符号用空格隔开"
-            type="textarea"
-            v-model="ruleForm.CFG"
-            autosize
-            spellcheck="false"
-          ></el-input>
-        </el-form-item>
-      </el-form>
-      <el-button round size="medium" @click="getProductions">完成</el-button>
     </div>
   </div>
 </template>
 <script>
 import GGFUI from "~/classes/algorithms/generate-grammar-from-user-input";
 import smithTag from "~/components/smith-tag";
+import Grammar from "~/classes/grammar";
 export default {
   components: {
     smithTag
@@ -194,9 +240,11 @@ export default {
     };
     return {
       terminals: ["(", ")", "+", "-", "*", "a", "b", "c", "id"],
-      nonterminals: ["A", "B", "C", "D", "E", "F", "T"],
+      nonterminals: ["A", "B", "C", "D", "E", "F", "T", "E'", "T'", "F'"],
       symbol: "",
       formalProductions: Array.of(),
+      grammar: new Grammar(),
+      showCurrentGrammar: false,
       tip: "",
       rulesCFG: {
         CFG: [
@@ -210,6 +258,45 @@ export default {
     };
   },
   methods: {
+    showGrammar() {
+      if (this.getProductions()) {
+        this.grammar = new GGFUI(this.formalProductions);
+        this.showCurrentGrammar = true;
+      }
+    },
+    grammarTableRowSpan({ row, column, rowIndex, columnIndex }) {
+      if (columnIndex === 0) {
+        if (rowIndex === 0) {
+          return {
+            rowspan: 1,
+            colspan: 1
+          };
+        }
+        if (rowIndex === 1) {
+          return {
+            rowspan: 1,
+            colspan: 1
+          };
+        }
+        if (rowIndex === 2) {
+          return {
+            rowspan: 1,
+            colspan: 1
+          };
+        }
+        if (rowIndex === 3) {
+          return {
+            rowspan: this.grammar.getProductions().length,
+            colspan: 1
+          };
+        } else {
+          return {
+            rowspan: 0,
+            colspan: 0
+          };
+        }
+      }
+    },
     combineHeadCells({ row, column, rowIndex, columnIndex }) {
       if (rowIndex === 1) {
         return { display: "none" };
@@ -259,7 +346,7 @@ export default {
     getProductions() {
       if (this.ruleForm.CFG.length === 0) {
         this.$message("请输入产生式");
-        return;
+        return false;
       }
       let productions = Array.of();
       productions = this.ruleForm.CFG.split(/\n/);
@@ -285,10 +372,11 @@ export default {
           }
         }
         this.formalProductions = formalPros;
+        return true;
         // console.log(this.formalProductions);
-        this.generateGrammar();
       } else {
         this.$message("产生式中存在问题，请修改产生式");
+        return false;
       }
     },
     productionsIsLegal(productions) {
@@ -379,28 +467,29 @@ export default {
       this.nonterminals = this.nonterminals.filter(e => e !== val);
     },
     generateGrammar() {
-      let grammar = new GGFUI(this.formalProductions);
-      {
-        console.log("Start symbol: " + grammar.getStartSign().getString());
-        console.log("Productions");
-        grammar.productions.forEach(e => {
-          console.log(e.getHeadString() + "->" + e.getBodyString());
-        });
-        let nonterminals2 = "";
-        grammar.getNonterminals().forEach(e => {
-          nonterminals2 += e.getString() + " ";
-        });
-        console.log("Nonterminals: " + nonterminals2);
-        let terminals2 = "";
-        grammar.getTerminals().forEach(e => {
-          terminals2 += e.getString() + " ";
-        });
-        console.log("Terminals: " + terminals2);
-      }
-
-      let result = this.grammarIsLegal(grammar);
-      if (result) {
-        this.$eventbus.$emit("FinishInputGrammar", grammar);
+      if (this.getProductions()) {
+        let grammar = new GGFUI(this.formalProductions);
+        {
+          console.log("Start symbol: " + grammar.getStartSign().getString());
+          console.log("Productions");
+          grammar.productions.forEach(e => {
+            console.log(e.getHeadString() + "->" + e.getBodyString());
+          });
+          let nonterminals2 = "";
+          grammar.getNonterminals().forEach(e => {
+            nonterminals2 += e.getString() + " ";
+          });
+          console.log("Nonterminals: " + nonterminals2);
+          let terminals2 = "";
+          grammar.getTerminals().forEach(e => {
+            terminals2 += e.getString() + " ";
+          });
+          console.log("Terminals: " + terminals2);
+        }
+        let result = this.grammarIsLegal(grammar);
+        if (result) {
+          this.$eventbus.$emit("FinishInputGrammar", grammar);
+        }
       }
     },
     grammarIsLegal(grammar) {
@@ -448,6 +537,49 @@ export default {
     }
   },
   computed: {
+    currentGrammar() {
+      let rows = Array.of();
+      if (this.grammar.getProductions().length !== 0) {
+        let row0 = {
+          name: "开始符号",
+          data: this.grammar.getStartSign().getString()
+        };
+        rows.push(row0);
+        let row1 = {
+          name: "非终止符号",
+          data: ""
+        };
+        let nonterminals = this.grammar.getNonterminals();
+        if (nonterminals.length !== 0) {
+          for (const nonterminal of nonterminals) {
+            row1.data += nonterminal.getString() + ", ";
+          }
+          row1.data = row1.data.slice(0, -2);
+        }
+        rows.push(row1);
+        let row2 = {
+          name: "终止符号",
+          data: ""
+        };
+        let terminals = this.grammar.getTerminals();
+        if (terminals.length !== 0) {
+          for (const terminal of terminals) {
+            row2.data += terminal.getString() + ", ";
+          }
+          row2.data = row2.data.slice(0, -2);
+        }
+        rows.push(row2);
+        for (const production of this.grammar.getProductions()) {
+          let rowP = {
+            name: "产生式",
+            data: production.getString()
+          };
+          rows.push(rowP);
+        }
+      }
+      console.log(rows);
+      return rows;
+    },
     tableData() {
       let terminals = [...this.terminals];
       let nonterminals = [...this.nonterminals];
@@ -479,39 +611,55 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-.userinput {
+.inputAndGrammar {
   display: flex;
-  flex-direction: row;
-  position: relative;
-  align-items: flex-start;
-  justify-content: space-between;
-  //top: 165px;
-  .left {
-    flex: 0 0 auto;
-    .table {
-      width: 100%;
-      .terminal {
-        text-align: center;
-        .terminalColumn {
-          width: 5%;
+  flex-direction: column;
+  .userinput {
+    display: flex;
+    flex-direction: row;
+    position: relative;
+    align-items: flex-start;
+    justify-content: space-around;
+    .left {
+      flex: 0 0 auto;
+      margin-top: 20px;
+      .table {
+        width: 100%;
+        .terminal {
+          width: 50%;
+          .terminalColumn {
+            width: 5%;
+          }
+        }
+        .nonterminal {
+          width: 50%;
+          .nonterminalColumn {
+            width: 5%;
+          }
         }
       }
-      .nonterminal {
-        text-align: center;
-        .nonterminalColumn {
-          width: 5%;
+      .bottom {
+        margin-top: 10px;
+        .symbol {
+          width: 30%;
+        }
+        .addSymbolButton {
+          width: 20%;
         }
       }
     }
-    .symbol {
-      width: 20%;
-      max-width: 20%;
+    .right {
+      margin-top: 20px;
+      width: 40%;
+      margin-left: 40px;
+      .production {
+        width: 80%;
+      }
     }
   }
-  .right {
-    flex: 1 0 auto;
-    .production {
-      width: 100%;
+  .currentGrammar {
+    width: 100%;
+    .grammarTable {
     }
   }
 }
