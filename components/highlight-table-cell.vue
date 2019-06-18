@@ -7,6 +7,7 @@
       :type="item.type"
       effect="dark"
       size="medium"
+      class="tag"
     >{{item.label}}</el-tag>
   </div>
 </template>
@@ -46,5 +47,8 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+.tag {
+  font-size: 20px;
+}
 </style>
 

@@ -12,21 +12,21 @@
       <p class="up">当前步骤详细描述</p>
       <p class="notice">{{notice}}</p>
       <template v-if="dependSymbolIndex!==null">
-        <p class="down">{{dependSymbolFirstSet}}</p>
+        <el-button class="down">{{dependSymbolFirstSet}}</el-button>
       </template>
     </div>
     <div class="right">
       <el-table :data="tableData" style="width: 100%">
-        <el-table-column label="文法符号" width="150">
+        <el-table-column label="文法符号" style="font-size:20px">
           <template slot-scope="scope">
-            <span>{{scope.row.symbol}}</span>
+            <span style="font-size:20px">{{scope.row.symbol}}</span>
           </template>
         </el-table-column>
         <el-table-column
           v-for="(pass,index) in tableColumnIndex"
           :key="index"
           :label="pass.toString()"
-          width="120"
+          style="font-size:20px"
         >
           <template slot-scope="scope">
             <HighlightTableCell
@@ -303,17 +303,17 @@ export default {
     height: 100%;
     .up {
       font-size: 30px;
-      height: 30%;
+      height: 10%;
     }
     .notice {
-      margin-top: 10px;
-      font-size: 20px;
-      margin-bottom: 10px;
-      height: 30%;
+      margin-top: 20px;
+      font-size: 25px;
+      margin-bottom: 20px;
+      height: 80%;
     }
     .down {
       font-size: 30px;
-      height: 30%;
+      height: 10%;
     }
   }
   .right {
