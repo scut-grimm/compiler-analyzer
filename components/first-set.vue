@@ -9,7 +9,7 @@
       ></GrammarIndicator>
     </div>
     <div class="center">
-      <p class="up">当前步骤详细描述</p>
+      <p class="up">当前步骤</p>
       <p class="notice">{{notice}}</p>
       <template v-if="dependSymbolIndex!==null">
         <el-button class="down">{{dependSymbolFirstSet}}</el-button>
