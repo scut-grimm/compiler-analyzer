@@ -3,7 +3,7 @@
     <div class="first">
       <div class="left">
         <HighlightProduction :productions="grammarProductions" title="当前文法"></HighlightProduction>
-        <el-button @click="changeButton" class="button">{{buttonMessage}}</el-button>
+        <!-- <el-button @click="changeButton" class="button">{{buttonMessage}}</el-button> -->
       </div>
       <div class="right">
         <div class="top">

@@ -20,10 +20,10 @@
         title="提取左因子后的文法"
       ></HightlightProduction>
     </div>
-    <el-button
+    <!-- <el-button
       type="primary"
       @click="finish"
-    >完成</el-button>
+    >完成</el-button> -->
 
   </div>
 </template>
