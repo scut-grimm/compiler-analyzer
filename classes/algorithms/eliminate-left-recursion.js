@@ -171,10 +171,12 @@ class EliminateLeftRecursion {
     }
   }
   // 扫描立即左递归
+  // 形如 E->Eα 的产生式称为立即左递归
+  // 其中 E 是非终止符号，α 是由终止符号与非终止符号组成的串且 α 不为空串
   scanImmedationLeftRecursion(productions) {
     const immedationRecursion = []
     for (let i = 0; i < productions.length; i++) {
-      if (productions[i].getHead() === productions[i].getBody()[0]) {
+      if (productions[i].getHead() === productions[i].getBody()[0] && productions[i].getBody().length > 1) {
         immedationRecursion.push(productions[i])
       }
     }
@@ -406,7 +408,7 @@ class EliminateLeftRecursion {
         return false
       }
     } else { // 目标符号是非终止符号
-      for (let i = data.length - 2; i >= 0; i--) {
+      for (let i = data.length - 1; i >= 0; i--) {
         const tempSymbol = data[i].getHead()
         if (tempSymbol === aim) {
           const temp = Array.of() // 该数组记录了间接左递归涉及到的产生式

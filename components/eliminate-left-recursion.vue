@@ -14,7 +14,7 @@
           <HighlightProduction
             :disjointSet="indirectRecursionDisjointSet"
             :productions="indirectRecursionProductions"
-            title="当前文法中的间接左递归"
+            title="当前文法中的间接左递归和环"
           ></HighlightProduction>
           <h3 v-if="!hasIndirectRecursionProduction">无</h3>
         </div>
