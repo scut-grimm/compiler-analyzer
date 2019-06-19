@@ -1,25 +1,14 @@
 <template>
   <div class="isLL1">
-    <div
-      v-for="production in productions"
-      :key="production.production"
-    >
-      <el-popover
-        placement="right"
-        width="200"
-        trigger="click"
-      >
+    <div v-for="production in productions" :key="production.production">
+      <el-popover placement="right" width="200" trigger="click">
         <el-table :data="production.notice">
-          <el-table-column
-            width="150"
-            property="notice"
-            lable="notice"
-          ></el-table-column>
+          <el-table-column width="150" property="notice" lable="notice"></el-table-column>
         </el-table>
         <el-button
           slot="reference"
           type="text"
-          :class="{errorProduction:production.error}"
+          :class="{errorProduction:production.error,grammar}"
         >{{production.production}}</el-button>
       </el-popover>
     </div>
@@ -40,13 +29,10 @@ export default {
       productions: []
     };
   },
-  computed: {
-  },
-  created() {
-
-  },
+  computed: {},
+  created() {},
   methods: {
-    run(){
+    run() {
       let judge = new IsLL1(this.grammar);
       for (let i of judge.productions) {
         let temp = Array.of();
@@ -59,22 +45,37 @@ export default {
       this.productions = judge.productions;
     },
     setGrammar(grammar) {
-      this.grammar = grammar
-      this.run()
+      this.grammar = grammar;
+      this.run();
     },
-    finish(){
-      this.$eventbus.$emit('FinishIsLL1')
+    finish() {
+      this.$eventbus.$emit("FinishIsLL1");
     }
   }
 };
 </script>
-<style>
-.errorProduction {
-  color: red;
-}
+<style lang="scss" scoped>
 .isLL1 {
+  display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
+  .errorProduction {
+    color: red;
+  }
+  .grammar {
+    border-radius: 5px;
+    font-size: 24px;
+    padding: 5px 10px;
+    margin: 2px;
+    &:hover {
+      background-color: rgb(178, 212, 247);
+      cursor: pointer;
+    }
+    &.active {
+      background-color: rgb(102, 174, 247);
+    }
+  }
 }
 </style>
 

@@ -31,11 +31,13 @@ class GenerateParsingStack {
     const p = strToken[cur_index]
     let M = PPT.get(X, p)
 
+    console.log(strToken)
     // 返回初始值
     if (!this.started) {
       yield {
         Production: '',
-        notice: ``
+        notice: ``,
+        token:strToken
       }
       this.started = true
     }
@@ -50,15 +52,17 @@ class GenerateParsingStack {
       } else if (M.getBody().length === 1 && M.getBody()[0] === empty) {
         stack.pop()
         yield {
-          Production: M.getString(),
-          notice: `输出${M.getHeadString()} -> ${M.getBodyString()}`
+          Production: this.getTokenString(cur_index),
+          notice: `输出${M.getHeadString()} -> ${M.getBodyString()}`,
+          token:strToken.slice(cur_index)
         }
       } else {
         stack.pop()
         stack.push(M.getBody())
         yield {
-          Production: M.getString(),
-          notice: `输出${M.getHeadString()} -> ${M.getBodyString()}`
+          Production: this.getTokenString(cur_index),
+          notice: `输出${M.getHeadString()} -> ${M.getBodyString()}`,
+          token:strToken.slice(cur_index)
         }
       }
       X = stack.peek()
@@ -69,11 +73,12 @@ class GenerateParsingStack {
       return [true, true]
     }
 
-    yield {
-      Production: null,
-      notice: `匹配${X.getString()}`
-    }
     stack.pop() // 匹配非终结符号
+    yield {
+      Production: this.getTokenString(cur_index+1),
+      notice: `匹配${X.getString()}`,
+      token:strToken.slice(cur_index+1)
+    }
 
     const nextContext = {
       cur_index: cur_index + 1,
@@ -99,6 +104,7 @@ class GenerateParsingStack {
     }
     return ret[1]
   }
+
   error() {
     console.log('发生错误')
     // 第二个参数表示失败
@@ -109,6 +115,13 @@ class GenerateParsingStack {
       'stack': stack,
       'strToken': this.strToken.slice(cur_index)
     }
+  }
+  getTokenString(n){
+    let result=""
+    for(let i=0;i<n;i++){
+      result+=this.strToken[i].getString()
+    }
+    return result
   }
 }
 

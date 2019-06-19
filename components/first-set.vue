@@ -1,59 +1,53 @@
 <template>
   <div class="first-set">
-    <div class="algorithm-notice">
-      <div class="left"></div>
-      <div class="right">
-        <p class="title">提示</p>
-        <p class="notice">啦啦啦啦</p>
-      </div>
+    <div class="left">
+      <GrammarIndicator
+        style="width: 200px;"
+        :grammar="grammar"
+        :active="activeProductionIndex"
+        @changeProduction="onChagneProduction"
+      ></GrammarIndicator>
     </div>
-    <div class="algorithm-show">
-      <div class="left">
-        <GrammarIndicator
-          style="width: 200px;"
-          :grammar="grammar"
-          :active="activeProductionIndex"
-          @changeProduction="onChagneProduction"
-        ></GrammarIndicator>
-      </div>
-      <div class="center">
-        <p class="up">当前步骤详细描述</p>
-        <span class="notice">{{notice}}</span>
-        <template v-if="dependSymbolIndex!==null">
-          <p class="down">{{dependSymbolFirstSet}}</p>
+    <div class="center">
+      <p class="up">当前步骤</p>
+      <p class="notice">{{notice}}</p>
+      <template v-if="dependSymbolIndex!==null">
+        <el-button class="down">{{dependSymbolFirstSet}}</el-button>
+      </template>
+    </div>
+    <div class="right">
+      <el-table :data="tableData" style="width: 100%">
+        <el-table-column label="文法符号" style="font-size:20px">
+          <template slot-scope="scope">
+            <span style="font-size:20px">{{scope.row.symbol}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          v-for="(pass,index) in tableColumnIndex"
+          :key="index"
+          :label="pass.toString()"
+          style="font-size:20px"
+        >
+          <template slot-scope="scope">
+            <HighlightTableCell
+              :string="getCell(scope.row,pass)"
+              :highlightSymbol="getHighlightSymbol(scope.row,pass)"
+            ></HighlightTableCell>
+          </template>
+        </el-table-column>
+      </el-table>
+      <div class="button">
+        <template v-if="started === false">
+          <el-button type="primary" @click="start">开始</el-button>
         </template>
-      </div>
-      <div class="right">
-        <el-table :data="tableData" style="width: 100%">
-          <el-table-column label="文法符号" width="150">
-            <template slot-scope="scope">
-              <span>{{scope.row.symbol}}</span>
-            </template>
-          </el-table-column>
-          <el-table-column
-            v-for="(pass,index) in tableColumnIndex"
-            :key="index"
-            :label="pass.toString()"
-            width="120"
-          >
-            <template slot-scope="scope">
-              <span>{{scope.row[pass]}}</span>
-            </template>
-          </el-table-column>
-        </el-table>
-        <div class="button">
-          <template v-if="started === false">
-            <el-button type="primary" @click="start">开始</el-button>
-          </template>
-          <template v-if="started === true && allDone === false">
-            <el-button type="success" @click="next">下一步</el-button>
-            <el-button type="warning" @click="skip">跳过</el-button>
-            <el-button type="info" @click="startAutorun" v-if="autoTimer === null">自动播放</el-button>
-            <el-button type="danger" @click="stopAutorun" v-if="autoTimer !== null">停止播放</el-button>
-          </template>
-          <el-button @click="start" v-if="started" type="primary">重新开始</el-button>
-          <el-button type="primary" @click="finish">完成</el-button>
-        </div>
+        <template v-if="started === true && allDone === false">
+          <el-button type="success" @click="next">下一步</el-button>
+          <el-button type="warning" @click="skip">跳过</el-button>
+          <el-button type="info" @click="startAutorun" v-if="autoTimer === null">自动播放</el-button>
+          <el-button type="danger" @click="stopAutorun" v-if="autoTimer !== null">停止播放</el-button>
+        </template>
+        <el-button @click="start" v-if="started" type="primary">重新开始</el-button>
+        <el-button type="primary" @click="finish">完成</el-button>
       </div>
     </div>
   </div>
@@ -64,9 +58,11 @@ import FirstSet from "~/classes/algorithms/generate-first-set";
 import Grammar from "~/classes/grammar";
 import AlgorithmWrapper from "~/classes/algorithm-wrapper";
 import MapSet from "~/classes/map-set";
+import HighlightTableCell from "~/components/highlight-table-cell";
 export default {
   components: {
-    GrammarIndicator
+    GrammarIndicator,
+    HighlightTableCell
   },
   data() {
     return {
@@ -77,7 +73,7 @@ export default {
       allFirstSet: null, //一个三维数组，存储了所有文法符号的和对应的first集合
       dependSymbolIndex: null, //当前正在计算first集合的文法符号所依赖的文法符号在allFirstSet中的下标
       isTerminal: null, //当前正在计算first集合的文法符号是否为终止符号
-      newlyIncreasedSymbol: null, //当前正在计算first集合的文法符号的first集合中新增的文法符号
+      newlyIncreasedSymbol: "", //当前正在计算first集合的文法符号的first集合中新增的文法符号
       notice: "", //对当前计算步骤的描述
       production: null, //计算当前文法符号的first集合所依赖的产生式
       productionIndex: null, //计算当前文法符号的first集合所依赖的产生式在grammar.productions中的下标
@@ -92,7 +88,7 @@ export default {
       autoTimer: null,
       autoTime: 1000,
       firstSet: null,
-      oldTurn: 1
+      currentTurn: 1
     };
   },
   computed: {
@@ -126,7 +122,7 @@ export default {
           firstSet += e.getString() + "  ";
         });
         firstSet = firstSet.slice(0, -2);
-        if (this.newTurn !== this.oldTurn) {
+        if (this.newTurn !== this.currentTurn) {
           // 如果轮次更新了，就先把上一轮的结果复制到本轮
           for (let i = 0; i < this.oldTableData.length; i++) {
             if (i !== this.firstSetSymbolIndex) {
@@ -137,7 +133,7 @@ export default {
               ); //Vue教程的深入响应式原理有详解
             }
           }
-          this.oldTurn = this.newTurn;
+          this.currentTurn = this.newTurn;
         }
         for (let i = 0; i < this.oldTableData.length; i++) {
           if (i === this.firstSetSymbolIndex) {
@@ -161,6 +157,22 @@ export default {
     }
   },
   methods: {
+    getHighlightSymbol(row, pass) {
+      if (
+        pass === this.currentTurn &&
+        row["symbol"] === this.firstSetSymbol.getString()
+      ) {
+        return this.newlyIncreasedSymbol;
+      } else {
+        return "";
+      }
+    },
+    getCell(row, pass) {
+      if (row[pass] === undefined) {
+        return "";
+      }
+      return row[pass];
+    },
     initTableData() {
       let initData = Array.of();
       for (let i of this.allFirstSet) {
@@ -188,7 +200,12 @@ export default {
         this.allFirstSet = this.wrapperReturn.allFirstSet;
         this.dependSymbolIndex = this.wrapperReturn.dependSymbolIndex;
         this.isTerminal = this.wrapperReturn.isTerminal;
-        this.newlyIncreasedSymbol = this.wrapperReturn.newlyIncreasedSymbol;
+        if (this.wrapperReturn.newlyIncreasedSymbol !== null) {
+          this.newlyIncreasedSymbol = this.wrapperReturn.newlyIncreasedSymbol.getString();
+        } else {
+          this.newlyIncreasedSymbol = "";
+        }
+
         this.notice = this.wrapperReturn.notice;
         this.production = this.wrapperReturn.production;
         this.firstSetSymbolIndex = this.wrapperReturn.symbolIndex;
@@ -274,48 +291,36 @@ export default {
 </script>
 <style lang="scss" scoped>
 .first-set {
-  .algorithm-notice {
-    display: flex;
-    .left {
-      width: 50%;
-      max-width: 50%;
+  display: flex;
+  justify-content: space-around;
+  margin-top: 30px;
+  height: 500px;
+  .left {
+    width: 10%;
+  }
+  .center {
+    width: 20%;
+    height: 100%;
+    .up {
+      font-size: 30px;
+      height: 10%;
     }
-    .right {
-      width: 50%;
-      max-width: 50%;
+    .notice {
+      margin-top: 20px;
+      font-size: 25px;
+      margin-bottom: 20px;
+      height: 80%;
+    }
+    .down {
+      font-size: 30px;
+      height: 10%;
     }
   }
-  .notice {
-    font-size: 20px;
-    padding: 5px;
-  }
-  .title {
-    font-size: 30px;
-  }
-  .algorithm-show {
-    display: flex;
-    margin-top: 30px;
-    height: 500px;
-    .left {
-      width: 20%;
-    }
-    .center {
-      width: 20%;
-      height: 100%;
-      .up {
-        font-size: 30px;
-        height: 50%;
-      }
-      .down {
-        font-size: 30px;
-        height: 50%;
-      }
-    }
-    .right {
-      width: 60%;
-      position: relative;
-      .button {
-      }
+  .right {
+    width: 50%;
+    position: relative;
+    .button {
+      margin-top: 10px;
     }
   }
 }
