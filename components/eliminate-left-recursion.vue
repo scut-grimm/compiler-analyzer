@@ -64,8 +64,8 @@ export default {
       EEGProductions: null,
       ECGProductions: null,
       ELRGProductions: null,
-      buttonMessage: "消除ε产生式",
-      //buttonMessage: "完成",
+      //buttonMessage: "消除ε产生式",
+      buttonMessage: "完成",
       second: true,
       thrid: true,
       fourth: true
