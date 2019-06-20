@@ -83,7 +83,7 @@
             <el-button type="danger" @click="stopAutoPlay" v-if="autoTimer !== null">停止播放</el-button>
           </template>
           <el-button @click="start" v-if="started" type="primary">重新开始</el-button>
-          <el-button type="primary" @click="finish">完成</el-button>
+          <!-- <el-button type="primary" @click="finish">完成</el-button> -->
         </div>
       </div>
     </div>

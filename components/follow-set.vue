@@ -98,7 +98,7 @@
             v-if="started"
             type="primary"
           >重新开始</el-button>
-          <el-button type="primary" @click="finish">完成</el-button>
+          <!-- <el-button type="primary" @click="finish">完成</el-button> -->
         </div>
       </div>
     </div>

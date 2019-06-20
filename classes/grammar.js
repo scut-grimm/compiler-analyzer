@@ -11,6 +11,8 @@ class Grammar {
     this.followSet = new MapSet()
     this.PPT = new PPT()
     this.startSign = null
+    this.getEmptySign()
+    this.getStackBottomSign()
   }
   clone(){
     let other = new Grammar()

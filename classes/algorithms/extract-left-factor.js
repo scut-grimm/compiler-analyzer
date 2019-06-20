@@ -101,6 +101,9 @@ class ExtractLeftFactor {
       let colorProduction = null
       for (const body of commonBodys) {
         const remain = body.slice(prefix.length)
+        if(remain.length === 0){
+          remain.push(newGrammar.getEmptySign())
+        }
         const newProduction = newGrammar.addProduction(middleSign, [...remain])
         // 染色
         for (const production of derivations) {

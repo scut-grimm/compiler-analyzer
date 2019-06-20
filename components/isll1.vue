@@ -14,7 +14,7 @@
     </div>
     <div v-if="isLL1===true">当前文法属于LL(1)文法</div>
     <div v-else>当前文法不属于LL(1)文法</div>
-    <el-button type="primary" @click="finish">完成</el-button>
+    <!-- <el-button type="primary" @click="finish">完成</el-button> -->
   </div>
 </template>
 <script>

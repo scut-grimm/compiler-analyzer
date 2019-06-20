@@ -1,7 +1,7 @@
 <template>
   <div>
     <grammar-input
-      v-if="curStep === 'GrammarInput'"
+      v-show="curStep === 'GrammarInput'"
       ref="GrammarInput"
     ></grammar-input>
     <EliminateLeftRecursion
