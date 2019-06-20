@@ -6,114 +6,284 @@
           <el-table-column label="终止符号" class="terminal" align="center">
             <el-table-column class="terminalColumn" label="hide" align="center">
               <template slot-scope="scope">
-                <el-button
+                <el-tag
+                  closable
                   type="danger"
-                  size="small"
-                  style="font-size:20px"
+                  effect="dark"
+                  size="medium"
+                  style="font-size:15px"
                   v-if="scope.row.terminal0"
-                  @click="delectSymbol(scope.row.terminal0)"
-                >{{scope.row.terminal0}}</el-button>
+                  @close="delectSymbol(scope.row.terminal0)"
+                >{{scope.row.terminal0}}</el-tag>
+                <el-input
+                  class="input-new-symbol"
+                  v-else-if="symbolInputVisible.terminal0"
+                  v-model="tagInputSymbol"
+                  ref="terminal0"
+                  size="medium"
+                  @keyup.enter.native="addTerminal('terminal0')"
+                  @blur="addTerminal('terminal0')"
+                ></el-input>
+                <el-button
+                  v-else
+                  class="button-new-tag"
+                  size="mini"
+                  @click="showInput('terminal0')"
+                >+New</el-button>
               </template>
             </el-table-column>
             <el-table-column class="terminalColumn" label="hide" align="center">
               <template slot-scope="scope">
-                <el-button
+                <el-tag
+                  closable
                   type="danger"
-                  size="small"
-                  style="font-size:20px"
+                  effect="dark"
+                  size="medium"
+                  style="font-size:15px"
                   v-if="scope.row.terminal1"
-                  @click="delectSymbol(scope.row.terminal1)"
-                >{{scope.row.terminal1}}</el-button>
+                  @close="delectSymbol(scope.row.terminal1)"
+                >{{scope.row.terminal1}}</el-tag>
+                <el-input
+                  class="input-new-symbol"
+                  v-else-if="symbolInputVisible.terminal1"
+                  v-model="tagInputSymbol"
+                  ref="terminal1"
+                  size="medium"
+                  @keyup.enter.native="addTerminal('terminal1')"
+                  @blur="addTerminal('terminal1')"
+                ></el-input>
+                <el-button
+                  v-else
+                  class="button-new-tag"
+                  size="mini"
+                  @click="showInput('terminal1')"
+                >+New</el-button>
               </template>
             </el-table-column>
             <el-table-column class="terminalColumn" label="hide" align="center">
               <template slot-scope="scope">
-                <el-button
+                <el-tag
+                  closable
                   type="danger"
-                  size="small"
-                  style="font-size:20px"
+                  effect="dark"
+                  size="medium"
+                  style="font-size:15px"
                   v-if="scope.row.terminal2"
-                  @click="delectSymbol(scope.row.terminal2)"
-                >{{scope.row.terminal2}}</el-button>
+                  @close="delectSymbol(scope.row.terminal2)"
+                >{{scope.row.terminal2}}</el-tag>
+                <el-input
+                  class="input-new-symbol"
+                  v-else-if="symbolInputVisible.terminal2"
+                  v-model="tagInputSymbol"
+                  ref="terminal2"
+                  size="medium"
+                  @keyup.enter.native="addTerminal('terminal2')"
+                  @blur="addTerminal('terminal2')"
+                ></el-input>
+                <el-button
+                  v-else
+                  class="button-new-tag"
+                  size="mini"
+                  @click="showInput('terminal2')"
+                >+New</el-button>
               </template>
             </el-table-column>
             <el-table-column class="terminalColumn" label="hide" align="center">
               <template slot-scope="scope">
-                <el-button
+                <el-tag
+                  closable
                   type="danger"
-                  size="small"
-                  style="font-size:20px"
+                  effect="dark"
+                  size="medium"
+                  style="font-size:15px"
                   v-if="scope.row.terminal3"
-                  @click="delectSymbol(scope.row.terminal3)"
-                >{{scope.row.terminal3}}</el-button>
+                  @close="delectSymbol(scope.row.terminal3)"
+                >{{scope.row.terminal3}}</el-tag>
+                <el-input
+                  class="input-new-symbol"
+                  v-else-if="symbolInputVisible.terminal3"
+                  v-model="tagInputSymbol"
+                  ref="terminal3"
+                  size="medium"
+                  @keyup.enter.native="addTerminal('terminal3')"
+                  @blur="addTerminal('terminal3')"
+                ></el-input>
+                <el-button
+                  v-else
+                  class="button-new-tag"
+                  size="mini"
+                  @click="showInput('terminal3')"
+                >+New</el-button>
               </template>
             </el-table-column>
             <el-table-column class="terminalColumn" label="hide" align="center">
               <template slot-scope="scope">
-                <el-button
+                <el-tag
+                  closable
                   type="danger"
-                  size="small"
-                  style="font-size:20px"
+                  effect="dark"
+                  size="medium"
+                  style="font-size:15px"
                   v-if="scope.row.terminal4"
-                  @click="delectSymbol(scope.row.terminal4)"
-                >{{scope.row.terminal4}}</el-button>
+                  @close="delectSymbol(scope.row.terminal4)"
+                >{{scope.row.terminal4}}</el-tag>
+                <el-input
+                  class="input-new-symbol"
+                  v-else-if="symbolInputVisible.terminal4"
+                  v-model="tagInputSymbol"
+                  ref="terminal4"
+                  size="medium"
+                  @keyup.enter.native="addTerminal('terminal4')"
+                  @blur="addTerminal('terminal4')"
+                ></el-input>
+                <el-button
+                  v-else
+                  class="button-new-tag"
+                  size="mini"
+                  @click="showInput('terminal4')"
+                >+New</el-button>
               </template>
             </el-table-column>
           </el-table-column>
           <el-table-column label="非终止符号" class="nonterminal" align="center">
             <el-table-column class="nonterminalColumn" label="hide" align="center">
               <template slot-scope="scope">
-                <el-button
-                  type="primary"
+                <el-tag
+                  closable
+                  type
+                  effect="dark"
+                  size="medium"
+                  style="font-size:15px"
                   v-if="scope.row.nonterminal0"
-                  size="small"
-                  style="font-size:20px"
-                  @click="delectSymbol(scope.row.nonterminal0)"
-                >{{scope.row.nonterminal0}}</el-button>
+                  @close="delectSymbol(scope.row.nonterminal0)"
+                >{{scope.row.nonterminal0}}</el-tag>
+                <el-input
+                  class="input-new-symbol"
+                  v-else-if="symbolInputVisible.nonterminal0"
+                  v-model="tagInputSymbol"
+                  ref="nonterminal0"
+                  size="medium"
+                  @keyup.enter.native="addNonterminal('nonterminal0')"
+                  @blur="addNonterminal('nonterminal0')"
+                ></el-input>
+                <el-button
+                  v-else
+                  class="button-new-tag"
+                  size="mini"
+                  @click="showInput('nonterminal0')"
+                >+New</el-button>
               </template>
             </el-table-column>
             <el-table-column class="nonterminalColumn" label="hide" align="center">
               <template slot-scope="scope">
-                <el-button
-                  type="primary"
+                <el-tag
+                  closable
+                  type
+                  effect="dark"
+                  size="medium"
+                  style="font-size:15px"
                   v-if="scope.row.nonterminal1"
-                  size="small"
-                  style="font-size:20px"
-                  @click="delectSymbol(scope.row.nonterminal1)"
-                >{{scope.row.nonterminal1}}</el-button>
+                  @close="delectSymbol(scope.row.nonterminal1)"
+                >{{scope.row.nonterminal1}}</el-tag>
+                <el-input
+                  class="input-new-symbol"
+                  v-else-if="symbolInputVisible.nonterminal1"
+                  v-model="tagInputSymbol"
+                  ref="nonterminal1"
+                  size="medium"
+                  @keyup.enter.native="addNonterminal('nonterminal1')"
+                  @blur="addNonterminal('nonterminal1')"
+                ></el-input>
+                <el-button
+                  v-else
+                  class="button-new-tag"
+                  size="mini"
+                  @click="showInput('nonterminal1')"
+                >+New</el-button>
               </template>
             </el-table-column>
             <el-table-column class="nonterminalColumn" label="hide" align="center">
               <template slot-scope="scope">
-                <el-button
-                  type="primary"
+                <el-tag
+                  closable
+                  type
+                  effect="dark"
+                  size="medium"
+                  style="font-size:15px"
                   v-if="scope.row.nonterminal2"
-                  size="small"
-                  style="font-size:20px"
-                  @click="delectSymbol(scope.row.nonterminal2)"
-                >{{scope.row.nonterminal2}}</el-button>
+                  @close="delectSymbol(scope.row.nonterminal2)"
+                >{{scope.row.nonterminal2}}</el-tag>
+                <el-input
+                  class="input-new-symbol"
+                  v-else-if="symbolInputVisible.nonterminal2"
+                  v-model="tagInputSymbol"
+                  ref="nonterminal2"
+                  size="medium"
+                  @keyup.enter.native="addNonterminal('nonterminal2')"
+                  @blur="addNonterminal('nonterminal2')"
+                ></el-input>
+                <el-button
+                  v-else
+                  class="button-new-tag"
+                  size="mini"
+                  @click="showInput('nonterminal2')"
+                >+New</el-button>
               </template>
             </el-table-column>
             <el-table-column class="nonterminalColumn" label="hide" align="center">
               <template slot-scope="scope">
-                <el-button
-                  type="primary"
+                <el-tag
+                  closable
+                  type
+                  effect="dark"
+                  size="medium"
+                  style="font-size:15px"
                   v-if="scope.row.nonterminal3"
-                  size="small"
-                  style="font-size:20px"
-                  @click="delectSymbol(scope.row.nonterminal3)"
-                >{{scope.row.nonterminal3}}</el-button>
+                  @close="delectSymbol(scope.row.nonterminal3)"
+                >{{scope.row.nonterminal3}}</el-tag>
+                <el-input
+                  class="input-new-symbol"
+                  v-else-if="symbolInputVisible.nonterminal3"
+                  v-model="tagInputSymbol"
+                  ref="nonterminal3"
+                  size="medium"
+                  @keyup.enter.native="addNonterminal('nonterminal3')"
+                  @blur="addNonterminal('nonterminal3')"
+                ></el-input>
+                <el-button
+                  v-else
+                  class="button-new-tag"
+                  size="mini"
+                  @click="showInput('nonterminal3')"
+                >+New</el-button>
               </template>
             </el-table-column>
             <el-table-column class="nonterminalColumn" label="hide" align="center">
               <template slot-scope="scope">
-                <el-button
-                  type="primary"
+                <el-tag
+                  closable
+                  type
+                  effect="dark"
+                  size="medium"
+                  style="font-size:15px"
                   v-if="scope.row.nonterminal4"
-                  size="small"
-                  style="font-size:20px"
-                  @click="delectSymbol(scope.row.nonterminal4)"
-                >{{scope.row.nonterminal4}}</el-button>
+                  @close="delectSymbol(scope.row.nonterminal4)"
+                >{{scope.row.nonterminal4}}</el-tag>
+                <el-input
+                  class="input-new-symbol"
+                  v-else-if="symbolInputVisible.nonterminal4"
+                  v-model="tagInputSymbol"
+                  ref="nonterminal4"
+                  size="medium"
+                  @keyup.enter.native="addNonterminal('nonterminal4')"
+                  @blur="addNonterminal('nonterminal4')"
+                ></el-input>
+                <el-button
+                  v-else
+                  class="button-new-tag"
+                  size="mini"
+                  @click="showInput('nonterminal4')"
+                >+New</el-button>
               </template>
             </el-table-column>
           </el-table-column>
@@ -242,6 +412,7 @@ export default {
       terminals: ["(", ")", "+", "-", "*", "a", "b", "c", "id"],
       nonterminals: ["A", "B", "C", "D", "E", "F", "T", "E'", "T'", "F'"],
       symbol: "",
+      tagInputSymbol: "",
       formalProductions: Array.of(),
       grammar: new Grammar(),
       showCurrentGrammar: false,
@@ -254,10 +425,28 @@ export default {
       },
       ruleForm: {
         CFG: ""
+      },
+      symbolInputVisible: {
+        terminal0: false,
+        terminal1: false,
+        terminal2: false,
+        terminal3: false,
+        terminal4: false,
+        nonterminal0: false,
+        nonterminal1: false,
+        nonterminal2: false,
+        nonterminal3: false,
+        nonterminal4: false
       }
     };
   },
   methods: {
+    showInput(val) {
+      this.symbolInputVisible[val] = true;
+      this.$nextTick(() => {
+        this.$refs[val].$refs.input.focus();
+      });
+    },
     showGrammar() {
       if (this.getProductions()) {
         this.grammar = new GGFUI(this.formalProductions);
@@ -302,26 +491,39 @@ export default {
         return { display: "none" };
       }
     },
-    addTerminal() {
-      if (!this.newSymbolLegal(this.symbol)) {
-        return;
+    addTerminal(val) {
+      if (this.newSymbolLegal(this.symbol)) {
+        this.terminals.push(this.symbol);
+        this.symbol = "";
+      } else if (this.newSymbolLegal(this.tagInputSymbol)) {
+        this.terminals.push(this.tagInputSymbol);
+        this.symbolInputVisible[val] = false;
+        this.tagInputSymbol = "";
+      } else {
+        this.symbolInputVisible[val] = false;
+        this.tagInputSymbol = "";
       }
-      this.terminals.push(this.symbol);
-      this.symbol = "";
+      return;
     },
-    addNonterminal() {
-      if (!this.newSymbolLegal(this.symbol)) {
-        return;
+    addNonterminal(val) {
+      if (this.newSymbolLegal(this.symbol)) {
+        this.nonterminals.push(this.symbol);
+        this.symbol = "";
+      } else if (this.newSymbolLegal(this.tagInputSymbol)) {
+        this.nonterminals.push(this.tagInputSymbol);
+        this.symbolInputVisible[val] = false;
+        this.tagInputSymbol = "";
+      } else {
+        this.symbolInputVisible[val] = false;
+        this.tagInputSymbol = "";
       }
-      this.nonterminals.push(this.symbol);
-      this.symbol = "";
+      return;
     },
     newSymbolLegal(newSymbol) {
       // 判断新添加的文法符号是否合法
       let symbol = newSymbol;
       symbol = symbol.replace(/\s+/g, ""); // 忽略符号中的空白字符
       if (symbol.length === 0) {
-        this.$message("请输入非空符号");
         return false;
       }
       const illegalSymbol = /(-|>|\||\$|ε)+/;
