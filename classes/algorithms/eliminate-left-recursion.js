@@ -40,7 +40,7 @@ class Stack {
 }
 class EliminateLeftRecursion {
   immedationRecursion = Array.of() // 记录立即左递归的产生式
-  indirectRecursion = Array.of() // 二维数组，记录间接左递归的产生式
+  indirectRecursion = Array.of() // 二维数组，记录间接左递归的产生式和环
   nollableNonterminal = Array.of()
   solutionSpace = new Stack()
   derivationStack = new Stack() // 推导栈，记录当前推导链上的产生式，压栈之前先检测栈中是否存在左递归
@@ -50,15 +50,16 @@ class EliminateLeftRecursion {
   constructor(grammar) {
     this.grammar = grammar
     this.immedationRecursion = this.scanImmedationLeftRecursion(this.grammar.getProductions())
-    const startProductions = this.grammar.getDerivations(this.grammar.getStartSign())
     const frame = {
       productions: Array.of(),
       index: 0,
       bodySymbolIndex: 0
     }
-    for (const i of startProductions) { // 只压入以开始符号为头部的产生式
-      if (!this.immedationRecursion.includes(i)) { // 检测产生式是否是立即左递归的
-        frame.productions.push(i)
+    for (const production of this.grammar.getProductions()) { // 初始化 frame 压入所有非立即左递归的产生式和非一步环
+      if (this.productionIsCycle(production)) {
+        this.indirectRecursion.push([production])
+      } else if (!this.productionIsImmedationLeftRecursion(production)) {
+        frame.productions.push(production)
       }
     }
     this.solutionSpace.push(frame) // 解空间初始化
@@ -176,39 +177,58 @@ class EliminateLeftRecursion {
   scanImmedationLeftRecursion(productions) {
     const immedationRecursion = []
     for (let i = 0; i < productions.length; i++) {
-      if (productions[i].getHead() === productions[i].getBody()[0] && productions[i].getBody().length > 1) {
+      if (this.productionIsImmedationLeftRecursion(productions[i])) {
         immedationRecursion.push(productions[i])
       }
     }
     return immedationRecursion
   }
+  // 检测一条产生式是不是立即左递归的
+  // 形如 E->Eα 的产生式称为立即左递归
+  // 其中 E 是非终止符号，α 是由终止符号与非终止符号组成的串且 α 不为空串
+  productionIsImmedationLeftRecursion(production) {
+    if (production.getHead() === production.getBody()[0] && production.getBody().length > 1) {
+      return true
+    } else {
+      return false
+    }
+  }
+  // 检测一条产生式是否是形如 A->A 的环
+  // A 是非终止符号
+  productionIsCycle(production) {
+    if (production.getHead() === production.getBody()[0] && production.getBody().length === 1) {
+      return true
+    } else {
+      return false
+    }
+  }
   // 扫描间接左递归
   // 递归实现的回溯法
   scanIndirectLeftRecursion(solutionSpace, derivationStack) {
-    // {
-    //   console.log('-----------------------------------')
-    //   const temp = solutionSpace.getData()
-    //   for (const i of temp) {
-    //     let tempString = ''
-    //     for (let j = 0; j < i.productions.length; j++) {
-    //       tempString += i.productions[j].getString() + ', '
-    //     }
-    //     console.log(tempString + i.index.toString() + ', ' + i.bodySymbolIndex.toString())
-    //   }
-    //   console.log('************************************')
-    //   const tempDer = derivationStack.getData()
-    //   let tempString = ''
-    //   for (const i of tempDer) {
-    //     if (i !== undefined) {
-    //       tempString += i.getString() + ', '
-    //     } else {
-    //       tempString += 'undefined, '
-    //     }
-    //   }
-    //   tempString = tempString.slice(0, -2)
-    //   console.log(tempString)
-    //   console.log('-----------------------------------')
-    // }
+    {
+      console.log('-----------------------------------')
+      const temp = solutionSpace.getData()
+      for (const i of temp) {
+        let tempString = ''
+        for (let j = 0; j < i.productions.length; j++) {
+          tempString += i.productions[j].getString() + ', '
+        }
+        console.log(tempString + i.index.toString() + ', ' + i.bodySymbolIndex.toString())
+      }
+      console.log('************************************')
+      const tempDer = derivationStack.getData()
+      let tempString = ''
+      for (const i of tempDer) {
+        if (i !== undefined) {
+          tempString += i.getString() + ', '
+        } else {
+          tempString += 'undefined, '
+        }
+      }
+      tempString = tempString.slice(0, -2)
+      console.log(tempString)
+      console.log('-----------------------------------')
+    }
     const bottom = solutionSpace.bottom()
     if (bottom.index === bottom.productions.length) { // 已经处理完解空间栈栈底产生式数组的最后一个产生式，算法结束
       return
@@ -259,12 +279,12 @@ class EliminateLeftRecursion {
               bodySymbolIndex: 0
             }
             const tempProductions = this.grammar.getDerivations(current)
-            for (let i = 0; i < tempProductions.length; i++) { // 把不是立即左递归的产生式放入 frame.productions 中
-              if (!this.immedationRecursion.includes(tempProductions[i])) { // 检测产生式是否是立即左递归的
+            for (let i = 0; i < tempProductions.length; i++) { // 把不是立即左递归和一步环的产生式放入 frame.productions 中
+              if (!this.immedationRecursion.includes(tempProductions[i]) && !this.productionIsCycle(tempProductions[i])) { // 排除立即左递归和一步环
                 frame.productions.push(tempProductions[i])
               }
             }
-            if (frame.productions.length === 0) { // 没有以当前符号为头部的产生式或以当前符号为头部的产生式都是立即左递归
+            if (frame.productions.length === 0) { // 没有以当前符号为头部的产生式或以当前符号为头部的产生式都是立即左递归或都是一步环
               top.index++
               top.bodySymbolIndex = 0
               derivationStack.pop()
@@ -333,12 +353,12 @@ class EliminateLeftRecursion {
                       index: 0,
                       bodySymbolIndex: 0
                     }
-                    for (const i of tempProductions) { // 排除所有立即左递归的产生式
-                      if (!this.immedationRecursion.includes(i)) {
+                    for (const i of tempProductions) { // 排除所有立即左递归和一步环的产生式
+                      if (!this.immedationRecursion.includes(i) && !this.productionIsCycle(i)) {
                         newFrame.productions.push(i)
                       }
                     }
-                    if (newFrame.productions.length === 0) { // 说明以 tempSymbol 为头部的产生式都是立即左递归
+                    if (newFrame.productions.length === 0) { // 说明以 tempSymbol 为头部的产生式都是立即左递归或一步环
                       // 这里solutionSpace和derivationStack都要弹栈，弹栈方式比较特殊
                       // solutionSpace 需要弹出当前栈帧之上的所有栈帧
                       // derivationStack 需要和 solutionSpace 同步弹栈
