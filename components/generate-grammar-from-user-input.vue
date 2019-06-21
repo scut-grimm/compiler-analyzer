@@ -2,7 +2,13 @@
   <div class="inputAndGrammar">
     <div class="userinput">
       <div class="left">
-        <el-table :data="tableData" class="table" border :header-cell-style="combineHeadCells">
+        <el-table
+          :data="tableData"
+          class="table"
+          border
+          :header-cell-style="combineHeadCells"
+          :span-method="symbolTableRowSpan"
+        >
           <el-table-column label="终止符号" class="terminal" align="center">
             <el-table-column class="terminalColumn" label="hide" align="center">
               <template slot-scope="scope">
@@ -13,7 +19,9 @@
                   size="medium"
                   style="font-size:15px"
                   v-if="scope.row.terminal0"
+                  :disable-transitions="false"
                   @close="delectSymbol(scope.row.terminal0)"
+                  @click="inputSymbolByClick(scope.row.terminal0)"
                 >{{scope.row.terminal0}}</el-tag>
                 <el-input
                   class="input-new-symbol"
@@ -41,7 +49,9 @@
                   size="medium"
                   style="font-size:15px"
                   v-if="scope.row.terminal1"
+                  :disable-transitions="false"
                   @close="delectSymbol(scope.row.terminal1)"
+                  @click="inputSymbolByClick(scope.row.terminal1)"
                 >{{scope.row.terminal1}}</el-tag>
                 <el-input
                   class="input-new-symbol"
@@ -70,6 +80,7 @@
                   style="font-size:15px"
                   v-if="scope.row.terminal2"
                   @close="delectSymbol(scope.row.terminal2)"
+                  @click="inputSymbolByClick(scope.row.terminal2)"
                 >{{scope.row.terminal2}}</el-tag>
                 <el-input
                   class="input-new-symbol"
@@ -98,6 +109,7 @@
                   style="font-size:15px"
                   v-if="scope.row.terminal3"
                   @close="delectSymbol(scope.row.terminal3)"
+                  @click="inputSymbolByClick(scope.row.terminal3)"
                 >{{scope.row.terminal3}}</el-tag>
                 <el-input
                   class="input-new-symbol"
@@ -126,6 +138,7 @@
                   style="font-size:15px"
                   v-if="scope.row.terminal4"
                   @close="delectSymbol(scope.row.terminal4)"
+                  @click="inputSymbolByClick(scope.row.terminal4)"
                 >{{scope.row.terminal4}}</el-tag>
                 <el-input
                   class="input-new-symbol"
@@ -156,6 +169,7 @@
                   style="font-size:15px"
                   v-if="scope.row.nonterminal0"
                   @close="delectSymbol(scope.row.nonterminal0)"
+                  @click="inputSymbolByClick(scope.row.nonterminal0)"
                 >{{scope.row.nonterminal0}}</el-tag>
                 <el-input
                   class="input-new-symbol"
@@ -184,6 +198,7 @@
                   style="font-size:15px"
                   v-if="scope.row.nonterminal1"
                   @close="delectSymbol(scope.row.nonterminal1)"
+                  @click="inputSymbolByClick(scope.row.nonterminal1)"
                 >{{scope.row.nonterminal1}}</el-tag>
                 <el-input
                   class="input-new-symbol"
@@ -212,6 +227,7 @@
                   style="font-size:15px"
                   v-if="scope.row.nonterminal2"
                   @close="delectSymbol(scope.row.nonterminal2)"
+                  @click="inputSymbolByClick(scope.row.nonterminal2)"
                 >{{scope.row.nonterminal2}}</el-tag>
                 <el-input
                   class="input-new-symbol"
@@ -240,6 +256,7 @@
                   style="font-size:15px"
                   v-if="scope.row.nonterminal3"
                   @close="delectSymbol(scope.row.nonterminal3)"
+                  @click="inputSymbolByClick(scope.row.nonterminal3)"
                 >{{scope.row.nonterminal3}}</el-tag>
                 <el-input
                   class="input-new-symbol"
@@ -268,6 +285,7 @@
                   style="font-size:15px"
                   v-if="scope.row.nonterminal4"
                   @close="delectSymbol(scope.row.nonterminal4)"
+                  @click="inputSymbolByClick(scope.row.nonterminal4)"
                 >{{scope.row.nonterminal4}}</el-tag>
                 <el-input
                   class="input-new-symbol"
@@ -285,6 +303,31 @@
                   @click="showInput('nonterminal4')"
                 >+New</el-button>
               </template>
+            </el-table-column>
+          </el-table-column>
+          <el-table-column label="特殊符号" align="center">
+            <el-table-column>
+              <el-tag
+                type="info"
+                effect="dark"
+                size="medium"
+                style="font-size:20px"
+                @click="inputSymbolByClick('ε')"
+              >ε</el-tag>
+              <el-tag
+                type="info"
+                effect="dark"
+                size="medium"
+                style="font-size:20px"
+                @click="inputSymbolByClick('->')"
+              >-></el-tag>
+              <el-tag
+                type="info"
+                effect="dark"
+                size="medium"
+                style="font-size:20px"
+                @click="inputSymbolByClick('|')"
+              >|</el-tag>
             </el-table-column>
           </el-table-column>
         </el-table>
@@ -441,6 +484,25 @@ export default {
     };
   },
   methods: {
+    inputSymbolByClick(symbol) {
+      this.ruleForm.CFG += symbol + " ";
+      this.$refs.ruleForm.$children[0].$children[1].$refs.textarea.focus();
+    },
+    symbolTableRowSpan({ row, column, rowIndex, columnIndex }) {
+      if (columnIndex === 10) {
+        if (rowIndex === 0) {
+          return {
+            rowspan: this.tableData.length,
+            colspan: 1
+          };
+        } else {
+          return {
+            rowspan: 0,
+            colspan: 0
+          };
+        }
+      }
+    },
     showInput(val) {
       this.symbolInputVisible[val] = true;
       this.$nextTick(() => {
