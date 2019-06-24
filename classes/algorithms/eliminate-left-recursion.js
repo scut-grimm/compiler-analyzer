@@ -685,6 +685,12 @@ class EliminateLeftRecursion {
       }
     } else {
       EFRGrammar.setStartSign(EFRGrammar.getSign(grammar.getStartSign()))
+      for (const terminal of grammar.getTerminals()) {
+        EFRGrammar.getSign(terminal)
+      }
+      for (const nonterminal of grammar.getNonterminals()) {
+        EFRGrammar.getSign(nonterminal)
+      }
       const nonterminals = grammar.getNonterminals()
       for (let i = 0; i < nonterminals.length; i++) {
         const iProductions = grammar.getDerivations(nonterminals[i])
@@ -724,9 +730,11 @@ class EliminateLeftRecursion {
         // newProductions 中的产生式的 head 都是 nonterminals[i]
         const immedationRecursion = this.scanImmedationLeftRecursion(newProductions)
         if (immedationRecursion.length > 0) { // 如果 newProductions 中有左递归
+          const newNonterminal = EFRGrammar.getSignUnusedAlias(nonterminals[i]) // 一个新的，右上角带单引号的非终止符号
           if (newProductions.length === immedationRecursion.length) { // 产生式都是左递归的，则应该添加产生式 A->A'
             const head = EFRGrammar.getSign(nonterminals[i].getString())
-            const body = [EFRGrammar.getSign(nonterminals[i].getString() + '\'', 'Nonterminal')]
+
+            const body = [newNonterminal]
             const tempProduction = new Production(head, body)
             if (!this.existTheProduction(EFRGrammar, tempProduction) && body.length > 0) {
               EFRGrammar.addProduction(head, body)
@@ -734,12 +742,12 @@ class EliminateLeftRecursion {
           }
           for (const production of newProductions) {
             if (immedationRecursion.includes(production)) {
-              const head = EFRGrammar.getSign(nonterminals[i].getString() + '\'', 'Nonterminal')
+              const head = newNonterminal
               const body = []
               for (let i = 1; i < production.getBody().length; i++) {
                 body.push(EFRGrammar.getSign(production.getBody()[i]))
               }
-              body.push(EFRGrammar.getSign(nonterminals[i].getString() + '\'', 'Nonterminal'))
+              body.push(newNonterminal)
               const tempProduction = new Production(head, body)
               if (!this.existTheProduction(EFRGrammar, tempProduction) && body.length > 0) {
                 EFRGrammar.addProduction(head, body)
@@ -750,14 +758,14 @@ class EliminateLeftRecursion {
               for (const symbol of production.getBody()) {
                 body.push(EFRGrammar.getSign(symbol))
               }
-              body.push(EFRGrammar.getSign(nonterminals[i].getString() + '\'', 'Nonterminal'))
+              body.push(newNonterminal)
               const tempProduction = new Production(head, body)
               if (!this.existTheProduction(EFRGrammar, tempProduction) && body.length > 0) {
                 EFRGrammar.addProduction(head, body)
               }
             }
           }
-          const head = EFRGrammar.getSign(nonterminals[i].getString() + '\'', 'Nonterminal')
+          const head = newNonterminal
           const body = [EFRGrammar.getEmptySign()]
           const tempProduction = new Production(head, body)
           if (!this.existTheProduction(EFRGrammar, tempProduction) && body.length > 0) {
@@ -786,14 +794,21 @@ class EliminateLeftRecursion {
   eliminatingImmedationRecursion(grammar) {
     const newG = new Grammar()
     newG.setStartSign(newG.getSign(grammar.getStartSign()))
+    for (const terminal of grammar.getTerminals()) {
+      newG.getSign(terminal)
+    }
+    for (const nonterminal of grammar.getNonterminals()) {
+      newG.getSign(nonterminal)
+    }
     for (const nonterminal of grammar.getNonterminals()) {
       const productions = grammar.getDerivations(nonterminal)
       if (productions.length !== 0) {
         const immedationRecursion = this.scanImmedationLeftRecursion(productions)
         if (immedationRecursion.length > 0) {
+          const newNonterminal = newG.getSignUnusedAlias(nonterminal)
           if (immedationRecursion.length === productions.length) {
             const head = newG.getSign(nonterminal)
-            const body = [newG.getSign(nonterminal.getString() + "\'", 'Nonterminal')]
+            const body = [newNonterminal]
             const tempProduction = new Production(head, body)
             if (!this.existTheProduction(newG, tempProduction) && body.length > 0) {
               newG.addProduction(head, body)
@@ -801,12 +816,12 @@ class EliminateLeftRecursion {
           }
           for (const production of productions) {
             if (immedationRecursion.includes(production)) {
-              const head = newG.getSign(nonterminal.getString() + '\'', 'Nonterminal')
+              const head = newNonterminal
               const body = []
               for (let i = 1; i < production.getBody().length; i++) {
                 body.push(newG.getSign(production.getBody()[i]))
               }
-              body.push(newG.getSign(nonterminal.getString() + '\'', 'Nonterminal'))
+              body.push(newNonterminal)
               const tempProduction = new Production(head, body)
               if (!this.existTheProduction(newG, tempProduction) && body.length > 0) {
                 newG.addProduction(head, body)
@@ -817,14 +832,14 @@ class EliminateLeftRecursion {
               for (const symbol of production.getBody()) {
                 body.push(newG.getSign(symbol))
               }
-              body.push(newG.getSign(nonterminal.getString() + '\'', 'Nonterminal'))
+              body.push(newNonterminal)
               const tempProduction = new Production(head, body)
               if (!this.existTheProduction(newG, tempProduction) && body.length > 0) {
                 newG.addProduction(head, body)
               }
             }
           }
-          const head = newG.getSign(nonterminal.getString() + '\'', 'Nonterminal')
+          const head = newNonterminal
           const body = [newG.getEmptySign()]
           const tempProduction = new Production(head, body)
           if (!this.existTheProduction(newG, tempProduction) && body.length > 0) {

@@ -14,9 +14,9 @@ class Grammar {
     this.getEmptySign()
     this.getStackBottomSign()
   }
-  clone(){
-    let other = new Grammar()
-    for(let key of this.signs.keys()){
+  clone() {
+    const other = new Grammar()
+    for (const key of this.signs.keys()) {
       other.signs.set(key, this.signs.get(key))
     }
     other.productions = [...this.productions]
@@ -26,13 +26,13 @@ class Grammar {
     other.startSign = this.startSign
     return other
   }
-  setFirstSet(firstSet){
+  setFirstSet(firstSet) {
     this.firstSet = firstSet
   }
-  setFollowSet(followSet){
+  setFollowSet(followSet) {
     this.followSet = followSet
   }
-  setPPT(PPT){
+  setPPT(PPT) {
     this.PPT = PPT
   }
   setStartSign(sign) {
@@ -59,20 +59,20 @@ class Grammar {
     }
     return this.signs.get(symbol)
   }
-  //symbol::string
-  hasSymbol(symbol){
+  // symbol::string
+  hasSymbol(symbol) {
     return this.signs.has(symbol)
   }
-  printProductions(){
-    for(let production of this.productions){
+  printProductions() {
+    for (const production of this.productions) {
       console.log(production.getString())
     }
   }
-  getSignUnusedAlias(sign){
+  getSignUnusedAlias(sign) {
     let cur = sign.getString()
-    while(true){
+    while (true) {
       cur = cur + "'"
-      if(!this.hasSymbol(cur)){
+      if (!this.hasSymbol(cur)) {
         return this.getSign(cur, sign.type)
       }
     }
@@ -85,7 +85,7 @@ class Grammar {
   }
   checkSignsExist(signs) {
     for (const sign of signs) {
-      if (typeof sign == "string") {
+      if (typeof sign === 'string') {
         if (!this.signs.has(sign) || this.signs.get(sign).symbol !== sign) {
           return false
         }
@@ -113,11 +113,11 @@ class Grammar {
     }
     return this.productions.filter(e => e.head.symbol === head.symbol)
   }
-  deleteProduction(head,body){
-    for(let a=0;a<this.productions.length;a++){
-      let production = this.productions[a]
-      if(production.isSameOf(head,body)){
-        this.productions.splice(a,1)
+  deleteProduction(head, body) {
+    for (let a = 0; a < this.productions.length; a++) {
+      const production = this.productions[a]
+      if (production.isSameOf(head, body)) {
+        this.productions.splice(a, 1)
         return true
       }
     }
@@ -143,13 +143,13 @@ class Grammar {
   getProductionBodyFirstSet(production) {
     return this.getSignsFirstSet(production.getBody())
   }
-  getSignsFirstSet(signs){
+  getSignsFirstSet(signs) {
     const result = new Set()
     let frontAllHaveEmpty = true
     const Empty = this.getEmptySign()
     for (const sign of signs) {
       if (frontAllHaveEmpty === true) {
-        this.getSignFirstSet(sign).filter(e => e.isTerminal() ).forEach(e => result.add(e))
+        this.getSignFirstSet(sign).filter(e => e.isTerminal()).forEach(e => result.add(e))
       }
       if (!(new Set(this.getSignFirstSet(sign))).has(Empty)) {
         frontAllHaveEmpty = false
