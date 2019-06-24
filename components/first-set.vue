@@ -1,7 +1,6 @@
 <template>
   <div class="first-set">
     <div class="top">
-      <CurrentGrammar :grammar="grammar" title="当前文法"></CurrentGrammar>
     </div>
     <div class="down">
       <div class="left">

@@ -1,5 +1,11 @@
 <template>
   <div>
+    <CurrentGrammar
+      :grammar="grammar"
+      title="当前文法"
+      v-show="curStep !== 'GrammarInput'"
+    ></CurrentGrammar>
+
     <grammar-input
       v-show="curStep === 'GrammarInput'"
       ref="GrammarInput"
@@ -51,6 +57,7 @@ import GenerateFollowSet from "~/classes/algorithms/generate-follow-set";
 import GeneratePPT from "~/classes/algorithms/generate-predictive-parsing-table";
 import EliminateLeftRecursion from "~/components/eliminate-left-recursion";
 import EliminateLeftRecursionAlgorithm from "~/classes/algorithms/eliminate-left-recursion";
+import CurrentGrammar from "~/components/current-grammar";
 
 export default {
   layout: "grammar",
@@ -69,7 +76,8 @@ export default {
     ParsingStack,
     PredictiveParsingTable,
     ExtractLeftFactor,
-    EliminateLeftRecursion
+    EliminateLeftRecursion,
+    CurrentGrammar
   },
   mounted() {
     this.$eventbus.$on('FinishInputGrammar', (grammar) => {
@@ -138,7 +146,7 @@ export default {
         console.log(e)
         this.$alert(e.message, '错误', {
           confirmButtonText: '确定',
-          type:'error'
+          type: 'error'
         });
       }
 
@@ -149,11 +157,12 @@ export default {
       if (step === 'GrammarInput') {
         return
       }
-      if(this.curStep === 'GrammarInput'){
+      if (this.curStep === 'GrammarInput') {
         let tmp = this.$refs.GrammarInput.generateGrammar()
-        if(tmp){
+        if (tmp) {
           this.rawGrammar = tmp
-        }else{
+          this.grammar = tmp
+        } else {
           throw new Error('请先拟定文法')
         }
         console.log(tmp)
