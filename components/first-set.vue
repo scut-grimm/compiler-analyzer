@@ -282,7 +282,7 @@ export default {
     },
     setGrammar(grammar) {
       this.grammar = grammar;
-      this.runAll();
+      //this.runAll();
     },
     finish() {
       this.$eventbus.$emit("FinishFirstSet");

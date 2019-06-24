@@ -225,7 +225,7 @@ export default {
     setGrammar(grammar) {
       this.grammar = grammar
       this.PPT = new GeneratePredictiveParsingTable(grammar).run();
-      this.runAll()
+      //this.runAll()
     }
   },
   computed: {
