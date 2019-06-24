@@ -9,7 +9,7 @@
           :header-cell-style="combineHeadCells"
           :span-method="symbolTableRowSpan"
         >
-          <el-table-column label="终止符号" class="terminal" align="center">
+          <el-table-column label="可用终止符号" class="terminal" align="center">
             <el-table-column class="terminalColumn" label="hide" align="center">
               <template slot-scope="scope">
                 <el-tag
@@ -163,7 +163,7 @@
               </template>
             </el-table-column>
           </el-table-column>
-          <el-table-column label="非终止符号" class="nonterminal" align="center">
+          <el-table-column label="可用非终止符号" class="nonterminal" align="center">
             <el-table-column class="nonterminalColumn" label="hide" align="center">
               <template slot-scope="scope">
                 <el-tag
