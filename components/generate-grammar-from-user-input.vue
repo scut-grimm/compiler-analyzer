@@ -433,6 +433,11 @@ export default {
                 if (!this.currentInputIslegal(symbol)) {
                   callback(new Error(`符号 ${symbol} 未定义`));
                 }
+                if (symbol === "ε" && symbols.length > 1) {
+                  callback(
+                    new Error(`产生式格式错误，不可以同时包含 ε 和其他符号`)
+                  );
+                }
               }
             }
           } catch (e) {
@@ -666,6 +671,9 @@ export default {
             }
             for (let symbol of symbols) {
               if (!this.currentInputIslegal(symbol)) {
+                return false;
+              }
+              if (symbol === "ε" && symbols.length > 1) {
                 return false;
               }
             }
