@@ -149,6 +149,15 @@ export default {
       if (step === 'GrammarInput') {
         return
       }
+      if(this.curStep === 'GrammarInput'){
+        let tmp = this.$refs.GrammarInput.generateGrammar()
+        if(tmp){
+          this.rawGrammar = tmp
+        }else{
+          throw new Error('请先拟定文法')
+        }
+        console.log(tmp)
+      }
       if (this.rawGrammar.getProductions().length === 0) {
         this.jumptTo('GrammarInput')
         throw new Error('请先拟定文法')
