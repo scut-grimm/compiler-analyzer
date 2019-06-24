@@ -1,7 +1,6 @@
 <template>
   <div class="first-set">
     <div class="top">
-      <CurrentGrammar :grammar="grammar" title="当前文法"></CurrentGrammar>
     </div>
     <div class="down">
       <div class="left">
@@ -38,7 +37,7 @@
           </template>
           <template v-if="started === true && allDone === false">
             <el-button type="success" @click="next">下一步</el-button>
-            <el-button type="warning" @click="allSkip">跳过</el-button>
+            <el-button type="warning" @click="runAll">跳过</el-button>
             <el-button type="info" @click="startAutorun" v-if="autoTimer === null">自动播放</el-button>
             <el-button type="danger" @click="stopAutorun" v-if="autoTimer !== null">停止播放</el-button>
           </template>
@@ -283,7 +282,7 @@ export default {
     },
     setGrammar(grammar) {
       this.grammar = grammar;
-      this.runAll();
+      //this.runAll();
     },
     finish() {
       this.$eventbus.$emit("FinishFirstSet");

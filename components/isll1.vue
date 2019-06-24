@@ -1,7 +1,6 @@
 <template>
   <div class="isLL1">
     <div class="top">
-      <CurrentGrammar :grammar="grammar" title="当前文法"></CurrentGrammar>
     </div>
     <div class="down">
       <div v-for="production in productions" :key="production.production">

@@ -218,7 +218,7 @@
             ></el-input>
           </el-form-item>
         </el-form>
-        <el-button round size="medium" @click="generateGrammar">完成</el-button>
+        <el-button round size="medium" @click="generateGrammar(true)">完成</el-button>
         <el-button round size="medium" @click="showGrammar">查看当前文法</el-button>
       </div>
     </div>
@@ -601,7 +601,7 @@ export default {
       this.terminals = this.terminals.filter(e => e !== val);
       this.nonterminals = this.nonterminals.filter(e => e !== val);
     },
-    generateGrammar() {
+    generateGrammar(jump = false) {
       if (this.getProductions()) {
         let grammar = new GGFUI(this.formalProductions);
         {
@@ -623,7 +623,13 @@ export default {
         }
         let result = this.grammarIsLegal(grammar);
         if (result) {
+          if(jump){
           this.$eventbus.$emit("FinishInputGrammar", grammar);
+
+          }
+          return grammar
+        }else{
+          return false
         }
       }
     },

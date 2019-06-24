@@ -1,7 +1,6 @@
 <template>
   <div class="all">
     <div class="top">
-      <CurrentGrammar :grammar="grammar" title="当前文法"></CurrentGrammar>
     </div>
     <div class="down">
       <div class="first">
@@ -36,12 +35,11 @@ import HighlightProduction from "~/components/highlight-production";
 import Grammar from "~/classes/grammar";
 import DisjointSet from "~/classes/disjoint-set";
 import Production from "~/classes/production";
-import CurrentGrammar from "~/components/current-grammar";
 export default {
   layout: "grammar",
   components: {
     HighlightProduction,
-    CurrentGrammar
+
   },
   data() {
     return {

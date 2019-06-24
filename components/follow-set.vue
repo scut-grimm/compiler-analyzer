@@ -80,7 +80,7 @@
             >下一步</el-button>
             <el-button
               type="warning"
-              @click="skip"
+              @click="runAll"
             >跳过</el-button>
             <el-button
               type="info"
@@ -231,7 +231,7 @@ export default {
     },
     setGrammar(grammar) {
       this.grammar = grammar
-      this.runAll()
+      //this.runAll()
     },
     finish(){
       this.$eventbus.$emit('FinishFollowSet')
