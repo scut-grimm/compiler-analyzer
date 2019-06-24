@@ -37,7 +37,7 @@
           </template>
           <template v-if="started === true && allDone === false">
             <el-button type="success" @click="next">下一步</el-button>
-            <el-button type="warning" @click="allSkip">跳过</el-button>
+            <el-button type="warning" @click="runAll">跳过</el-button>
             <el-button type="info" @click="startAutorun" v-if="autoTimer === null">自动播放</el-button>
             <el-button type="danger" @click="stopAutorun" v-if="autoTimer !== null">停止播放</el-button>
           </template>
