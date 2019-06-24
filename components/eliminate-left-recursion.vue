@@ -1,11 +1,10 @@
 <template>
   <div class="all">
-    <div class="first">
-      <div class="left">
-        <HighlightProduction :productions="grammarProductions" title="当前文法"></HighlightProduction>
-        <!-- <el-button @click="changeButton" class="button">{{buttonMessage}}</el-button> -->
-      </div>
-      <div class="right">
+    <div class="top">
+      <CurrentGrammar :grammar="grammar" title="当前文法"></CurrentGrammar>
+    </div>
+    <div class="down">
+      <div class="first">
         <div class="top">
           <HighlightProduction :productions="immedationRecursionProductions" title="当前文法中的立即左递归"></HighlightProduction>
           <h3 v-if="!hasImmedationRecursionProduction">无</h3>
@@ -19,15 +18,15 @@
           <h3 v-if="!hasIndirectRecursionProduction">无</h3>
         </div>
       </div>
-    </div>
-    <div class="second" v-show="second">
-      <HighlightProduction :productions="EEGProductions" title="消除ε产生式"></HighlightProduction>
-    </div>
-    <div class="thrid" v-show="thrid">
-      <HighlightProduction :productions="ECGProductions" title="消除环"></HighlightProduction>
-    </div>
-    <div class="fourth" v-show="fourth">
-      <HighlightProduction :productions="ELRGProductions" :title="titleMessage"></HighlightProduction>
+      <div class="second" v-show="second">
+        <HighlightProduction :productions="EEGProductions" title="消除ε产生式"></HighlightProduction>
+      </div>
+      <div class="thrid" v-show="thrid">
+        <HighlightProduction :productions="ECGProductions" title="消除环"></HighlightProduction>
+      </div>
+      <div class="fourth" v-show="fourth">
+        <HighlightProduction :productions="ELRGProductions" :title="titleMessage"></HighlightProduction>
+      </div>
     </div>
   </div>
 </template>
@@ -37,10 +36,12 @@ import HighlightProduction from "~/components/highlight-production";
 import Grammar from "~/classes/grammar";
 import DisjointSet from "~/classes/disjoint-set";
 import Production from "~/classes/production";
+import CurrentGrammar from "~/components/current-grammar";
 export default {
   layout: "grammar",
   components: {
-    HighlightProduction
+    HighlightProduction,
+    CurrentGrammar
   },
   data() {
     return {
@@ -59,7 +60,7 @@ export default {
       //buttonMessage: "完成",
       second: false,
       thrid: false,
-      fourth: true,
+      fourth: false,
       titleMessage: ""
     };
   },
@@ -107,14 +108,17 @@ export default {
       if (this.hasIndirectRecursionProduction) {
         this.second = true;
         this.thrid = true;
+        this.fourth = true;
         this.titleMessage = "消除左递归";
       } else if (this.hasImmedationRecursionProduction) {
         this.second = false;
         this.thrid = false;
+        this.fourth = true;
         this.titleMessage = "消除立即左递归";
       } else {
         this.second = false;
         this.thrid = false;
+        this.fourth = false;
         this.titleMessage = "当前文法无左递归";
       }
     }
@@ -207,14 +211,14 @@ export default {
 <style lang="scss" scoped>
 .all {
   display: flex;
-  flex-direction: row;
-  .first {
-    flex: 1 1 auto;
-    .left {
-      .button {
-      }
-    }
-    .right {
+  flex-direction: column;
+  .top {
+  }
+  .down {
+    display: flex;
+    flex-direction: row;
+    .first {
+      flex: 1 1 auto;
       .top {
         h3 {
           text-align: center;
@@ -227,15 +231,15 @@ export default {
         }
       }
     }
-  }
-  .second {
-    flex: 1 1 auto;
-  }
-  .thrid {
-    flex: 1 1 auto;
-  }
-  .fourth {
-    flex: 1 1 auto;
+    .second {
+      flex: 1 1 auto;
+    }
+    .thrid {
+      flex: 1 1 auto;
+    }
+    .fourth {
+      flex: 1 1 auto;
+    }
   }
 }
 </style>

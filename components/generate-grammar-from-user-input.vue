@@ -20,6 +20,7 @@
                   style="font-size:15px"
                   v-if="scope.row.terminal0"
                   :disable-transitions="false"
+                  class="tag"
                   @close="delectSymbol(scope.row.terminal0)"
                   @click="inputSymbolByClick(scope.row.terminal0)"
                 >{{scope.row.terminal0}}</el-tag>
@@ -48,6 +49,7 @@
                   effect="dark"
                   size="medium"
                   style="font-size:15px"
+                  class="tag"
                   v-if="scope.row.terminal1"
                   :disable-transitions="false"
                   @close="delectSymbol(scope.row.terminal1)"
@@ -78,6 +80,7 @@
                   effect="dark"
                   size="medium"
                   style="font-size:15px"
+                  class="tag"
                   v-if="scope.row.terminal2"
                   @close="delectSymbol(scope.row.terminal2)"
                   @click="inputSymbolByClick(scope.row.terminal2)"
@@ -107,6 +110,7 @@
                   effect="dark"
                   size="medium"
                   style="font-size:15px"
+                  class="tag"
                   v-if="scope.row.terminal3"
                   @close="delectSymbol(scope.row.terminal3)"
                   @click="inputSymbolByClick(scope.row.terminal3)"
@@ -136,6 +140,7 @@
                   effect="dark"
                   size="medium"
                   style="font-size:15px"
+                  class="tag"
                   v-if="scope.row.terminal4"
                   @close="delectSymbol(scope.row.terminal4)"
                   @click="inputSymbolByClick(scope.row.terminal4)"
@@ -167,6 +172,7 @@
                   effect="dark"
                   size="medium"
                   style="font-size:15px"
+                  class="tag"
                   v-if="scope.row.nonterminal0"
                   @close="delectSymbol(scope.row.nonterminal0)"
                   @click="inputSymbolByClick(scope.row.nonterminal0)"
@@ -196,6 +202,7 @@
                   effect="dark"
                   size="medium"
                   style="font-size:15px"
+                  class="tag"
                   v-if="scope.row.nonterminal1"
                   @close="delectSymbol(scope.row.nonterminal1)"
                   @click="inputSymbolByClick(scope.row.nonterminal1)"
@@ -225,6 +232,7 @@
                   effect="dark"
                   size="medium"
                   style="font-size:15px"
+                  class="tag"
                   v-if="scope.row.nonterminal2"
                   @close="delectSymbol(scope.row.nonterminal2)"
                   @click="inputSymbolByClick(scope.row.nonterminal2)"
@@ -254,6 +262,7 @@
                   effect="dark"
                   size="medium"
                   style="font-size:15px"
+                  class="tag"
                   v-if="scope.row.nonterminal3"
                   @close="delectSymbol(scope.row.nonterminal3)"
                   @click="inputSymbolByClick(scope.row.nonterminal3)"
@@ -283,6 +292,7 @@
                   effect="dark"
                   size="medium"
                   style="font-size:15px"
+                  class="tag"
                   v-if="scope.row.nonterminal4"
                   @close="delectSymbol(scope.row.nonterminal4)"
                   @click="inputSymbolByClick(scope.row.nonterminal4)"
@@ -312,6 +322,7 @@
                 effect="dark"
                 size="medium"
                 style="font-size:20px"
+                class="tag"
                 @click="inputSymbolByClick('ε')"
               >ε</el-tag>
               <el-tag
@@ -319,6 +330,7 @@
                 effect="dark"
                 size="medium"
                 style="font-size:20px"
+                class="tag"
                 @click="inputSymbolByClick('->')"
               >-></el-tag>
               <el-tag
@@ -326,6 +338,7 @@
                 effect="dark"
                 size="medium"
                 style="font-size:20px"
+                class="tag"
                 @click="inputSymbolByClick('|')"
               >|</el-tag>
             </el-table-column>
@@ -907,6 +920,11 @@ export default {
           width: 50%;
           .nonterminalColumn {
             width: 5%;
+          }
+        }
+        .tag {
+          &:hover {
+            cursor: pointer;
           }
         }
       }

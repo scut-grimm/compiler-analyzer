@@ -1,27 +1,35 @@
 <template>
   <div class="isLL1">
-    <div v-for="production in productions" :key="production.production">
-      <el-popover placement="right" width="200" trigger="click">
-        <el-table :data="production.notice">
-          <el-table-column width="150" property="notice" lable="notice"></el-table-column>
-        </el-table>
-        <el-button
-          slot="reference"
-          type="text"
-          :class="{errorProduction:production.error,grammar}"
-        >{{production.production}}</el-button>
-      </el-popover>
+    <div class="top">
+      <CurrentGrammar :grammar="grammar" title="当前文法"></CurrentGrammar>
     </div>
-    <div v-if="isLL1===true">当前文法属于LL(1)文法</div>
-    <div v-else>当前文法不属于LL(1)文法</div>
-    <!-- <el-button type="primary" @click="finish">完成</el-button> -->
+    <div class="down">
+      <div v-for="production in productions" :key="production.production">
+        <el-popover placement="right" width="200" trigger="click">
+          <el-table :data="production.notice">
+            <el-table-column width="150" property="notice" lable="notice"></el-table-column>
+          </el-table>
+          <el-button
+            slot="reference"
+            type="text"
+            :class="{errorProduction:production.error,grammar}"
+          >{{production.production}}</el-button>
+        </el-popover>
+      </div>
+      <div v-if="isLL1===true">当前文法属于LL(1)文法</div>
+      <div v-else>当前文法不属于LL(1)文法</div>
+    </div>
   </div>
 </template>
 <script>
 import IsLL1 from "~/classes/algorithms/is-LL1";
 import Grammar from "~/classes/grammar";
 import MapSet from "~/classes/map-set";
+import CurrentGrammar from "~/components/current-grammar";
 export default {
+  components: {
+    CurrentGrammar
+  },
   data() {
     return {
       grammar: new Grammar(),
@@ -60,20 +68,25 @@ export default {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  .errorProduction {
-    color: red;
+  .top {
+    width: 100%;
   }
-  .grammar {
-    border-radius: 5px;
-    font-size: 24px;
-    padding: 5px 10px;
-    margin: 2px;
-    &:hover {
-      background-color: rgb(178, 212, 247);
-      cursor: pointer;
+  .down {
+    .errorProduction {
+      color: red;
     }
-    &.active {
-      background-color: rgb(102, 174, 247);
+    .grammar {
+      border-radius: 5px;
+      font-size: 24px;
+      padding: 5px 10px;
+      margin: 2px;
+      &:hover {
+        background-color: rgb(178, 212, 247);
+        cursor: pointer;
+      }
+      &.active {
+        background-color: rgb(102, 174, 247);
+      }
     }
   }
 }

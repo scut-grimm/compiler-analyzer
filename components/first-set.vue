@@ -1,53 +1,50 @@
 <template>
   <div class="first-set">
-    <div class="left">
-      <GrammarIndicator
-        style="width: 200px;"
-        :grammar="grammar"
-        :active="activeProductionIndex"
-        @changeProduction="onChagneProduction"
-      ></GrammarIndicator>
+    <div class="top">
+      <CurrentGrammar :grammar="grammar" title="当前文法"></CurrentGrammar>
     </div>
-    <div class="center">
-      <p class="up">当前步骤</p>
-      <p class="notice">{{notice}}</p>
-      <template v-if="dependSymbolIndex!==null">
-        <el-button class="down">{{dependSymbolFirstSet}}</el-button>
-      </template>
-    </div>
-    <div class="right">
-      <el-table :data="tableData" style="width: 100%">
-        <el-table-column label="文法符号" style="font-size:20px">
-          <template slot-scope="scope">
-            <span style="font-size:20px">{{scope.row.symbol}}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          v-for="(pass,index) in tableColumnIndex"
-          :key="index"
-          :label="pass.toString()"
-          style="font-size:20px"
-        >
-          <template slot-scope="scope">
-            <HighlightTableCell
-              :string="getCell(scope.row,pass)"
-              :highlightSymbol="getHighlightSymbol(scope.row,pass)"
-            ></HighlightTableCell>
-          </template>
-        </el-table-column>
-      </el-table>
-      <div class="button">
-        <template v-if="started === false">
-          <el-button type="primary" @click="start">开始</el-button>
+    <div class="down">
+      <div class="left">
+        <p class="up">当前步骤</p>
+        <p class="notice">{{notice}}</p>
+        <template v-if="dependSymbolIndex!==null">
+          <el-button class="down">{{dependSymbolFirstSet}}</el-button>
         </template>
-        <template v-if="started === true && allDone === false">
-          <el-button type="success" @click="next">下一步</el-button>
-          <el-button type="warning" @click="skip">跳过</el-button>
-          <el-button type="info" @click="startAutorun" v-if="autoTimer === null">自动播放</el-button>
-          <el-button type="danger" @click="stopAutorun" v-if="autoTimer !== null">停止播放</el-button>
-        </template>
-        <el-button @click="start" v-if="started" type="primary">重新开始</el-button>
-        <!-- <el-button type="primary" @click="finish">完成</el-button> -->
+      </div>
+      <div class="right">
+        <el-table :data="tableData" style="width: 100%">
+          <el-table-column label="文法符号" style="font-size:20px">
+            <template slot-scope="scope">
+              <span style="font-size:20px">{{scope.row.symbol}}</span>
+            </template>
+          </el-table-column>
+          <el-table-column
+            v-for="(pass,index) in tableColumnIndex"
+            :key="index"
+            :label="pass.toString()"
+            style="font-size:20px"
+          >
+            <template slot-scope="scope">
+              <HighlightTableCell
+                :string="getCell(scope.row,pass)"
+                :highlightSymbol="getHighlightSymbol(scope.row,pass)"
+              ></HighlightTableCell>
+            </template>
+          </el-table-column>
+        </el-table>
+        <div class="button">
+          <template v-if="started === false">
+            <el-button type="primary" @click="start">开始</el-button>
+          </template>
+          <template v-if="started === true && allDone === false">
+            <el-button type="success" @click="next">下一步</el-button>
+            <el-button type="warning" @click="allSkip">跳过</el-button>
+            <el-button type="info" @click="startAutorun" v-if="autoTimer === null">自动播放</el-button>
+            <el-button type="danger" @click="stopAutorun" v-if="autoTimer !== null">停止播放</el-button>
+          </template>
+          <el-button @click="start" v-if="started" type="primary">重新开始</el-button>
+          <!-- <el-button type="primary" @click="finish">完成</el-button> -->
+        </div>
       </div>
     </div>
   </div>
@@ -59,10 +56,12 @@ import Grammar from "~/classes/grammar";
 import AlgorithmWrapper from "~/classes/algorithm-wrapper";
 import MapSet from "~/classes/map-set";
 import HighlightTableCell from "~/components/highlight-table-cell";
+import CurrentGrammar from "~/components/current-grammar";
 export default {
   components: {
     GrammarIndicator,
-    HighlightTableCell
+    HighlightTableCell,
+    CurrentGrammar
   },
   data() {
     return {
@@ -157,6 +156,10 @@ export default {
     }
   },
   methods: {
+    allSkip() {
+      this.runAll();
+      return;
+    },
     getHighlightSymbol(row, pass) {
       if (
         pass === this.currentTurn &&
@@ -293,34 +296,36 @@ export default {
 .first-set {
   display: flex;
   justify-content: space-around;
-  margin-top: 30px;
-  height: 500px;
-  .left {
-    width: 10%;
+  flex-direction: column;
+  .top {
   }
-  .center {
-    width: 20%;
-    height: 100%;
-    .up {
-      font-size: 30px;
-      height: 10%;
+  .down {
+    display: flex;
+    flex-direction: row;
+    .left {
+      width: 50%;
+      height: 100%;
+      .up {
+        font-size: 30px;
+        height: 10%;
+      }
+      .notice {
+        margin-top: 20px;
+        font-size: 25px;
+        margin-bottom: 20px;
+        height: 80%;
+      }
+      .down {
+        font-size: 30px;
+        height: 10%;
+      }
     }
-    .notice {
-      margin-top: 20px;
-      font-size: 25px;
-      margin-bottom: 20px;
-      height: 80%;
-    }
-    .down {
-      font-size: 30px;
-      height: 10%;
-    }
-  }
-  .right {
-    width: 50%;
-    position: relative;
-    .button {
-      margin-top: 10px;
+    .right {
+      width: 50%;
+      position: relative;
+      .button {
+        margin-top: 10px;
+      }
     }
   }
 }

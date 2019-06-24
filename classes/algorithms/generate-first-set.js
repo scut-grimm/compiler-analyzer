@@ -1,3 +1,4 @@
+/* eslint-disable prefer-const */
 import assert from 'assert'
 import MapSet from '../map-set'
 class FirstSet {
@@ -101,7 +102,7 @@ class FirstSet {
           dependSymbolIndex: null,
           newlyIncreasedSymbol: symbol,
           turn: this.turn,
-          notice: `符号 ${symbol.getString()} 是终止符号，first(${symbol.getString()})={${symbol.getString()}}`
+          notice: `符号 ${symbol.getString()} 是终止符号，first( ${symbol.getString()} )={ ${symbol.getString()} }`
         }
       }
       if (symbolIndex === this.allFirstSet.length - 1) {
@@ -176,7 +177,7 @@ class FirstSet {
                 dependSymbolIndex: null,
                 newlyIncreasedSymbol: newSymbol,
                 turn: this.turn,
-                notice: `当前计算 first(${symbol.getString()})。基于产生式 ${production.getString()}，将 ${newSymbol.getString()} 放入 first(${symbol.getString()}) 集合中`
+                notice: `当前计算 first( ${symbol.getString()} )。基于产生式 ${production.getString()}。`
               }
             }
           } else {
@@ -193,9 +194,9 @@ class FirstSet {
                 dependSymbolIndex: dependSymbolIndex,
                 newlyIncreasedSymbol: null,
                 turn: this.turn,
-                notice: `当前计算 first(${symbol.getString()})。
-                基于产生式 ${production.getString()}，需要将first(${this.allFirstSet[dependSymbolIndex][0].getString()}) 的所有符号放入 first(${symbol.getString()}) 中，
-                但是当前 first(${this.allFirstSet[dependSymbolIndex][0].getString()}) 为空`
+                notice: `当前计算 first( ${symbol.getString()} )。
+                基于产生式 ${production.getString()}，需要将first( ${this.allFirstSet[dependSymbolIndex][0].getString()} ) 的所有符号放入 first( ${symbol.getString()} ) 中，
+                但是当前 first( ${this.allFirstSet[dependSymbolIndex][0].getString()} ) 为空`
               }
               break
             } else {
@@ -215,9 +216,8 @@ class FirstSet {
                         dependSymbolIndex: dependSymbolIndex,
                         newlyIncreasedSymbol: newSymbol,
                         turn: this.turn,
-                        notice: `当前计算 first(${symbol.getString()})。
-                        基于产生式 ${production.getString()}，需要将first(${this.allFirstSet[dependSymbolIndex][0].getString()}) 的所有符号放入 first(${symbol.getString()}) 中。
-                        将符号 ${newSymbol.getString()} 加进 first(${symbol.getString()}) 中`
+                        notice: `当前计算 first( ${symbol.getString()} )。
+                        基于产生式 ${production.getString()}，需要将first( ${this.allFirstSet[dependSymbolIndex][0].getString()} ) 的所有符号放入 first( ${symbol.getString()} ) 中。`
                       }
                     }
                   }
@@ -236,9 +236,8 @@ class FirstSet {
                         dependSymbolIndex: dependSymbolIndex,
                         newlyIncreasedSymbol: newSymbol,
                         turn: this.turn,
-                        notice: `当前计算 first(${symbol.getString()})。
-                        基于产生式 ${production.getString()}，需要将first(${this.allFirstSet[dependSymbolIndex][0].getString()}) 的所有符号放入 first(${symbol.getString()}) 中。
-                        将符号 ${newSymbol.getString()} 加进 first(${symbol.getString()}) 中`
+                        notice: `当前计算 first( ${symbol.getString()} )。
+                        基于产生式 ${production.getString()}，需要将first( ${this.allFirstSet[dependSymbolIndex][0].getString()} ) 的所有符号放入 first( ${symbol.getString()} ) 中。`
                       }
                     }
                   }
@@ -258,9 +257,8 @@ class FirstSet {
                       dependSymbolIndex: dependSymbolIndex,
                       newlyIncreasedSymbol: newSymbol,
                       turn: this.turn,
-                      notice: `当前计算 first(${symbol.getString()})。
-                      基于产生式 ${production.getString()}，需要将first(${this.allFirstSet[dependSymbolIndex][0].getString()}) 的所有符号放入 first(${symbol.getString()}) 中。
-                      将符号 ${newSymbol.getString()} 加进 first(${symbol.getString()}) 中`
+                      notice: `当前计算 first( ${symbol.getString()} )。
+                      基于产生式 ${production.getString()}，需要将first( ${this.allFirstSet[dependSymbolIndex][0].getString()} ) 的所有符号放入 first( ${symbol.getString()} ) 中。`
                     }
                   }
                 }
