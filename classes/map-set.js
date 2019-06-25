@@ -5,10 +5,10 @@ class MapSet {
     this.dirty = false
   }
   get(key) {
-    if(this.map.has(key) === false){
+    if (this.map.has(key) === false) {
       console.log(key)
       console.log(this)
-      debugger;
+      debugger
     }
 
     assert.strictEqual(this.map.has(key), true)
@@ -18,7 +18,7 @@ class MapSet {
     if (!this.map.has(key)) {
       this.map.set(key, new Set())
     }
-    if(!this.map.get(key).has(value)){
+    if (!this.map.get(key).has(value)) {
       this.map.get(key).add(value)
       this.setDirty()
     }
@@ -26,24 +26,24 @@ class MapSet {
   has(key) {
     return this.map.has(key)
   }
-  setDirty(){
+  setDirty() {
     this.dirty = true
   }
-  clearDirty(){
+  clearDirty() {
     this.dirty = false
   }
-  isDirty(){
+  isDirty() {
     return this.dirty
   }
-  print(){
-    for(let key of this.map.keys()){
+  print() {
+    for (const key of this.map.keys()) {
       console.log(key.getString(), '->', [...this.map.get(key)].map(e => e.getString()).join(' '))
     }
   }
-  clone(){
-    let other = new MapSet()
-    for(let key of this.map.keys()){
-      for(let value of this.get(key)){
+  clone() {
+    const other = new MapSet()
+    for (const key of this.map.keys()) {
+      for (const value of this.get(key)) {
         other.add(key, value)
       }
     }

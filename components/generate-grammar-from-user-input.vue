@@ -1,7 +1,7 @@
 <template>
   <div class="inputAndGrammar">
     <div class="userinput">
-      <div class="left">
+      <div class="top">
         <el-table
           :data="tableData"
           class="table"
@@ -200,29 +200,51 @@
           <el-button round size="medium" @click="addNonterminal" class="addSymbolButton">添加非终止符号</el-button>
         </el-row>
       </div>
-      <div class="right">
-        <el-form
-          ref="ruleForm"
-          :rules="rulesCFG"
-          :model="ruleForm"
-          label-width="0px"
-          class="production"
-        >
+      <div class="down">
+        <el-collapse v-model="activeNotice">
+          <el-collapse-item name="1">
+            <template slot="title">
+              <div style="font-size:18px;font-family:Arial;">提示</div>
+            </template>
+            <div class="notice">
+              <div class="left">
+                文法符号使用前必须先添加至上方符号表中
+                <br>第一条产生式的头部默认为文法的开始符号
+              </div>
+              <div class="center">
+                产生式格式：产生式头 -> 产生式体
+                <br>产生式头是单个非终止符号
+                <br>产生式体是由终止符号和非终止符号组成的串或空串
+                <br>产生式体中不同文法符号之间用空格隔开
+              </div>
+              <div class="right">
+                例如：
+                <br>E -> A a | B b
+                <br>A -> a id | ε
+                <br>B -> b | ε
+              </div>
+            </div>
+          </el-collapse-item>
+        </el-collapse>
+        <el-form ref="ruleForm" :rules="rulesCFG" :model="ruleForm" label-width="0px">
           <el-form-item prop="CFG">
             <el-input
-              placeholder="请输入文法规则: 例子： A -> a b c 将产生式中的符号用空格隔开"
               type="textarea"
+              placeholder="请输入产生式"
               v-model="ruleForm.CFG"
               :autosize="{minRows:5}"
               spellcheck="false"
+              class="input"
             ></el-input>
           </el-form-item>
         </el-form>
-        <el-button round size="medium" @click="generateGrammar(true)">完成</el-button>
-        <el-button round size="medium" @click="showGrammar">查看当前文法</el-button>
+        <div class="button">
+          <el-button round size="medium" @click="generateGrammar(true)">完成</el-button>
+          <!-- <el-button round size="medium" @click="showGrammar">查看当前文法</el-button> -->
+        </div>
       </div>
     </div>
-    <div class="currentGrammar" v-if="showCurrentGrammar">
+    <!-- <div class="currentGrammar" v-if="showCurrentGrammar" >
       <el-table
         :data="currentGrammar"
         class="grammarTable"
@@ -243,7 +265,7 @@
           </el-table-column>
         </el-table-column>
       </el-table>
-    </div>
+    </div>-->
   </div>
 </template>
 <script>
@@ -348,12 +370,23 @@ export default {
         nonterminal2: false,
         nonterminal3: false,
         nonterminal4: false
-      }
+      },
+      activeNotice: ["1"]
     };
   },
   methods: {
+    hasInput() {
+      if (this.ruleForm.CFG.length > 0) {
+        return true;
+      } else {
+        return false;
+      }
+    },
     inputSymbolByClick(symbol) {
       this.ruleForm.CFG += symbol + " ";
+      this.focusInputArea();
+    },
+    focusInputArea() {
       this.$refs.ruleForm.$children[0].$children[1].$refs.textarea.focus();
     },
     symbolTableRowSpan({ row, column, rowIndex, columnIndex }) {
@@ -623,13 +656,12 @@ export default {
         }
         let result = this.grammarIsLegal(grammar);
         if (result) {
-          if(jump){
-          this.$eventbus.$emit("FinishInputGrammar", grammar);
-
+          if (jump) {
+            this.$eventbus.$emit("FinishInputGrammar", grammar);
           }
-          return grammar
-        }else{
-          return false
+          return grammar;
+        } else {
+          return false;
         }
       }
     },
@@ -755,17 +787,16 @@ export default {
 .inputAndGrammar {
   display: flex;
   flex-direction: column;
+  align-items: center;
   .userinput {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     position: relative;
     align-items: flex-start;
     justify-content: space-around;
-    .left {
-      flex: 0 0 auto;
-      margin-top: 20px;
+    .top {
+      width: 100%;
       .table {
-        width: 100%;
         .terminal {
           width: 50%;
           .terminalColumn {
@@ -779,8 +810,10 @@ export default {
           }
         }
         .tag {
-          margin-top: 5px;
-          margin-bottom: 5px;
+          margin-top: 2px;
+          margin-bottom: 2px;
+          width: 60px;
+          overflow: hidden;
           &:hover {
             cursor: pointer;
           }
@@ -796,17 +829,28 @@ export default {
         }
       }
     }
-    .right {
+    .down {
       margin-top: 20px;
-      width: 40%;
-      margin-left: 40px;
-      .production {
-        width: 80%;
+      width: 100%;
+      .notice {
+        font-size: 15px;
+        font-family: Arial;
+        color: #b4b7b9;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+      }
+      .input {
+        margin-top: 10px;
+        width: 100%;
+      }
+      .button {
+        margin-top: 5px;
       }
     }
   }
   .currentGrammar {
-    width: 100%;
+    margin-top: 10px;
     .grammarTable {
     }
   }

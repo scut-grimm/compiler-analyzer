@@ -1,31 +1,27 @@
 <template>
   <div class="all">
-    <div class="top">
+    <div class="first">
+      <div class="top">
+        <HighlightProduction :productions="immedationRecursionProductions" title="当前文法中的立即左递归"></HighlightProduction>
+        <h3 v-if="!hasImmedationRecursionProduction">无</h3>
+      </div>
+      <div class="bottom">
+        <HighlightProduction
+          :disjointSet="indirectRecursionDisjointSet"
+          :productions="indirectRecursionProductions"
+          title="当前文法中的间接左递归和环"
+        ></HighlightProduction>
+        <h3 v-if="!hasIndirectRecursionProduction">无</h3>
+      </div>
     </div>
-    <div class="down">
-      <div class="first">
-        <div class="top">
-          <HighlightProduction :productions="immedationRecursionProductions" title="当前文法中的立即左递归"></HighlightProduction>
-          <h3 v-if="!hasImmedationRecursionProduction">无</h3>
-        </div>
-        <div class="bottom">
-          <HighlightProduction
-            :disjointSet="indirectRecursionDisjointSet"
-            :productions="indirectRecursionProductions"
-            title="当前文法中的间接左递归和环"
-          ></HighlightProduction>
-          <h3 v-if="!hasIndirectRecursionProduction">无</h3>
-        </div>
-      </div>
-      <div class="second" v-show="second">
-        <HighlightProduction :productions="EEGProductions" title="消除ε产生式"></HighlightProduction>
-      </div>
-      <div class="thrid" v-show="thrid">
-        <HighlightProduction :productions="ECGProductions" title="消除环"></HighlightProduction>
-      </div>
-      <div class="fourth" v-show="fourth">
-        <HighlightProduction :productions="ELRGProductions" :title="titleMessage"></HighlightProduction>
-      </div>
+    <div class="second" v-show="second">
+      <HighlightProduction :productions="EEGProductions" title="消除ε产生式后的文法"></HighlightProduction>
+    </div>
+    <div class="thrid" v-show="thrid">
+      <HighlightProduction :productions="ECGProductions" title="消除环后的文法"></HighlightProduction>
+    </div>
+    <div class="fourth" v-show="fourth">
+      <HighlightProduction :productions="ELRGProductions" :title="titleMessage"></HighlightProduction>
     </div>
   </div>
 </template>
@@ -38,8 +34,7 @@ import Production from "~/classes/production";
 export default {
   layout: "grammar",
   components: {
-    HighlightProduction,
-
+    HighlightProduction
   },
   data() {
     return {
@@ -107,12 +102,12 @@ export default {
         this.second = true;
         this.thrid = true;
         this.fourth = true;
-        this.titleMessage = "消除左递归";
+        this.titleMessage = "消除左递归后的文法";
       } else if (this.hasImmedationRecursionProduction) {
         this.second = false;
         this.thrid = false;
         this.fourth = true;
-        this.titleMessage = "消除立即左递归";
+        this.titleMessage = "消除立即左递归后的文法";
       } else {
         this.second = false;
         this.thrid = false;
@@ -209,35 +204,35 @@ export default {
 <style lang="scss" scoped>
 .all {
   display: flex;
-  flex-direction: column;
-  .top {
-  }
-  .down {
-    display: flex;
-    flex-direction: row;
-    .first {
-      flex: 1 1 auto;
-      .top {
-        h3 {
-          text-align: center;
-        }
-      }
-      .bottom {
+  flex-direction: row;
+  .first {
+    flex: 1 1 auto;
+    margin-top: 20px;
+    .top {
+      h3 {
+        margin-top: 10px;
         text-align: center;
-        h3 {
-          text-align: center;
-        }
       }
     }
-    .second {
-      flex: 1 1 auto;
+    .bottom {
+      margin-top: 20px;
+      h3 {
+        margin-top: 10px;
+        text-align: center;
+      }
     }
-    .thrid {
-      flex: 1 1 auto;
-    }
-    .fourth {
-      flex: 1 1 auto;
-    }
+  }
+  .second {
+    margin-top: 20px;
+    flex: 1 1 auto;
+  }
+  .thrid {
+    margin-top: 20px;
+    flex: 1 1 auto;
+  }
+  .fourth {
+    margin-top: 20px;
+    flex: 1 1 auto;
   }
 }
 </style>

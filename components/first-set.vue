@@ -1,49 +1,50 @@
 <template>
   <div class="first-set">
-    <div class="top">
-    </div>
-    <div class="down">
-      <div class="left">
-        <p class="up">当前步骤</p>
-        <p class="notice">{{notice}}</p>
-        <template v-if="dependSymbolIndex!==null">
-          <el-button class="down">{{dependSymbolFirstSet}}</el-button>
-        </template>
+    <div class="left">
+      <div class="top">
+        <div v-if="!started">点击开始按钮计算所有文法符号的First集合</div>
+        <div v-if="started&&!allDone">当前操作</div>
       </div>
-      <div class="right">
-        <el-table :data="tableData" style="width: 100%">
-          <el-table-column label="文法符号" style="font-size:20px">
-            <template slot-scope="scope">
-              <span style="font-size:20px">{{scope.row.symbol}}</span>
-            </template>
-          </el-table-column>
-          <el-table-column
-            v-for="(pass,index) in tableColumnIndex"
-            :key="index"
-            :label="pass.toString()"
-            style="font-size:20px"
-          >
-            <template slot-scope="scope">
-              <HighlightTableCell
-                :string="getCell(scope.row,pass)"
-                :highlightSymbol="getHighlightSymbol(scope.row,pass)"
-              ></HighlightTableCell>
-            </template>
-          </el-table-column>
-        </el-table>
-        <div class="button">
-          <template v-if="started === false">
-            <el-button type="primary" @click="start">开始</el-button>
+      <div class="middle">
+        <span v-html="notice"></span>
+        <div v-if="allDone">表格最后一列为对应文法符号的First集合</div>
+      </div>
+      <!-- <div v-if="dependSymbolIndex!==null" class="down">
+        <el-button style="font-size: 30px;">当前{{dependSymbolFirstSet}}</el-button>
+      </div>-->
+    </div>
+    <div class="right">
+      <el-table :data="tableData" style="width: 100%" empty-text="请点击开始按钮" max-height="550">
+        <el-table-column label="文法符号" style="font-size:20px" fixed>
+          <template slot-scope="scope">
+            <span style="font-size:20px">{{scope.row.symbol}}</span>
           </template>
-          <template v-if="started === true && allDone === false">
-            <el-button type="success" @click="next">下一步</el-button>
-            <el-button type="warning" @click="runAll">跳过</el-button>
-            <el-button type="info" @click="startAutorun" v-if="autoTimer === null">自动播放</el-button>
-            <el-button type="danger" @click="stopAutorun" v-if="autoTimer !== null">停止播放</el-button>
+        </el-table-column>
+        <el-table-column
+          v-for="(pass,index) in tableColumnIndex"
+          :key="index"
+          :label="pass.toString()"
+          style="font-size:20px"
+        >
+          <template slot-scope="scope">
+            <HighlightTableCell
+              :string="getCell(scope.row,pass)"
+              :highlightSymbol="getHighlightSymbol(scope.row,pass)"
+            ></HighlightTableCell>
           </template>
-          <el-button @click="start" v-if="started" type="primary">重新开始</el-button>
-          <!-- <el-button type="primary" @click="finish">完成</el-button> -->
-        </div>
+        </el-table-column>
+      </el-table>
+      <div class="button">
+        <template v-if="started === false">
+          <el-button type="primary" @click="start">开始</el-button>
+        </template>
+        <template v-if="started === true && allDone === false">
+          <el-button type="success" @click="next">下一步</el-button>
+          <el-button type="warning" @click="runAll">跳过</el-button>
+          <el-button type="info" @click="startAutorun" v-if="autoTimer === null">自动播放</el-button>
+          <el-button type="danger" @click="stopAutorun" v-if="autoTimer !== null">停止播放</el-button>
+        </template>
+        <el-button @click="start" v-if="started" type="primary">重新开始</el-button>
       </div>
     </div>
   </div>
@@ -294,37 +295,35 @@ export default {
 <style lang="scss" scoped>
 .first-set {
   display: flex;
-  justify-content: space-around;
-  flex-direction: column;
-  .top {
-  }
-  .down {
-    display: flex;
-    flex-direction: row;
-    .left {
-      width: 50%;
-      height: 100%;
-      .up {
-        font-size: 30px;
-        height: 10%;
-      }
-      .notice {
-        margin-top: 20px;
-        font-size: 25px;
-        margin-bottom: 20px;
-        height: 80%;
-      }
-      .down {
-        font-size: 30px;
-        height: 10%;
-      }
+  flex-direction: row;
+  align-items: flex-start;
+  .left {
+    width: 50%;
+    height: 100%;
+    margin-top: 10px;
+    .top {
+      font-size: 30px;
+      height: 10%;
+      text-align: center;
     }
-    .right {
-      width: 50%;
-      position: relative;
-      .button {
-        margin-top: 10px;
-      }
+    .middle {
+      text-align: center;
+      margin-top: 20px;
+      margin-right: 20px;
+      margin-bottom: 20px;
+      font-size: 25px;
+      height: 80%;
+    }
+    .down {
+      text-align: center;
+      height: 10%;
+    }
+  }
+  .right {
+    width: 50%;
+    margin-top: 10px;
+    .button {
+      margin-top: 10px;
     }
   }
 }

@@ -102,7 +102,41 @@ class FirstSet {
           dependSymbolIndex: null,
           newlyIncreasedSymbol: symbol,
           turn: this.turn,
-          notice: `符号 ${symbol.getString()} 是终止符号，first( ${symbol.getString()} )={ ${symbol.getString()} }`
+          notice: `
+          <div>
+            当前计算
+            <span 
+            style="color: #409EFF;
+            background-color: rgba(64,158,255,.1);
+            border-radius: 4px;
+            margin: 2px; 
+            padding:1px 3px 3px 10px;
+            border: 1px solid rgba(64,158,255,.2);"
+            >
+              first( ${symbol.getString()} )
+            </span><br><br>
+            符号
+            <span 
+            style="color: #409EFF;
+            background-color: rgba(64,158,255,.1);
+            margin-right: 6px;
+            padding:0px 1px 0px 8px;
+            border-radius: 4px;
+            border: 1px solid rgba(64,158,255,.2);"
+            >
+              ${symbol.getString()}
+            </span>是终止符号<br><br>
+            <span 
+            style="color: #409EFF;
+            background-color: rgba(64,158,255,.1);
+            margin: 2px;
+            padding:2px 2px 2px 2px;
+            border-radius: 4px;
+            border: 1px solid rgba(64,158,255,.2);"
+            >
+              first( ${symbol.getString()} )={ ${symbol.getString()} }
+            </span>
+          </div>`
         }
       }
       if (symbolIndex === this.allFirstSet.length - 1) {
@@ -177,7 +211,52 @@ class FirstSet {
                 dependSymbolIndex: null,
                 newlyIncreasedSymbol: newSymbol,
                 turn: this.turn,
-                notice: `当前计算 first( ${symbol.getString()} )。基于产生式 ${production.getString()}。`
+                notice: `
+                <div>
+                  当前计算
+                  <span 
+                  style="color: #409EFF;
+                  background-color: rgba(64,158,255,.1);
+                  border-radius: 4px;
+                  margin: 2px; 
+                  padding:1px 3px 3px 10px;
+                  border: 1px solid rgba(64,158,255,.2);"
+                  >
+                    first( ${symbol.getString()} )
+                  </span><br><br>
+                  基于产生式
+                  <span 
+                  style="color: #409EFF;
+                  background-color: rgba(64,158,255,.1);
+                  border-radius: 4px;
+                  margin: 2px; 
+                  padding:1px 3px 3px 10px;
+                  border: 1px solid rgba(64,158,255,.2);"
+                  >
+                    ${production.getString()}
+                  </span><br><br>
+                  将
+                  <span 
+                  style="color: #409EFF;
+                  background-color: rgba(64,158,255,.1);
+                  margin-right: 6px;
+                  padding:0px 1px 0px 8px;
+                  border-radius: 4px;
+                  border: 1px solid rgba(64,158,255,.2);"
+                  >
+                    ${newSymbol.getString()}
+                  </span>加入
+                  <span 
+                  style="color: #409EFF;
+                  background-color: rgba(64,158,255,.1);
+                  border-radius: 4px;
+                  margin: 2px; 
+                  padding:1px 3px 3px 10px;
+                  border: 1px solid rgba(64,158,255,.2);"
+                  >
+                    first( ${symbol.getString()} )
+                  </span>中
+                </div>`
               }
             }
           } else {
@@ -194,9 +273,63 @@ class FirstSet {
                 dependSymbolIndex: dependSymbolIndex,
                 newlyIncreasedSymbol: null,
                 turn: this.turn,
-                notice: `当前计算 first( ${symbol.getString()} )。
-                基于产生式 ${production.getString()}，需要将first( ${this.allFirstSet[dependSymbolIndex][0].getString()} ) 的所有符号放入 first( ${symbol.getString()} ) 中，
-                但是当前 first( ${this.allFirstSet[dependSymbolIndex][0].getString()} ) 为空`
+                notice: `
+                <div>
+                  当前计算
+                  <span 
+                  style="color: #409EFF;
+                  background-color: rgba(64,158,255,.1);
+                  border-radius: 4px;
+                  margin: 2px; 
+                  padding:1px 3px 3px 10px;
+                  border: 1px solid rgba(64,158,255,.2);"
+                  >
+                      first( ${symbol.getString()} )
+                  </span><br><br>
+                  基于产生式
+                  <span 
+                  style="color: #409EFF;
+                  background-color: rgba(64,158,255,.1);
+                  border-radius: 4px;
+                  margin: 2px; 
+                  padding:1px 3px 3px 10px;
+                  border: 1px solid rgba(64,158,255,.2);"
+                  >
+                    ${production.getString()}
+                  </span><br><br>
+                  需要将
+                  <span 
+                  style="color: #409EFF;
+                  background-color: rgba(64,158,255,.1);
+                  border-radius: 4px;
+                  margin: 2px; 
+                  padding:1px 3px 3px 10px;
+                  border: 1px solid rgba(64,158,255,.2);"
+                  >
+                      first( ${this.allFirstSet[dependSymbolIndex][0].getString()} )
+                  </span>中的所有符号加入
+                  <span 
+                  style="color: #409EFF;
+                  background-color: rgba(64,158,255,.1);
+                  border-radius: 4px;
+                  margin: 2px; 
+                  padding:1px 3px 3px 10px;
+                  border: 1px solid rgba(64,158,255,.2);"
+                  >
+                      first( ${symbol.getString()} )
+                  </span>中<br><br>
+                  但是当前
+                  <span 
+                  style="color: #409EFF;
+                  background-color: rgba(64,158,255,.1);
+                  border-radius: 4px;
+                  margin: 2px; 
+                  padding:1px 3px 3px 10px;
+                  border: 1px solid rgba(64,158,255,.2);"
+                  >
+                      first( ${this.allFirstSet[dependSymbolIndex][0].getString()} ) 
+                  </span>为空
+                </div>`
               }
               break
             } else {
@@ -216,8 +349,52 @@ class FirstSet {
                         dependSymbolIndex: dependSymbolIndex,
                         newlyIncreasedSymbol: newSymbol,
                         turn: this.turn,
-                        notice: `当前计算 first( ${symbol.getString()} )。
-                        基于产生式 ${production.getString()}，需要将first( ${this.allFirstSet[dependSymbolIndex][0].getString()} ) 的所有符号放入 first( ${symbol.getString()} ) 中。`
+                        notice: `
+                        <div>
+                          当前计算
+                          <span 
+                          style="color: #409EFF;
+                          background-color: rgba(64,158,255,.1);
+                          border-radius: 4px;
+                          margin: 2px; 
+                          padding:1px 3px 3px 10px;
+                          border: 1px solid rgba(64,158,255,.2);"
+                          >
+                            first( ${symbol.getString()} )
+                          </span><br><br>
+                          基于产生式
+                          <span 
+                          style="color: #409EFF;
+                          background-color: rgba(64,158,255,.1);
+                          border-radius: 4px;
+                          margin: 2px; 
+                          padding:1px 3px 3px 10px;
+                          border: 1px solid rgba(64,158,255,.2);"
+                          >
+                            ${production.getString()}
+                          </span><br><br>
+                          需要将
+                          <span 
+                          style="color: #409EFF;
+                          background-color: rgba(64,158,255,.1);
+                          border-radius: 4px;
+                          margin: 2px; 
+                          padding:1px 3px 3px 10px;
+                          border: 1px solid rgba(64,158,255,.2);"
+                          >
+                            first( ${this.allFirstSet[dependSymbolIndex][0].getString()} )
+                          </span>中的所有符号加入
+                          <span 
+                          style="color: #409EFF;
+                          background-color: rgba(64,158,255,.1);
+                          border-radius: 4px;
+                          margin: 2px; 
+                          padding:1px 3px 3px 10px;
+                          border: 1px solid rgba(64,158,255,.2);"
+                          >
+                            first( ${symbol.getString()} )
+                          </span>中
+                        </div>`
                       }
                     }
                   }
@@ -236,8 +413,52 @@ class FirstSet {
                         dependSymbolIndex: dependSymbolIndex,
                         newlyIncreasedSymbol: newSymbol,
                         turn: this.turn,
-                        notice: `当前计算 first( ${symbol.getString()} )。
-                        基于产生式 ${production.getString()}，需要将first( ${this.allFirstSet[dependSymbolIndex][0].getString()} ) 的所有符号放入 first( ${symbol.getString()} ) 中。`
+                        notice: `
+                        <div>
+                          当前计算
+                          <span 
+                          style="color: #409EFF;
+                          background-color: rgba(64,158,255,.1);
+                          border-radius: 4px;
+                          margin: 2px; 
+                          padding:1px 3px 3px 10px;
+                          border: 1px solid rgba(64,158,255,.2);"
+                          >
+                            first( ${symbol.getString()} )
+                          </span><br><br>
+                          基于产生式
+                          <span 
+                          style="color: #409EFF;
+                          background-color: rgba(64,158,255,.1);
+                          border-radius: 4px;
+                          margin: 2px; 
+                          padding:1px 3px 3px 10px;
+                          border: 1px solid rgba(64,158,255,.2);"
+                          >
+                            ${production.getString()}
+                          </span><br><br>
+                          需要将
+                          <span 
+                          style="color: #409EFF;
+                          background-color: rgba(64,158,255,.1);
+                          border-radius: 4px;
+                          margin: 2px; 
+                          padding:1px 3px 3px 10px;
+                          border: 1px solid rgba(64,158,255,.2);"
+                          >
+                            first( ${this.allFirstSet[dependSymbolIndex][0].getString()} )
+                          </span>中的所有符号加入
+                          <span 
+                          style="color: #409EFF;
+                          background-color: rgba(64,158,255,.1);
+                          border-radius: 4px;
+                          margin: 2px; 
+                          padding:1px 3px 3px 10px;
+                          border: 1px solid rgba(64,158,255,.2);"
+                          >
+                            first( ${symbol.getString()} )
+                          </span>中
+                        </div>`
                       }
                     }
                   }
@@ -257,8 +478,52 @@ class FirstSet {
                       dependSymbolIndex: dependSymbolIndex,
                       newlyIncreasedSymbol: newSymbol,
                       turn: this.turn,
-                      notice: `当前计算 first( ${symbol.getString()} )。
-                      基于产生式 ${production.getString()}，需要将first( ${this.allFirstSet[dependSymbolIndex][0].getString()} ) 的所有符号放入 first( ${symbol.getString()} ) 中。`
+                      notice: `
+                      <div>
+                        当前计算
+                        <span 
+                          style="color: #409EFF;
+                          background-color: rgba(64,158,255,.1);
+                          border-radius: 4px;
+                          margin: 2px; 
+                          padding:1px 3px 3px 10px;
+                          border: 1px solid rgba(64,158,255,.2);"
+                          >
+                          first( ${symbol.getString()} )
+                        </span><br><br>
+                        基于产生式
+                        <span 
+                          style="color: #409EFF;
+                          background-color: rgba(64,158,255,.1);
+                          border-radius: 4px;
+                          margin: 2px; 
+                          padding:1px 3px 3px 10px;
+                          border: 1px solid rgba(64,158,255,.2);"
+                          >
+                          ${production.getString()}
+                        </span><br><br>
+                        需要将
+                        <span 
+                        style="color: #409EFF;
+                        background-color: rgba(64,158,255,.1);
+                        border-radius: 4px;
+                        margin: 2px; 
+                        padding:1px 3px 3px 10px;
+                        border: 1px solid rgba(64,158,255,.2);"
+                        >
+                          first( ${this.allFirstSet[dependSymbolIndex][0].getString()} )
+                        </span>中的所有符号加入
+                        <span 
+                        style="color: #409EFF;
+                        background-color: rgba(64,158,255,.1);
+                        border-radius: 4px;
+                        margin: 2px; 
+                        padding:1px 3px 3px 10px;
+                        border: 1px solid rgba(64,158,255,.2);"
+                        >
+                          first( ${symbol.getString()} )
+                        </span>中
+                      </div>`
                     }
                   }
                 }

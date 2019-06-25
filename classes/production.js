@@ -4,7 +4,7 @@ class Production {
     this.body = body
   }
   getString() {
-    return this.head.getString() + '->' + this.body.map(e => e.getString()).join('')
+    return this.head.getString() + ' -> ' + this.body.map(e => e.getString()).join(' ')
   }
   getTerminals() {
     return this.body.filter(e => e.type === 'Terminal')
@@ -24,11 +24,11 @@ class Production {
   getBody() {
     return this.body
   }
-  isSameOf(head, body){
-    if(this.head === head && body.length === this.body.length){
+  isSameOf(head, body) {
+    if (this.head === head && body.length === this.body.length) {
       let same = true
-      for(let i=0;i<body.length;i++){
-        if(body[i] !== this.body[i]){
+      for (let i = 0; i < body.length; i++) {
+        if (body[i] !== this.body[i]) {
           same = false
           break
         }

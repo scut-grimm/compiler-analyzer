@@ -2,22 +2,30 @@
   <div class="grammar">
     <el-collapse>
       <el-collapse-item>
-        <template slot="title">显示{{title}}</template>
+        <template slot="title">
+          <div style="font-size:18px;font-family:Arial;">查看{{title}}</div>
+        </template>
         <el-table
           :data="tableData"
           class="table"
+          size="small"
           border
           :span-method="grammarTableRowSpan"
           :header-cell-style="combineHeadCells"
         >
           <el-table-column align="center" :show-header="false">
             <template slot-scope="scope">
-              <el-tag style="font-size: 20px">{{scope.row.name}}</el-tag>
+              <div style="font-size: 20px">{{scope.row.name}}</div>
             </template>
           </el-table-column>
           <el-table-column align="center" :show-header="false">
             <template slot-scope="scope">
-              <el-tag style="font-size: 20px">{{scope.row.data}}</el-tag>
+              <el-tag
+                style="font-size: 20px"
+                v-for="(item,index) in scope.row.data"
+                :key="index"
+                class="tag"
+              >{{item}}</el-tag>
             </template>
           </el-table-column>
         </el-table>
@@ -74,39 +82,42 @@ export default {
       if (this.grammar.getProductions().length !== 0) {
         let row0 = {
           name: "开始符号",
-          data: this.grammar.getStartSign().getString()
+          data: [this.grammar.getStartSign().getString()]
         };
         rows.push(row0);
         let row1 = {
           name: "非终止符号",
-          data: ""
+          data: []
         };
         let nonterminals = this.grammar.getNonterminals();
         if (nonterminals.length !== 0) {
           for (const nonterminal of nonterminals) {
-            row1.data += nonterminal.getString() + ", ";
+            row1.data.push(nonterminal.getString());
           }
-          row1.data = row1.data.slice(0, -2);
         }
         rows.push(row1);
         let row2 = {
           name: "终止符号",
-          data: ""
+          data: []
         };
         let terminals = this.grammar.getTerminals();
         if (terminals.length !== 0) {
           for (const terminal of terminals) {
-            row2.data += terminal.getString() + ", ";
+            row2.data.push(terminal.getString());
           }
-          row2.data = row2.data.slice(0, -2);
         }
         rows.push(row2);
-        for (const production of this.grammar.getProductions()) {
+        for (const nonterminal of this.grammar.getNonterminals()) {
           let rowP = {
             name: "产生式",
-            data: production.getString()
+            data: []
           };
-          rows.push(rowP);
+          if (this.grammar.getDerivations(nonterminal).length > 0) {
+            for (const production of this.grammar.getDerivations(nonterminal)) {
+              rowP.data.push(production.getString());
+            }
+            rows.push(rowP);
+          }
         }
       }
       return rows;
@@ -115,4 +126,12 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+.grammar {
+  .table {
+    width: 100%;
+    .tag {
+      margin-left: 10px;
+    }
+  }
+}
 </style>
