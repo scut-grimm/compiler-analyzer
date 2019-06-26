@@ -303,7 +303,7 @@ export default {
               }
             }
           } catch (e) {
-            console.log(e.message);
+            // console.log(e.message);
             callback(
               new Error(
                 "第" + (i + 1).toString() + "条产生式不合法，请重新输入"
@@ -607,23 +607,23 @@ export default {
     generateGrammar(jump = false) {
       if (this.getProductions()) {
         let grammar = new GGFUI(this.formalProductions);
-        {
-          console.log("Start symbol: " + grammar.getStartSign().getString());
-          console.log("Productions");
-          grammar.productions.forEach(e => {
-            console.log(e.getHeadString() + "->" + e.getBodyString());
-          });
-          let nonterminals2 = "";
-          grammar.getNonterminals().forEach(e => {
-            nonterminals2 += e.getString() + " ";
-          });
-          console.log("Nonterminals: " + nonterminals2);
-          let terminals2 = "";
-          grammar.getTerminals().forEach(e => {
-            terminals2 += e.getString() + " ";
-          });
-          console.log("Terminals: " + terminals2);
-        }
+        // {
+        //   console.log("Start symbol: " + grammar.getStartSign().getString());
+        //   console.log("Productions");
+        //   grammar.productions.forEach(e => {
+        //     console.log(e.getHeadString() + "->" + e.getBodyString());
+        //   });
+        //   let nonterminals2 = "";
+        //   grammar.getNonterminals().forEach(e => {
+        //     nonterminals2 += e.getString() + " ";
+        //   });
+        //   console.log("Nonterminals: " + nonterminals2);
+        //   let terminals2 = "";
+        //   grammar.getTerminals().forEach(e => {
+        //     terminals2 += e.getString() + " ";
+        //   });
+        //   console.log("Terminals: " + terminals2);
+        // }
         let result = this.grammarIsLegal(grammar);
         if (result) {
           if (jump) {
@@ -675,7 +675,7 @@ export default {
       };
     },
     handleSelect(item) {
-      console.log(item);
+      // console.log(item);
       this.tip = item.symbol;
     }
   },
