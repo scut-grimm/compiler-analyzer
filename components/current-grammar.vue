@@ -3,29 +3,24 @@
     <el-collapse>
       <el-collapse-item>
         <template slot="title">
-          <div style="font-size:18px;font-family:Arial;">查看{{title}}</div>
+          <h3>查看{{title}}</h3>
+          <!-- style="font-size:18px;font-family:Arial;" -->
         </template>
         <el-table
           :data="tableData"
           class="table"
           size="small"
-          border
           :span-method="grammarTableRowSpan"
-          :header-cell-style="combineHeadCells"
+          :show-header="false"
         >
-          <el-table-column align="center" :show-header="false">
+          <el-table-column align="center" width="200" fixed>
             <template slot-scope="scope">
               <div style="font-size: 20px">{{scope.row.name}}</div>
             </template>
           </el-table-column>
-          <el-table-column align="center" :show-header="false">
+          <el-table-column align="center">
             <template slot-scope="scope">
-              <el-tag
-                style="font-size: 20px"
-                v-for="(item,index) in scope.row.data"
-                :key="index"
-                class="tag"
-              >{{item}}</el-tag>
+              <el-tag v-for="(item,index) in scope.row.data" :key="index" class="tag">{{item}}</el-tag>
             </template>
           </el-table-column>
         </el-table>
@@ -68,11 +63,6 @@ export default {
             colspan: 0
           };
         }
-      }
-    },
-    combineHeadCells({ row, column, rowIndex, columnIndex }) {
-      if (rowIndex === 0) {
-        return { display: "none" };
       }
     }
   },
@@ -130,7 +120,8 @@ export default {
   .table {
     width: 100%;
     .tag {
-      margin-left: 10px;
+      font-size: 20px;
+      margin: 5px;
     }
   }
 }

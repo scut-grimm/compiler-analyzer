@@ -106,11 +106,11 @@ export default function(grammar) {
   const temp = new IsLL1(grammar)
   const result = temp.isLL1()
   result.productions.forEach(e => {
-    let productionString = e.production[0].getHeadString() + '->'
+    let productionString = e.production[0].getHeadString() + ' -> '
     for (const i of e.production) {
-      productionString += i.getBodyString() + '|'
+      productionString += i.getBodyString() + ' | '
     }
-    productionString = productionString.slice(0, -1)
+    productionString = productionString.slice(0, -3)
     e.production = productionString
   })
   return result

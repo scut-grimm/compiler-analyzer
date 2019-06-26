@@ -2,12 +2,11 @@
   <div class="first-set">
     <div class="left">
       <div class="top">
-        <div v-if="!started">点击开始按钮计算所有文法符号的First集合</div>
-        <div v-if="started&&!allDone">当前操作</div>
+        <h3 v-if="!started">点击开始按钮计算所有文法符号的First集合</h3>
       </div>
       <div class="middle">
         <span v-html="notice"></span>
-        <div v-if="allDone">表格最后一列为对应文法符号的First集合</div>
+        <h3 v-if="allDone">表格最后一列为对应文法符号的First集合</h3>
       </div>
       <!-- <div v-if="dependSymbolIndex!==null" class="down">
         <el-button style="font-size: 30px;">当前{{dependSymbolFirstSet}}</el-button>
@@ -216,7 +215,7 @@ export default {
         this.newTurn = this.wrapperReturn.turn;
         this.activeProductionIndex = this.wrapperReturn.productionIndex;
       } else {
-        this.notice = "first集合计算完成";
+        this.notice = "<h3>First集合计算完成</h3>";
         this.dependSymbolIndex = null;
       }
       if (this.autoTimer !== null) {
@@ -302,7 +301,6 @@ export default {
     height: 100%;
     margin-top: 10px;
     .top {
-      font-size: 30px;
       height: 10%;
       text-align: center;
     }
@@ -311,7 +309,6 @@ export default {
       margin-top: 20px;
       margin-right: 20px;
       margin-bottom: 20px;
-      font-size: 25px;
       height: 80%;
     }
     .down {

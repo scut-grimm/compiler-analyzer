@@ -1,13 +1,16 @@
 <template>
   <div class="isLL1">
     <div class="top">
+      <h3 v-if="isLL1===true">当前文法属于LL(1)文法</h3>
+      <h3 v-else>
+        当前文法不属于LL(1)文法
+        <br>点击下面产生式可查看具体原因
+      </h3>
     </div>
     <div class="down">
       <div v-for="production in productions" :key="production.production">
         <el-popover placement="right" width="200" trigger="click">
-          <el-table :data="production.notice">
-            <el-table-column width="150" property="notice" lable="notice"></el-table-column>
-          </el-table>
+          <div>{{production.notice[0].notice}}</div>
           <el-button
             slot="reference"
             type="text"
@@ -15,8 +18,6 @@
           >{{production.production}}</el-button>
         </el-popover>
       </div>
-      <div v-if="isLL1===true">当前文法属于LL(1)文法</div>
-      <div v-else>当前文法不属于LL(1)文法</div>
     </div>
   </div>
 </template>
@@ -57,6 +58,13 @@ export default {
     },
     finish() {
       this.$eventbus.$emit("FinishIsLL1");
+    },
+    tableData(notice) {
+      const row = [];
+      row.push({
+        notice: notice
+      });
+      return row;
     }
   }
 };
@@ -65,18 +73,22 @@ export default {
 .isLL1 {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-around;
   align-items: center;
   .top {
+    text-align: center;
+    margin-top: 20px;
     width: 100%;
   }
   .down {
+    text-align: center;
+    margin-top: 20px;
     .errorProduction {
       color: red;
     }
     .grammar {
       border-radius: 5px;
-      font-size: 24px;
+      font-size: 30px;
       padding: 5px 10px;
       margin: 2px;
       &:hover {

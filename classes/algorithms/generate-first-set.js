@@ -103,7 +103,7 @@ class FirstSet {
           newlyIncreasedSymbol: symbol,
           turn: this.turn,
           notice: `
-          <div>
+          <h3>
             当前计算
             <span 
             style="color: #409EFF;
@@ -113,7 +113,7 @@ class FirstSet {
             padding:1px 3px 3px 10px;
             border: 1px solid rgba(64,158,255,.2);"
             >
-              first( ${symbol.getString()} )
+              First( ${symbol.getString()} )
             </span><br><br>
             符号
             <span 
@@ -134,9 +134,9 @@ class FirstSet {
             border-radius: 4px;
             border: 1px solid rgba(64,158,255,.2);"
             >
-              first( ${symbol.getString()} )={ ${symbol.getString()} }
+              First( ${symbol.getString()} )={ ${symbol.getString()} }
             </span>
-          </div>`
+          </h3>`
         }
       }
       if (symbolIndex === this.allFirstSet.length - 1) {
@@ -212,7 +212,7 @@ class FirstSet {
                 newlyIncreasedSymbol: newSymbol,
                 turn: this.turn,
                 notice: `
-                <div>
+                <h3>
                   当前计算
                   <span 
                   style="color: #409EFF;
@@ -222,7 +222,7 @@ class FirstSet {
                   padding:1px 3px 3px 10px;
                   border: 1px solid rgba(64,158,255,.2);"
                   >
-                    first( ${symbol.getString()} )
+                    First( ${symbol.getString()} )
                   </span><br><br>
                   基于产生式
                   <span 
@@ -254,9 +254,9 @@ class FirstSet {
                   padding:1px 3px 3px 10px;
                   border: 1px solid rgba(64,158,255,.2);"
                   >
-                    first( ${symbol.getString()} )
+                    First( ${symbol.getString()} )
                   </span>中
-                </div>`
+                </h3>`
               }
             }
           } else {
@@ -274,7 +274,7 @@ class FirstSet {
                 newlyIncreasedSymbol: null,
                 turn: this.turn,
                 notice: `
-                <div>
+                <h3>
                   当前计算
                   <span 
                   style="color: #409EFF;
@@ -284,7 +284,7 @@ class FirstSet {
                   padding:1px 3px 3px 10px;
                   border: 1px solid rgba(64,158,255,.2);"
                   >
-                      first( ${symbol.getString()} )
+                      First( ${symbol.getString()} )
                   </span><br><br>
                   基于产生式
                   <span 
@@ -306,7 +306,7 @@ class FirstSet {
                   padding:1px 3px 3px 10px;
                   border: 1px solid rgba(64,158,255,.2);"
                   >
-                      first( ${this.allFirstSet[dependSymbolIndex][0].getString()} )
+                      First( ${this.allFirstSet[dependSymbolIndex][0].getString()} )
                   </span>中的所有符号加入
                   <span 
                   style="color: #409EFF;
@@ -316,7 +316,7 @@ class FirstSet {
                   padding:1px 3px 3px 10px;
                   border: 1px solid rgba(64,158,255,.2);"
                   >
-                      first( ${symbol.getString()} )
+                      First( ${symbol.getString()} )
                   </span>中<br><br>
                   但是当前
                   <span 
@@ -327,9 +327,9 @@ class FirstSet {
                   padding:1px 3px 3px 10px;
                   border: 1px solid rgba(64,158,255,.2);"
                   >
-                      first( ${this.allFirstSet[dependSymbolIndex][0].getString()} ) 
+                      First( ${this.allFirstSet[dependSymbolIndex][0].getString()} ) 
                   </span>为空
-                </div>`
+                </h3>`
               }
               break
             } else {
@@ -350,7 +350,7 @@ class FirstSet {
                         newlyIncreasedSymbol: newSymbol,
                         turn: this.turn,
                         notice: `
-                        <div>
+                        <h3>
                           当前计算
                           <span 
                           style="color: #409EFF;
@@ -360,7 +360,7 @@ class FirstSet {
                           padding:1px 3px 3px 10px;
                           border: 1px solid rgba(64,158,255,.2);"
                           >
-                            first( ${symbol.getString()} )
+                            First( ${symbol.getString()} )
                           </span><br><br>
                           基于产生式
                           <span 
@@ -382,7 +382,7 @@ class FirstSet {
                           padding:1px 3px 3px 10px;
                           border: 1px solid rgba(64,158,255,.2);"
                           >
-                            first( ${this.allFirstSet[dependSymbolIndex][0].getString()} )
+                            First( ${this.allFirstSet[dependSymbolIndex][0].getString()} )
                           </span>中的所有符号加入
                           <span 
                           style="color: #409EFF;
@@ -392,9 +392,9 @@ class FirstSet {
                           padding:1px 3px 3px 10px;
                           border: 1px solid rgba(64,158,255,.2);"
                           >
-                            first( ${symbol.getString()} )
+                            First( ${symbol.getString()} )
                           </span>中
-                        </div>`
+                        </h3>`
                       }
                     }
                   }
@@ -414,7 +414,7 @@ class FirstSet {
                         newlyIncreasedSymbol: newSymbol,
                         turn: this.turn,
                         notice: `
-                        <div>
+                        <h3>
                           当前计算
                           <span 
                           style="color: #409EFF;
@@ -424,7 +424,7 @@ class FirstSet {
                           padding:1px 3px 3px 10px;
                           border: 1px solid rgba(64,158,255,.2);"
                           >
-                            first( ${symbol.getString()} )
+                            First( ${symbol.getString()} )
                           </span><br><br>
                           基于产生式
                           <span 
@@ -446,7 +446,7 @@ class FirstSet {
                           padding:1px 3px 3px 10px;
                           border: 1px solid rgba(64,158,255,.2);"
                           >
-                            first( ${this.allFirstSet[dependSymbolIndex][0].getString()} )
+                            First( ${this.allFirstSet[dependSymbolIndex][0].getString()} )
                           </span>中的所有符号加入
                           <span 
                           style="color: #409EFF;
@@ -456,9 +456,9 @@ class FirstSet {
                           padding:1px 3px 3px 10px;
                           border: 1px solid rgba(64,158,255,.2);"
                           >
-                            first( ${symbol.getString()} )
+                            First( ${symbol.getString()} )
                           </span>中
-                        </div>`
+                        </h3>`
                       }
                     }
                   }
@@ -479,7 +479,7 @@ class FirstSet {
                       newlyIncreasedSymbol: newSymbol,
                       turn: this.turn,
                       notice: `
-                      <div>
+                      <h3>
                         当前计算
                         <span 
                           style="color: #409EFF;
@@ -489,7 +489,7 @@ class FirstSet {
                           padding:1px 3px 3px 10px;
                           border: 1px solid rgba(64,158,255,.2);"
                           >
-                          first( ${symbol.getString()} )
+                          First( ${symbol.getString()} )
                         </span><br><br>
                         基于产生式
                         <span 
@@ -511,7 +511,7 @@ class FirstSet {
                         padding:1px 3px 3px 10px;
                         border: 1px solid rgba(64,158,255,.2);"
                         >
-                          first( ${this.allFirstSet[dependSymbolIndex][0].getString()} )
+                          First( ${this.allFirstSet[dependSymbolIndex][0].getString()} )
                         </span>中的所有符号加入
                         <span 
                         style="color: #409EFF;
@@ -521,9 +521,9 @@ class FirstSet {
                         padding:1px 3px 3px 10px;
                         border: 1px solid rgba(64,158,255,.2);"
                         >
-                          first( ${symbol.getString()} )
+                          First( ${symbol.getString()} )
                         </span>中
-                      </div>`
+                      </h3>`
                     }
                   }
                 }

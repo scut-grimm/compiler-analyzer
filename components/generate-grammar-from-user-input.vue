@@ -204,7 +204,7 @@
         <el-collapse v-model="activeNotice">
           <el-collapse-item name="1">
             <template slot="title">
-              <div style="font-size:18px;font-family:Arial;">提示</div>
+              <h3>提示</h3>
             </template>
             <div class="notice">
               <div class="left">

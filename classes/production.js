@@ -16,7 +16,7 @@ class Production {
     return this.head.getString()
   }
   getBodyString() {
-    return this.body.map(e => e.getString()).join('')
+    return this.body.map(e => e.getString()).join(' ')
   }
   getHead() {
     return this.head
