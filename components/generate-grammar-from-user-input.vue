@@ -240,32 +240,9 @@
         </el-form>
         <div class="button">
           <el-button round size="medium" @click="generateGrammar(true)">完成</el-button>
-          <!-- <el-button round size="medium" @click="showGrammar">查看当前文法</el-button> -->
         </div>
       </div>
     </div>
-    <!-- <div class="currentGrammar" v-if="showCurrentGrammar" >
-      <el-table
-        :data="currentGrammar"
-        class="grammarTable"
-        border
-        :span-method="grammarTableRowSpan"
-        :header-cell-style="combineHeadCells"
-      >
-        <el-table-column label="当前文法" align="center">
-          <el-table-column label="hide" align="center">
-            <template slot-scope="scope">
-              <el-tag style="font-size: 20px">{{scope.row.name}}</el-tag>
-            </template>
-          </el-table-column>
-          <el-table-column label="hide" align="center">
-            <template slot-scope="scope">
-              <el-tag style="font-size: 20px">{{scope.row.data}}</el-tag>
-            </template>
-          </el-table-column>
-        </el-table-column>
-      </el-table>
-    </div>-->
   </div>
 </template>
 <script>
@@ -348,7 +325,6 @@ export default {
       tagInputSymbol: "",
       formalProductions: Array.of(),
       grammar: new Grammar(),
-      showCurrentGrammar: false,
       tip: "",
       rulesCFG: {
         CFG: [
@@ -409,12 +385,6 @@ export default {
       this.$nextTick(() => {
         this.$refs[val].$refs.input.focus();
       });
-    },
-    showGrammar() {
-      if (this.getProductions()) {
-        this.grammar = new GGFUI(this.formalProductions);
-        this.showCurrentGrammar = true;
-      }
     },
     grammarTableRowSpan({ row, column, rowIndex, columnIndex }) {
       if (columnIndex === 0) {
@@ -710,49 +680,6 @@ export default {
     }
   },
   computed: {
-    currentGrammar() {
-      let rows = Array.of();
-      if (this.grammar.getProductions().length !== 0) {
-        let row0 = {
-          name: "开始符号",
-          data: this.grammar.getStartSign().getString()
-        };
-        rows.push(row0);
-        let row1 = {
-          name: "非终止符号",
-          data: ""
-        };
-        let nonterminals = this.grammar.getNonterminals();
-        if (nonterminals.length !== 0) {
-          for (const nonterminal of nonterminals) {
-            row1.data += nonterminal.getString() + ", ";
-          }
-          row1.data = row1.data.slice(0, -2);
-        }
-        rows.push(row1);
-        let row2 = {
-          name: "终止符号",
-          data: ""
-        };
-        let terminals = this.grammar.getTerminals();
-        if (terminals.length !== 0) {
-          for (const terminal of terminals) {
-            row2.data += terminal.getString() + ", ";
-          }
-          row2.data = row2.data.slice(0, -2);
-        }
-        rows.push(row2);
-        for (const production of this.grammar.getProductions()) {
-          let rowP = {
-            name: "产生式",
-            data: production.getString()
-          };
-          rows.push(rowP);
-        }
-      }
-      console.log(rows);
-      return rows;
-    },
     tableData() {
       let terminals = [...this.terminals];
       let nonterminals = [...this.nonterminals];
@@ -847,11 +774,6 @@ export default {
       .button {
         margin-top: 5px;
       }
-    }
-  }
-  .currentGrammar {
-    margin-top: 10px;
-    .grammarTable {
     }
   }
 }
