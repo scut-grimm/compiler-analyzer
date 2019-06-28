@@ -3,7 +3,8 @@ class IsLL1 {
   productions = Array.of()
   isLL1Label = true
   constructor(grammar) {
-    this.grammar = grammar
+    // 深拷贝 grammar
+    this.grammar = grammar.clone()
   }
 
   isLL1() {

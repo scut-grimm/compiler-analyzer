@@ -3,14 +3,23 @@
     <div class="left">
       <div class="top">
         <h3 v-if="!started">点击开始按钮计算所有文法符号的First集合</h3>
-      </div>
-      <div class="middle">
         <span v-html="notice"></span>
         <h3 v-if="allDone">表格最后一列为对应文法符号的First集合</h3>
       </div>
-      <!-- <div v-if="dependSymbolIndex!==null" class="down">
-        <el-button style="font-size: 30px;">当前{{dependSymbolFirstSet}}</el-button>
-      </div>-->
+      <div class="down">
+        <div style="text-align:center">
+          <h2>算法流程</h2>
+        </div>
+        <div class="first">
+          <h3>
+            1. 如果
+            <span class="symbol">X</span>是一个终止符号，那么
+            <span class="production">First(X)=X</span>
+          </h3>
+        </div>
+        <div class="second"></div>
+        <div class="thrid"></div>
+      </div>
     </div>
     <div class="right">
       <el-table :data="tableData" style="width: 100%" empty-text="请点击开始按钮" max-height="550">
@@ -297,26 +306,27 @@ export default {
   flex-direction: row;
   align-items: flex-start;
   .left {
+    flex: auto;
+    display: flex;
+    flex-flow: column wrap;
+    align-items: center;
+    justify-content: space-around;
     width: 50%;
-    height: 100%;
     margin-top: 10px;
+    height: 100%;
     .top {
-      height: 10%;
-      text-align: center;
-    }
-    .middle {
-      text-align: center;
-      margin-top: 20px;
-      margin-right: 20px;
-      margin-bottom: 20px;
+      flex: 1 1 auto;
+      margin: 20px;
       height: 80%;
     }
     .down {
-      text-align: center;
-      height: 10%;
+      flex: 1 1 auto;
+      height: 20%;
+      margin: 10px;
     }
   }
   .right {
+    flex: auto;
     width: 50%;
     margin-top: 10px;
     .button {

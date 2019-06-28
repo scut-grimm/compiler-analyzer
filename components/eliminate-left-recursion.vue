@@ -1,27 +1,55 @@
 <template>
   <div class="all">
     <div class="first">
-      <div class="top">
-        <HighlightProduction :productions="immedationRecursionProductions" title="当前文法中的立即左递归"></HighlightProduction>
-        <h3 v-if="!hasImmedationRecursionProduction">无</h3>
+      <div class="button">
+        <div v-if="hasImmedationRecursionProduction&&!hasIndirectRecursionProduction">
+          <el-button type="success" @click="eliminateImmedationRecursion">消除立即左递归</el-button>
+        </div>
+        <div v-else-if="hasIndirectRecursionProduction">
+          <el-button type="success" @click="eliminateEmptyProductions">消除 ε 产生式</el-button>
+        </div>
       </div>
-      <div class="bottom">
-        <HighlightProduction
-          :disjointSet="indirectRecursionDisjointSet"
-          :productions="indirectRecursionProductions"
-          title="当前文法中的间接左递归和环"
-        ></HighlightProduction>
-        <h3 v-if="!hasIndirectRecursionProduction">无</h3>
+      <div v-if="hasImmedationRecursionProduction||hasIndirectRecursionProduction">
+        <div class="top">
+          <HighlightProduction :productions="immedationRecursionProductions" title="当前文法中的立即左递归"></HighlightProduction>
+          <h3 v-if="!hasImmedationRecursionProduction">无</h3>
+        </div>
+        <div class="bottom">
+          <HighlightProduction
+            :disjointSet="indirectRecursionDisjointSet"
+            :productions="indirectRecursionProductions"
+            title="当前文法中的间接左递归和环"
+          ></HighlightProduction>
+          <h3 v-if="!hasIndirectRecursionProduction">无</h3>
+        </div>
+      </div>
+      <div v-else>
+        <h3>当前文法中无左递归</h3>
       </div>
     </div>
     <div class="second" v-show="second">
-      <HighlightProduction :productions="EEGProductions" title="消除ε产生式后的文法"></HighlightProduction>
+      <div class="button">
+        <el-button type="warning" @click="eliminateCycles">消除环</el-button>
+      </div>
+      <div style="margin-top:10px">
+        <HighlightProduction :productions="EEGProductions" title="消除ε产生式后的文法"></HighlightProduction>
+      </div>
     </div>
     <div class="thrid" v-show="thrid">
-      <HighlightProduction :productions="ECGProductions" title="消除环后的文法"></HighlightProduction>
+      <div class="button">
+        <el-button type="info" @click="eliminateLeftRecursion">消除左递归</el-button>
+      </div>
+      <div style="margin-top:10px">
+        <HighlightProduction :productions="ECGProductions" title="消除环后的文法"></HighlightProduction>
+      </div>
     </div>
     <div class="fourth" v-show="fourth">
-      <HighlightProduction :productions="ELRGProductions" :title="titleMessage"></HighlightProduction>
+      <div class="button">
+        <el-button type="primary">消除左递归完成</el-button>
+      </div>
+      <div style="margin-top:10px">
+        <HighlightProduction :productions="ELRGProductions" :title="titleMessage"></HighlightProduction>
+      </div>
     </div>
   </div>
 </template>
@@ -58,6 +86,25 @@ export default {
     };
   },
   methods: {
+    eliminateImmedationRecursion() {
+      this.second = false;
+      this.thrid = false;
+      this.fourth = true;
+      this.titleMessage = "消除立即左递归后的文法";
+    },
+    eliminateEmptyProductions() {
+      this.second = true;
+    },
+    eliminateCycles() {
+      this.second = true;
+      this.thrid = true;
+    },
+    eliminateLeftRecursion() {
+      this.second = true;
+      this.thrid = true;
+      this.fourth = true;
+      this.titleMessage = "消除左递归后的文法";
+    },
     changeButton() {
       if (this.buttonMessage === "完成") {
         this.$eventbus.$emit("FinishEliminateLeftRecursion");
@@ -67,12 +114,12 @@ export default {
     setGrammar(grammar) {
       this.grammar = grammar;
       this.ELR = new ELR(this.grammar);
-
       this.immedationRecursionProductions = this.ELR.immedationRecursion;
       this.grammarProductions = this.grammar.getProductions();
       this.EEGProductions = this.ELR.eliminatingEmptyGrammar.getProductions();
       this.ECGProductions = this.ELR.eliminatingCyclesGrammar.getProductions();
       this.ELRGProductions = this.ELR.eliminateLeftRecursionGrammar.getProductions();
+      this.indirectRecursionProductions = []; // data 只会在组件创建的时候初始化一次！！！！！
       const disjointSet = new DisjointSet();
       for (const item of this.ELR.indirectRecursion) {
         const tempProduction0 = new Production(
@@ -87,32 +134,18 @@ export default {
             item[i].getBody()
           );
           this.indirectRecursionProductions.push(tempProduction);
+          disjointSet.add(tempProduction);
           disjointSet.disjoint(tempProduction0, tempProduction);
         }
       }
       this.indirectRecursionDisjointSet = disjointSet;
+      disjointSet.print();
       if (this.immedationRecursionProductions.length > 0) {
         this.hasImmedationRecursionProduction = true;
       }
       if (this.indirectRecursionProductions.length > 0) {
         // 当前文法含有间接左递归
         this.hasIndirectRecursionProduction = true;
-      }
-      if (this.hasIndirectRecursionProduction) {
-        this.second = true;
-        this.thrid = true;
-        this.fourth = true;
-        this.titleMessage = "消除左递归后的文法";
-      } else if (this.hasImmedationRecursionProduction) {
-        this.second = false;
-        this.thrid = false;
-        this.fourth = true;
-        this.titleMessage = "消除立即左递归后的文法";
-      } else {
-        this.second = false;
-        this.thrid = false;
-        this.fourth = false;
-        this.titleMessage = "当前文法无左递归";
       }
     }
   },
@@ -205,10 +238,13 @@ export default {
 .all {
   display: flex;
   flex-direction: row;
+  justify-content: space-around;
   .first {
-    flex: 1 1 auto;
+    flex: 0 1 auto;
     margin-top: 20px;
+
     .top {
+      margin-top: 10px;
       h3 {
         margin-top: 10px;
         text-align: center;
@@ -224,15 +260,20 @@ export default {
   }
   .second {
     margin-top: 20px;
-    flex: 1 1 auto;
+    flex: 0 1 auto;
   }
   .thrid {
     margin-top: 20px;
-    flex: 1 1 auto;
+    flex: 0 1 auto;
   }
   .fourth {
     margin-top: 20px;
-    flex: 1 1 auto;
+    flex: 0 1 auto;
+  }
+  .button {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
   }
 }
 </style>

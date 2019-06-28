@@ -1,262 +1,285 @@
 <template>
-  <div class="inputAndGrammar">
-    <div class="userinput">
-      <div class="top">
-        <el-table
-          :data="tableData"
-          class="table"
-          border
-          :header-cell-style="combineHeadCells"
-          :span-method="symbolTableRowSpan"
-        >
-          <el-table-column label="可用终止符号" class="terminal" align="center">
-            <el-table-column class="terminalColumn" label="hide" align="center">
-              <template slot-scope="scope">
-                <el-tag
-                  closable
-                  type="danger"
-                  effect="dark"
-                  size="medium"
-                  style="font-size:15px"
-                  v-if="scope.row.terminal0"
-                  :disable-transitions="false"
-                  class="tag"
-                  @close="delectSymbol(scope.row.terminal0)"
-                  @click="inputSymbolByClick(scope.row.terminal0)"
-                >{{scope.row.terminal0}}</el-tag>
-              </template>
-            </el-table-column>
-            <el-table-column class="terminalColumn" label="hide" align="center">
-              <template slot-scope="scope">
-                <el-tag
-                  closable
-                  type="danger"
-                  effect="dark"
-                  size="medium"
-                  style="font-size:15px"
-                  class="tag"
-                  v-if="scope.row.terminal1"
-                  :disable-transitions="false"
-                  @close="delectSymbol(scope.row.terminal1)"
-                  @click="inputSymbolByClick(scope.row.terminal1)"
-                >{{scope.row.terminal1}}</el-tag>
-              </template>
-            </el-table-column>
-            <el-table-column class="terminalColumn" label="hide" align="center">
-              <template slot-scope="scope">
-                <el-tag
-                  closable
-                  type="danger"
-                  effect="dark"
-                  size="medium"
-                  style="font-size:15px"
-                  class="tag"
-                  v-if="scope.row.terminal2"
-                  @close="delectSymbol(scope.row.terminal2)"
-                  @click="inputSymbolByClick(scope.row.terminal2)"
-                >{{scope.row.terminal2}}</el-tag>
-              </template>
-            </el-table-column>
-            <el-table-column class="terminalColumn" label="hide" align="center">
-              <template slot-scope="scope">
-                <el-tag
-                  closable
-                  type="danger"
-                  effect="dark"
-                  size="medium"
-                  style="font-size:15px"
-                  class="tag"
-                  v-if="scope.row.terminal3"
-                  @close="delectSymbol(scope.row.terminal3)"
-                  @click="inputSymbolByClick(scope.row.terminal3)"
-                >{{scope.row.terminal3}}</el-tag>
-              </template>
-            </el-table-column>
-            <el-table-column class="terminalColumn" label="hide" align="center">
-              <template slot-scope="scope">
-                <el-tag
-                  closable
-                  type="danger"
-                  effect="dark"
-                  size="medium"
-                  style="font-size:15px"
-                  class="tag"
-                  v-if="scope.row.terminal4"
-                  @close="delectSymbol(scope.row.terminal4)"
-                  @click="inputSymbolByClick(scope.row.terminal4)"
-                >{{scope.row.terminal4}}</el-tag>
-              </template>
-            </el-table-column>
-          </el-table-column>
-          <el-table-column label="可用非终止符号" class="nonterminal" align="center">
-            <el-table-column class="nonterminalColumn" label="hide" align="center">
-              <template slot-scope="scope">
-                <el-tag
-                  closable
-                  type
-                  effect="dark"
-                  size="medium"
-                  style="font-size:15px"
-                  class="tag"
-                  v-if="scope.row.nonterminal0"
-                  @close="delectSymbol(scope.row.nonterminal0)"
-                  @click="inputSymbolByClick(scope.row.nonterminal0)"
-                >{{scope.row.nonterminal0}}</el-tag>
-              </template>
-            </el-table-column>
-            <el-table-column class="nonterminalColumn" label="hide" align="center">
-              <template slot-scope="scope">
-                <el-tag
-                  closable
-                  type
-                  effect="dark"
-                  size="medium"
-                  style="font-size:15px"
-                  class="tag"
-                  v-if="scope.row.nonterminal1"
-                  @close="delectSymbol(scope.row.nonterminal1)"
-                  @click="inputSymbolByClick(scope.row.nonterminal1)"
-                >{{scope.row.nonterminal1}}</el-tag>
-              </template>
-            </el-table-column>
-            <el-table-column class="nonterminalColumn" label="hide" align="center">
-              <template slot-scope="scope">
-                <el-tag
-                  closable
-                  type
-                  effect="dark"
-                  size="medium"
-                  style="font-size:15px"
-                  class="tag"
-                  v-if="scope.row.nonterminal2"
-                  @close="delectSymbol(scope.row.nonterminal2)"
-                  @click="inputSymbolByClick(scope.row.nonterminal2)"
-                >{{scope.row.nonterminal2}}</el-tag>
-              </template>
-            </el-table-column>
-            <el-table-column class="nonterminalColumn" label="hide" align="center">
-              <template slot-scope="scope">
-                <el-tag
-                  closable
-                  type
-                  effect="dark"
-                  size="medium"
-                  style="font-size:15px"
-                  class="tag"
-                  v-if="scope.row.nonterminal3"
-                  @close="delectSymbol(scope.row.nonterminal3)"
-                  @click="inputSymbolByClick(scope.row.nonterminal3)"
-                >{{scope.row.nonterminal3}}</el-tag>
-              </template>
-            </el-table-column>
-            <el-table-column class="nonterminalColumn" label="hide" align="center">
-              <template slot-scope="scope">
-                <el-tag
-                  closable
-                  type
-                  effect="dark"
-                  size="medium"
-                  style="font-size:15px"
-                  class="tag"
-                  v-if="scope.row.nonterminal4"
-                  @close="delectSymbol(scope.row.nonterminal4)"
-                  @click="inputSymbolByClick(scope.row.nonterminal4)"
-                >{{scope.row.nonterminal4}}</el-tag>
-              </template>
-            </el-table-column>
-          </el-table-column>
-          <el-table-column label="特殊符号" align="center">
-            <el-table-column align="center">
-              <el-tag
-                type="info"
-                effect="dark"
-                size="medium"
-                style="font-size:20px "
-                class="tag"
-                @click="inputSymbolByClick('ε')"
-              >ε</el-tag>
-              <el-tag
-                type="info"
-                effect="dark"
-                size="medium"
-                style="font-size:20px"
-                class="tag"
-                @click="inputSymbolByClick('->')"
-              >-></el-tag>
-              <el-tag
-                type="info"
-                effect="dark"
-                size="medium"
-                style="font-size:20px"
-                class="tag"
-                @click="inputSymbolByClick('|')"
-              >|</el-tag>
-            </el-table-column>
-          </el-table-column>
-        </el-table>
-        <el-row class="bottom">
-          <el-input placeholder="请输入自定义文法符号" v-model="symbol" clearable class="symbol"></el-input>
-          <el-button round size="medium" @click="addTerminal" class="addSymbolButton">添加终止符号</el-button>
-          <el-button round size="medium" @click="addNonterminal" class="addSymbolButton">添加非终止符号</el-button>
-        </el-row>
-      </div>
-      <div class="down">
-        <el-collapse v-model="activeNotice">
-          <el-collapse-item name="1">
-            <template slot="title">
-              <h3>提示</h3>
-            </template>
-            <div class="notice">
-              <div class="left">
-                文法符号使用前必须先添加至上方符号表中
-                <br>第一条产生式的头部默认为文法的开始符号
-              </div>
-              <div class="center">
-                产生式格式：产生式头 -> 产生式体
-                <br>产生式头是单个非终止符号
-                <br>产生式体是由终止符号和非终止符号组成的串或空串
-                <br>产生式体中不同文法符号之间用空格隔开
-              </div>
-              <div class="right">
-                例如：
-                <br>E -> A a | B b
-                <br>A -> a id | ε
-                <br>B -> b | ε
-              </div>
+  <div class="userinput">
+    <div class="top">
+      <el-collapse v-model="activeCollapse">
+        <el-collapse-item name="1">
+          <template slot="title">
+            <h3>提示</h3>
+          </template>
+          <div class="notice">
+            <div class="left">
+              拟定的文法应属于上下文无关文法
+              <br>文法符号使用前必须先添加至下方符号表中
+              <br>第一条产生式的头部默认为文法的开始符号
+              <br>开始符号将在符号表中高亮为红色
             </div>
-          </el-collapse-item>
-        </el-collapse>
-        <el-form ref="ruleForm" :rules="rulesCFG" :model="ruleForm" label-width="0px">
-          <el-form-item prop="CFG">
+            <div class="center">
+              产生式格式：产生式头 -> 产生式体
+              <br>产生式头是单个非终止符号
+              <br>产生式体是由终止符号和非终止符号组成的串或空串
+              <br>产生式体中不同文法符号之间用空格隔开
+            </div>
+            <div class="right">
+              例如：
+              <br>E -> A a | B b
+              <br>A -> a id | ε
+              <br>B -> b | ε
+            </div>
+          </div>
+        </el-collapse-item>
+      </el-collapse>
+    </div>
+    <div class="medium">
+      <el-collapse v-model="activeCollapse">
+        <el-collapse-item name="2">
+          <template slot="title">
+            <h3>符号表</h3>
+          </template>
+          <el-table
+            :data="symbolTable"
+            class="table"
+            border
+            :header-cell-style="combineHeadCells"
+            :span-method="symbolTableRowSpan"
+            max-height="202"
+          >
+            <el-table-column label="终止符号" align="center">
+              <el-table-column class="terminalColumn" label="hide" align="center">
+                <template slot-scope="scope">
+                  <el-tag
+                    closable
+                    type
+                    effect="dark"
+                    size="medium"
+                    style="font-size:15px"
+                    v-if="scope.row.terminal0"
+                    :disable-transitions="false"
+                    class="tag"
+                    @close="delectSymbol(scope.row.terminal0)"
+                    @click="inputSymbolByClick(scope.row.terminal0)"
+                  >{{scope.row.terminal0}}</el-tag>
+                </template>
+              </el-table-column>
+              <el-table-column class="terminalColumn" label="hide" align="center">
+                <template slot-scope="scope">
+                  <el-tag
+                    closable
+                    type
+                    effect="dark"
+                    size="medium"
+                    style="font-size:15px"
+                    class="tag"
+                    v-if="scope.row.terminal1"
+                    :disable-transitions="false"
+                    @close="delectSymbol(scope.row.terminal1)"
+                    @click="inputSymbolByClick(scope.row.terminal1)"
+                  >{{scope.row.terminal1}}</el-tag>
+                </template>
+              </el-table-column>
+              <el-table-column class="terminalColumn" label="hide" align="center">
+                <template slot-scope="scope">
+                  <el-tag
+                    closable
+                    type
+                    effect="dark"
+                    size="medium"
+                    style="font-size:15px"
+                    class="tag"
+                    v-if="scope.row.terminal2"
+                    @close="delectSymbol(scope.row.terminal2)"
+                    @click="inputSymbolByClick(scope.row.terminal2)"
+                  >{{scope.row.terminal2}}</el-tag>
+                </template>
+              </el-table-column>
+              <el-table-column class="terminalColumn" label="hide" align="center">
+                <template slot-scope="scope">
+                  <el-tag
+                    closable
+                    type
+                    effect="dark"
+                    size="medium"
+                    style="font-size:15px"
+                    class="tag"
+                    v-if="scope.row.terminal3"
+                    @close="delectSymbol(scope.row.terminal3)"
+                    @click="inputSymbolByClick(scope.row.terminal3)"
+                  >{{scope.row.terminal3}}</el-tag>
+                </template>
+              </el-table-column>
+              <el-table-column class="terminalColumn" label="hide" align="center">
+                <template slot-scope="scope">
+                  <el-tag
+                    closable
+                    type
+                    effect="dark"
+                    size="medium"
+                    style="font-size:15px"
+                    class="tag"
+                    v-if="scope.row.terminal4"
+                    @close="delectSymbol(scope.row.terminal4)"
+                    @click="inputSymbolByClick(scope.row.terminal4)"
+                  >{{scope.row.terminal4}}</el-tag>
+                </template>
+              </el-table-column>
+            </el-table-column>
+            <el-table-column label="非终止符号" align="center">
+              <el-table-column class="nonterminalColumn" label="hide" align="center">
+                <template slot-scope="scope">
+                  <el-tag
+                    closable
+                    :type="isStartSymbol(scope.row.nonterminal0)"
+                    effect="dark"
+                    size="medium"
+                    style="font-size:15px"
+                    class="tag"
+                    v-if="scope.row.nonterminal0"
+                    @close="delectSymbol(scope.row.nonterminal0)"
+                    @click="inputSymbolByClick(scope.row.nonterminal0)"
+                  >{{scope.row.nonterminal0}}</el-tag>
+                </template>
+              </el-table-column>
+              <el-table-column class="nonterminalColumn" label="hide" align="center">
+                <template slot-scope="scope">
+                  <el-tag
+                    closable
+                    :type="isStartSymbol(scope.row.nonterminal1)"
+                    effect="dark"
+                    size="medium"
+                    style="font-size:15px"
+                    class="tag"
+                    v-if="scope.row.nonterminal1"
+                    @close="delectSymbol(scope.row.nonterminal1)"
+                    @click="inputSymbolByClick(scope.row.nonterminal1)"
+                  >{{scope.row.nonterminal1}}</el-tag>
+                </template>
+              </el-table-column>
+              <el-table-column class="nonterminalColumn" label="hide" align="center">
+                <template slot-scope="scope">
+                  <el-tag
+                    closable
+                    :type="isStartSymbol(scope.row.nonterminal2)"
+                    effect="dark"
+                    size="medium"
+                    style="font-size:15px"
+                    class="tag"
+                    v-if="scope.row.nonterminal2"
+                    @close="delectSymbol(scope.row.nonterminal2)"
+                    @click="inputSymbolByClick(scope.row.nonterminal2)"
+                  >{{scope.row.nonterminal2}}</el-tag>
+                </template>
+              </el-table-column>
+              <el-table-column class="nonterminalColumn" label="hide" align="center">
+                <template slot-scope="scope">
+                  <el-tag
+                    closable
+                    :type="isStartSymbol(scope.row.nonterminal3)"
+                    effect="dark"
+                    size="medium"
+                    style="font-size:15px"
+                    class="tag"
+                    v-if="scope.row.nonterminal3"
+                    @close="delectSymbol(scope.row.nonterminal3)"
+                    @click="inputSymbolByClick(scope.row.nonterminal3)"
+                  >{{scope.row.nonterminal3}}</el-tag>
+                </template>
+              </el-table-column>
+              <el-table-column class="nonterminalColumn" label="hide" align="center">
+                <template slot-scope="scope">
+                  <el-tag
+                    closable
+                    :type="isStartSymbol(scope.row.nonterminal4)"
+                    effect="dark"
+                    size="medium"
+                    style="font-size:15px"
+                    class="tag"
+                    v-if="scope.row.nonterminal4"
+                    @close="delectSymbol(scope.row.nonterminal4)"
+                    @click="inputSymbolByClick(scope.row.nonterminal4)"
+                  >{{scope.row.nonterminal4}}</el-tag>
+                </template>
+              </el-table-column>
+            </el-table-column>
+            <el-table-column label="特殊符号" align="center">
+              <el-table-column label="hide" align="center">
+                <el-tag
+                  type="info"
+                  effect="dark"
+                  size="medium"
+                  style="font-size:20px"
+                  class="tag"
+                  @click="inputSymbolByClick('ε')"
+                >ε</el-tag>
+                <el-tag
+                  type="info"
+                  effect="dark"
+                  size="medium"
+                  style="font-size:20px"
+                  class="tag"
+                  @click="inputSymbolByClick('->')"
+                >-></el-tag>
+                <el-tag
+                  type="info"
+                  effect="dark"
+                  size="medium"
+                  style="font-size:20px"
+                  class="tag"
+                  @click="inputSymbolByClick('|')"
+                >|</el-tag>
+              </el-table-column>
+            </el-table-column>
+          </el-table>
+          <el-row class="bottom">
             <el-input
-              type="textarea"
-              placeholder="请输入产生式"
-              v-model="ruleForm.CFG"
-              :autosize="{minRows:5}"
+              placeholder="请输入自定义文法符号"
+              v-model="symbol"
+              clearable
+              class="symbol"
               spellcheck="false"
-              class="input"
             ></el-input>
-          </el-form-item>
-        </el-form>
-        <div class="button">
-          <el-button round size="medium" @click="generateGrammar(true)">完成</el-button>
-        </div>
+            <el-button round size="medium" @click="addTerminal" class="addSymbolButton">添加终止符号</el-button>
+            <el-button round size="medium" @click="addNonterminal" class="addSymbolButton">添加非终止符号</el-button>
+          </el-row>
+        </el-collapse-item>
+      </el-collapse>
+    </div>
+    <div class="down">
+      <el-form ref="ruleForm" :rules="rulesCFG" :model="ruleForm" label-width="0px" class="input">
+        <el-form-item prop="CFG">
+          <el-input
+            type="textarea"
+            rows="4"
+            placeholder="请输入产生式"
+            v-model="ruleForm.CFG"
+            spellcheck="false"
+          ></el-input>
+        </el-form-item>
+      </el-form>
+      <div class="button">
+        <el-button round size="medium" @click="generateGrammar(true)">开始分析</el-button>
       </div>
     </div>
   </div>
 </template>
 <script>
 import GGFUI from "~/classes/algorithms/generate-grammar-from-user-input";
-import smithTag from "~/components/smith-tag";
 import Grammar from "~/classes/grammar";
 export default {
-  components: {
-    smithTag
-  },
   data() {
     var validateCFG = (rule, value, callback) => {
       let productions = value.split(/\n/);
       let empty = true;
+      // 设置开始符号的 for 循环
+      for (let i = 0; i < productions.length; i++) {
+        if (
+          productions[i] !== "" &&
+          productions[i].match(/->/g) !== null &&
+          productions[i].match(/->/g).length === 1
+        ) {
+          let prodution = productions[i].split(/->/);
+          this.startSymbol = prodution[0].match(/\S+/)[0];
+          break;
+        }
+      }
       for (let i = 0; i < productions.length; i++) {
         if (productions[i] !== "") {
           empty = false;
@@ -321,10 +344,13 @@ export default {
     return {
       terminals: ["(", ")", "+", "-", "*", "a", "b", "c", "id"],
       nonterminals: ["A", "B", "C", "D", "E", "F", "T", "E'", "T'", "F'"],
+      // terminals: [],
+      // nonterminals: [],
       symbol: "",
       tagInputSymbol: "",
       formalProductions: Array.of(),
       grammar: new Grammar(),
+      startSymbol: null, // 当前文法的开始符号
       tip: "",
       rulesCFG: {
         CFG: [
@@ -347,10 +373,17 @@ export default {
         nonterminal3: false,
         nonterminal4: false
       },
-      activeNotice: ["1"]
+      activeCollapse: ["1", "2"]
     };
   },
   methods: {
+    isStartSymbol(symbol) {
+      if (symbol === this.startSymbol) {
+        return "danger";
+      } else {
+        return "";
+      }
+    },
     hasInput() {
       if (this.ruleForm.CFG.length > 0) {
         return true;
@@ -369,7 +402,7 @@ export default {
       if (columnIndex === 10) {
         if (rowIndex === 0) {
           return {
-            rowspan: this.tableData.length,
+            rowspan: this.symbolTable.length,
             colspan: 1
           };
         } else {
@@ -385,39 +418,6 @@ export default {
       this.$nextTick(() => {
         this.$refs[val].$refs.input.focus();
       });
-    },
-    grammarTableRowSpan({ row, column, rowIndex, columnIndex }) {
-      if (columnIndex === 0) {
-        if (rowIndex === 0) {
-          return {
-            rowspan: 1,
-            colspan: 1
-          };
-        }
-        if (rowIndex === 1) {
-          return {
-            rowspan: 1,
-            colspan: 1
-          };
-        }
-        if (rowIndex === 2) {
-          return {
-            rowspan: 1,
-            colspan: 1
-          };
-        }
-        if (rowIndex === 3) {
-          return {
-            rowspan: this.grammar.getProductions().length,
-            colspan: 1
-          };
-        } else {
-          return {
-            rowspan: 0,
-            colspan: 0
-          };
-        }
-      }
     },
     combineHeadCells({ row, column, rowIndex, columnIndex }) {
       if (rowIndex === 1) {
@@ -629,6 +629,7 @@ export default {
           if (jump) {
             this.$eventbus.$emit("FinishInputGrammar", grammar);
           }
+          this.startSymbol = grammar.getStartSign().getString();
           return grammar;
         } else {
           return false;
@@ -673,14 +674,17 @@ export default {
         val = val.slice(-1);
         return sign.symbol.indexOf(val) === 0;
       };
+<<<<<<< HEAD
     },
     handleSelect(item) {
       // console.log(item);
       this.tip = item.symbol;
+=======
+>>>>>>> feature/optimizeInteroperation
     }
   },
   computed: {
-    tableData() {
+    symbolTable() {
       let terminals = [...this.terminals];
       let nonterminals = [...this.nonterminals];
       let temp = Array.of();
@@ -703,6 +707,9 @@ export default {
         }
         temp.push(row);
       }
+      if (terminalIndex === 0 && nonterminalIndex === 0) {
+        temp.push({ empty: 0 });
+      }
       return temp;
     }
   },
@@ -711,69 +718,63 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-.inputAndGrammar {
+.userinput {
   display: flex;
   flex-direction: column;
+  position: relative;
   align-items: center;
-  .userinput {
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    align-items: flex-start;
-    justify-content: space-around;
-    .top {
-      width: 100%;
-      .table {
-        .terminal {
-          width: 50%;
-          .terminalColumn {
-            width: 5%;
-          }
-        }
-        .nonterminal {
-          width: 50%;
-          .nonterminalColumn {
-            width: 5%;
-          }
-        }
-        .tag {
-          margin-top: 2px;
-          margin-bottom: 2px;
-          width: 60px;
-          overflow: hidden;
-          &:hover {
-            cursor: pointer;
-          }
+  justify-content: space-around;
+  .top {
+    width: 90%;
+    .notice {
+      font-size: 15px;
+      font-family: Arial;
+      color: #b4b7b9;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+    }
+  }
+  .medium {
+    width: 90%;
+    .table {
+      .tag {
+        margin-top: 2px;
+        margin-bottom: 2px;
+        width: 60px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        &:hover {
+          cursor: pointer;
         }
       }
-      .bottom {
-        margin-top: 10px;
-        .symbol {
-          width: 30%;
-        }
-        .addSymbolButton {
-          width: 20%;
-        }
+      .tag::-webkit-scrollbar {
+        height: 4px;
+      }
+      .tag::-webkit-scrollbar-track {
+        background-color: rgba(64, 158, 255, 0.1);
+        border-radius: 0;
+      }
+      .tag::-webkit-scrollbar-thumb {
+        background-color: #409eff;
+        border-radius: 2px;
       }
     }
-    .down {
-      margin-top: 20px;
+    .bottom {
+      margin-top: 10px;
+      .symbol {
+        width: 30%;
+      }
+      .addSymbolButton {
+        width: 20%;
+      }
+    }
+  }
+  .down {
+    margin-top: 10px;
+    width: 90%;
+    .input {
       width: 100%;
-      .notice {
-        font-size: 15px;
-        font-family: Arial;
-        color: #b4b7b9;
-        display: flex;
-        flex-direction: row;
-        justify-content: space-around;
-      }
-      .input {
-        margin-top: 10px;
-        width: 100%;
-      }
-      .button {
-        margin-top: 5px;
-      }
     }
   }
 }
