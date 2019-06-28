@@ -161,7 +161,7 @@
                         size="medium"
                         style="font-size:20px"
                         class="tag"
-                      >-></el-tag>
+                      >&#8594;</el-tag>
                     </el-table-column>
                   </el-table-column>
                 </el-table>

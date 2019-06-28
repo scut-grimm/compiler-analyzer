@@ -10,11 +10,12 @@
             <div class="left">
               拟定的文法应属于上下文无关文法
               <br>文法符号使用前必须先添加至下方符号表中
+              <br>符号 &#8594; 用一个减号紧接一个大于号代替，即 ->
               <br>第一条产生式的头部默认为文法的开始符号
               <br>开始符号将在符号表中高亮为红色
             </div>
             <div class="center">
-              产生式格式：产生式头 -> 产生式体
+              产生式格式：产生式头 &#8594; 产生式体
               <br>产生式头是单个非终止符号
               <br>产生式体是由终止符号和非终止符号组成的串或空串
               <br>产生式体中不同文法符号之间用空格隔开
@@ -216,7 +217,7 @@
                   style="font-size:20px"
                   class="tag"
                   @click="inputSymbolByClick('->')"
-                >-></el-tag>
+                >&#8594;</el-tag>
                 <el-tag
                   type="info"
                   effect="dark"
@@ -459,7 +460,7 @@ export default {
       if (symbol.length === 0) {
         return false;
       }
-      const illegalSymbol = /(-|>|\||\$|ε)+/;
+      const illegalSymbol = /(-|>|\||\$|ε|\u2192)+/;
       if (illegalSymbol.test(symbol)) {
         this.$message(`符号 ${symbol} 不可定义为文法符号`);
         return false;
