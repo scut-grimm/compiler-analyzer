@@ -4,7 +4,7 @@ class Production {
     this.body = body
   }
   getString() {
-    return this.head.getString() + ' -> ' + this.body.map(e => e.getString()).join(' ')
+    return this.head.getString() + ' \u2192 ' + this.body.map(e => e.getString()).join(' ')
   }
   getTerminals() {
     return this.body.filter(e => e.type === 'Terminal')

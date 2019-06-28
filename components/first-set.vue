@@ -10,15 +10,61 @@
         <div style="text-align:center">
           <h2>算法流程</h2>
         </div>
-        <div class="first">
+        <div class="step" :class="{'active':algorithmStep===1}">
           <h3>
             1. 如果
             <span class="symbol">X</span>是一个终止符号，那么
             <span class="production">First(X)=X</span>
           </h3>
         </div>
-        <div class="second"></div>
-        <div class="thrid"></div>
+        <div class="step" :class="{'active':algorithmStep===2}">
+          <h3>
+            2. 如果
+            <span class="symbol">X</span>是一个非终止符号，
+            且
+            <span class="production">
+              X &rarr; Y
+              <sub>1</sub> Y
+              <sub>2</sub>...Y
+              <sub>k</sub>
+            </span>是一个产生式，
+            其中 k&ge;1, 那么如果对于某个 i&lt;k，a 在
+            <span class="firstSet">
+              First(Y
+              <sub>i</sub>)
+            </span>中，且 ε 在所有的
+            <span class="firstSet">
+              First(Y
+              <sub>1</sub>)
+            </span>、
+            <span class="firstSet">
+              First(Y
+              <sub>2</sub>)
+            </span>、...、
+            <span class="firstSet">
+              First(Y
+              <sub>i-1</sub>)
+            </span>中，就把 a 加入到
+            <span class="firstSet">First(X)</span>中
+          </h3>
+        </div>
+        <div class="step" :class="{'active':algorithmStep===3}">
+          <h3>
+            3. 如果对于所有的 j=1,2,...,k，ε 在
+            <span class="firstSet">
+              First(Y
+              <sub>j</sub>)
+            </span>中，那么将 ε 加入到
+            <span class="firstSet">First(X)</span>中
+          </h3>
+        </div>
+        <div class="step" :class="{'active':algorithmStep===4}">
+          <h3>
+            4. 如果
+            <span class="production">X &rarr; ε</span>是一个产生式，那么将 ε 加入到
+            <span class="firstSet">First(X)</span>中
+          </h3>
+        </div>
       </div>
     </div>
     <div class="right">
@@ -86,6 +132,7 @@ export default {
       productionIndex: null, //计算当前文法符号的first集合所依赖的产生式在grammar.productions中的下标
       firstSetSymbol: null, //当前正在计算first集合的文法符号
       firstSetSymbolIndex: null, //当前正在计算first集合的文法符号在allFirstSet中的下标
+      algorithmStep: 0, //计算First集合算法的当前步骤，取值为1、2、3、4
       newTurn: null,
       oldTableData: null,
       oldTableColumnIndex: [],
@@ -209,6 +256,7 @@ export default {
     sync() {
       if (!this.allDone) {
         this.allFirstSet = this.wrapperReturn.allFirstSet;
+        this.algorithmStep = this.wrapperReturn.algorithmStep;
         this.dependSymbolIndex = this.wrapperReturn.dependSymbolIndex;
         this.isTerminal = this.wrapperReturn.isTerminal;
         if (this.wrapperReturn.newlyIncreasedSymbol !== null) {
@@ -226,6 +274,7 @@ export default {
       } else {
         this.notice = "<h3>First集合计算完成</h3>";
         this.dependSymbolIndex = null;
+        this.algorithmStep = 0;
       }
       if (this.autoTimer !== null) {
         clearTimeout(this.autoTimer);
@@ -303,30 +352,32 @@ export default {
 <style lang="scss" scoped>
 .first-set {
   display: flex;
-  flex-direction: row;
-  align-items: flex-start;
+  flex-flow: row nowrap;
+  align-items: stretch;
   .left {
-    flex: auto;
     display: flex;
-    flex-flow: column wrap;
-    align-items: center;
-    justify-content: space-around;
     width: 50%;
     margin-top: 10px;
-    height: 100%;
+    flex-flow: column nowrap;
+    align-items: stretch;
     .top {
+      text-align: center;
       flex: 1 1 auto;
       margin: 20px;
-      height: 80%;
+      height: 60%;
     }
     .down {
       flex: 1 1 auto;
-      height: 20%;
-      margin: 10px;
+      height: 40%;
+      margin: 20px;
+      .step {
+        &.active {
+          background-color: gold;
+        }
+      }
     }
   }
   .right {
-    flex: auto;
     width: 50%;
     margin-top: 10px;
     .button {
