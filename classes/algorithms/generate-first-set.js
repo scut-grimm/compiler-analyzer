@@ -6,7 +6,8 @@ class FirstSet {
   allDone = true
   turn = 1
   constructor(grammar) {
-    this.grammar = grammar
+    // 深拷贝 grammar
+    this.grammar = grammar.clone()
     const terminals = this.grammar.getTerminals()
     assert(terminals.length, '当前文法没有终止符号')
     const nonterminals = this.grammar.getNonterminals()

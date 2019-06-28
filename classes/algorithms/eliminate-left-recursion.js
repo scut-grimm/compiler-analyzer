@@ -48,7 +48,8 @@ class EliminateLeftRecursion {
   eliminatingCyclesGrammar = new Grammar() // 消除环以后的新文法
   eliminateLeftRecursionGrammar = new Grammar() // 消除左递归后的新文法
   constructor(grammar) {
-    this.grammar = grammar
+    // 深拷贝 grammar
+    this.grammar = grammar.clone()
     this.immedationRecursion = this.scanImmedationLeftRecursion(this.grammar.getProductions())
     const frame = {
       productions: Array.of(),
@@ -82,6 +83,7 @@ class EliminateLeftRecursion {
     // }
     // 先检查当前文法有没有间接左递归
     if (this.indirectRecursion.length !== 0) { // 当前文法有间接左递归
+      this.indirectRecursionDeDuplex()
       this.eliminatingEmptyGrammar = this.eliminatingEmptyProduction(this.grammar)
       // {
       //   console.log('消除ε产生式后的文法')
@@ -167,7 +169,7 @@ class EliminateLeftRecursion {
         //   console.log('Terminals: ' + Terminals)
         // }
       } else { // 当前文法没有直接左递归
-        this.eliminateLeftRecursionGrammar = this.grammar
+        this.eliminateLeftRecursionGrammar = this.grammar.clone()
       }
     }
   }
@@ -861,6 +863,35 @@ class EliminateLeftRecursion {
       }
     }
     return newG
+  }
+  // 对记录间接左递归和环的二维数组去重
+  // 因为一个间接左递归或环可能会在不同的回溯阶段被重复检测出来
+  // 重复的间接左递归或环的特点：涉及到的产生式的个数相同，顺序一致
+  // 对于重复的间接左递归只保留第一个
+  indirectRecursionDeDuplex() {
+    const recursionArray = this.indirectRecursion
+    for (let i = 0; i < recursionArray.length; i++) {
+      for (let j = i + 1; j < recursionArray.length; j++) {
+        if (recursionArray[i].length === recursionArray[j].length) {
+          let k = 0
+          for (; k < recursionArray[i].length; k++) {
+            if (recursionArray[i][k] !== recursionArray[j][k]) {
+              break
+            }
+          }
+          if (k === recursionArray[i].length) {
+            recursionArray.splice(j, 1, [])
+          }
+        }
+      }
+    }
+    const newIndirectRecursion = []
+    for (const item of recursionArray) {
+      if (item.length !== 0) {
+        newIndirectRecursion.push(item)
+      }
+    }
+    this.indirectRecursion = newIndirectRecursion
   }
 }
 export default function(grammar) {
