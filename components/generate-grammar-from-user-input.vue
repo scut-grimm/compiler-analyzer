@@ -674,13 +674,6 @@ export default {
         val = val.slice(-1);
         return sign.symbol.indexOf(val) === 0;
       };
-<<<<<<< HEAD
-    },
-    handleSelect(item) {
-      // console.log(item);
-      this.tip = item.symbol;
-=======
->>>>>>> feature/optimizeInteroperation
     }
   },
   computed: {
