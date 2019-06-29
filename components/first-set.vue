@@ -1,11 +1,13 @@
+/* eslint-disable */
 <template>
   <div class="first-set">
     <div class="left">
       <div class="top">
-        <h3 v-if="!started">点击开始按钮计算所有文法符号的First集合</h3>
+        <h2 v-if="!started">点击开始按钮计算所有文法符号的First集合</h2>
         <span v-html="notice"></span>
-        <h3 v-if="allDone">表格最后一列为对应文法符号的First集合</h3>
+        <h2 v-if="allDone">表格最后一列为对应文法符号的First集合</h2>
       </div>
+      <!--prettyhtml-preserve-whitespace-->
       <div class="down">
         <div style="text-align:center">
           <h2>算法流程</h2>
@@ -13,56 +15,55 @@
         <div class="step" :class="{'active':algorithmStep===1}">
           <h3>
             1. 如果
-            <span class="symbol">X</span>是一个终止符号，那么
-            <span class="production">First(X)=X</span>
+            <el-tag class="symbol">X</el-tag>是一个终止符号，那么
+            <el-tag class="frstSet">First(X)=X</el-tag>
           </h3>
         </div>
         <div class="step" :class="{'active':algorithmStep===2}">
           <h3>
             2. 如果
-            <span class="symbol">X</span>是一个非终止符号，
+            <el-tag class="symbol">X</el-tag>是一个非终止符号，
             且
-            <span class="production">
-              X &rarr; Y
-              <sub>1</sub> Y
-              <sub>2</sub>...Y
-              <sub>k</sub>
-            </span>是一个产生式，
-            其中 k&ge;1, 那么如果对于某个 i&lt;k，a 在
-            <span class="firstSet">
-              First(Y
-              <sub>i</sub>)
-            </span>中，且 ε 在所有的
-            <span class="firstSet">
-              First(Y
-              <sub>1</sub>)
-            </span>、
-            <span class="firstSet">
-              First(Y
-              <sub>2</sub>)
-            </span>、...、
-            <span class="firstSet">
-              First(Y
-              <sub>i-1</sub>)
-            </span>中，就把 a 加入到
-            <span class="firstSet">First(X)</span>中
+            <el-tag class="production">
+              X &rarr; Y<sub>1</sub> Y<sub>2</sub>...Y<sub>k</sub>
+            </el-tag>是一个产生式，
+            其中 k&ge;1, 那么如果对于某个 i&lt;k，
+            <el-tag class="symbol">a</el-tag>在
+            <el-tag class="firstSet">
+              First(Y<sub>i</sub>)
+            </el-tag>中，且
+            <el-tag class="symbol">ε</el-tag>在所有的
+            
+            <el-tag class="firstSet">
+              First(Y<sub>1</sub>)
+            </el-tag>、
+            <el-tag class="firstSet">
+              First(Y<sub>2</sub>)
+            </el-tag>、...、
+            <el-tag class="firstSet">
+              First(Y<sub>i-1</sub>)
+            </el-tag>中，就把
+            <el-tag class="symbol">a</el-tag>加入到
+            <el-tag class="firstSet">First(X)</el-tag>中
           </h3>
         </div>
         <div class="step" :class="{'active':algorithmStep===3}">
           <h3>
-            3. 如果对于所有的 j=1,2,...,k，ε 在
-            <span class="firstSet">
-              First(Y
-              <sub>j</sub>)
-            </span>中，那么将 ε 加入到
-            <span class="firstSet">First(X)</span>中
+            3. 如果对于所有的 j=1,2,...,k，
+            <el-tag class="symbol">ε</el-tag>在
+            <el-tag class="firstSet">
+              First(Y<sub>j</sub>)
+            </el-tag>中，那么将
+            <el-tag class="symbol">ε</el-tag>加入到
+            <el-tag class="firstSet">First(X)</el-tag>中
           </h3>
         </div>
         <div class="step" :class="{'active':algorithmStep===4}">
           <h3>
             4. 如果
-            <span class="production">X &rarr; ε</span>是一个产生式，那么将 ε 加入到
-            <span class="firstSet">First(X)</span>中
+            <el-tag class="production">X &rarr; ε</el-tag>是一个产生式，那么将
+            <el-tag class="symbol">ε</el-tag>加入到
+            <el-tag class="firstSet">First(X)</el-tag>中
           </h3>
         </div>
       </div>
@@ -272,7 +273,7 @@ export default {
         this.newTurn = this.wrapperReturn.turn;
         this.activeProductionIndex = this.wrapperReturn.productionIndex;
       } else {
-        this.notice = "<h3>First集合计算完成</h3>";
+        this.notice = "<h2>First集合计算完成</h2>";
         this.dependSymbolIndex = null;
         this.algorithmStep = 0;
       }
@@ -363,16 +364,27 @@ export default {
     .top {
       text-align: center;
       flex: 1 1 auto;
-      margin: 20px;
-      height: 60%;
+      margin: 15px;
+      height: 40%;
     }
     .down {
       flex: 1 1 auto;
-      height: 40%;
-      margin: 20px;
+      height: 60%;
+      margin: 15px;
       .step {
+        border-radius: 4px;
+        padding: 5px;
+        .symbol {
+          margin: 2px 7px 2px 0px;
+        }
+        .production {
+          margin: 2px 7px 2px 0px;
+        }
+        .firstSet {
+          margin: 2px 7px 2px 0px;
+        }
         &.active {
-          background-color: gold;
+          background-color: rgba(252, 217, 21, 0.603);
         }
       }
     }

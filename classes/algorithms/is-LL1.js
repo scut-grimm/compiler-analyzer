@@ -40,14 +40,21 @@ class IsLL1 {
           index.push(this.grammar.getProductionBodyFirstSet(production))
           productionBodyFirstSets.push(productionBodyFirstSet)
         }
-        index = this.findProductionBodyFirstSetIntersectionNotEmpty(index)
+        index = [...this.findProductionBodyFirstSetIntersectionNotEmpty(index)]
         if (index.length > 0) {
           bodyFirstSetIntersectionIsEmpty = false
           this.isLL1Label = false
-          for (const i of index) {
-            bodyFirstSetIntersectionNoEmptyProduction.push(productionBodyFirstSets[i].production)
+          // console.log(index)
+          // console.log(productionBodyFirstSets)
+          for (const item of index) {
+            const tempProductionArray = []
+            for (const i of item) {
+              tempProductionArray.push(productionBodyFirstSets[i].production)
+            }
+            bodyFirstSetIntersectionNoEmptyProduction.push([...tempProductionArray])
           }
         }
+
         const item = {
           head: head, // 记录所有头部相同的产生式的头部
           sameHeadProductions: sameHeadProductions, // 存放所有头部相同的产生式
@@ -60,6 +67,8 @@ class IsLL1 {
           productionBodyFirstSets: productionBodyFirstSets, // 存放所有头部相同的产生式的产生式体的 First 集合
           bodyFirstSetIntersectionNoEmptyProduction: bodyFirstSetIntersectionNoEmptyProduction // 存放产生式体 First 集合相交不为空的产生式
         }
+        // console.log('11111111111111')
+        // console.log(bodyFirstSetIntersectionNoEmptyProduction)
         this.productions.push(item)
       }
     }
@@ -127,6 +136,8 @@ class IsLL1 {
     }
   }
 
+  // 输入 二维数组
+  // 输出 二维数组
   findProductionBodyFirstSetIntersectionNotEmpty(bodyFirstSets) {
     const errorBodyIndex = Array.of()
     for (let i = 0; i < bodyFirstSets.length; i++) {
@@ -143,7 +154,7 @@ class IsLL1 {
         }
       }
       if (tempIndex.size !== 0) {
-        errorBodyIndex.push(tempIndex)
+        errorBodyIndex.push([...tempIndex])
       }
     }
     return errorBodyIndex
