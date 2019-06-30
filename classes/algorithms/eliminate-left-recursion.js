@@ -56,11 +56,16 @@ class EliminateLeftRecursion {
       index: 0,
       bodySymbolIndex: 0
     }
-    for (const production of this.grammar.getProductions()) { // 初始化 frame 压入所有非立即左递归的产生式和非一步环
+    // 初始化 frame 压入所有非立即左递归的产生式和非一步环
+    // 如果一个产生式不可能产生左递归，则不压入 frame 中
+    // 比如 A->a 或 A->ε
+    for (const production of this.grammar.getProductions()) {
       if (this.productionIsCycle(production)) {
         this.indirectRecursion.push([production])
       } else if (!this.productionIsImmedationLeftRecursion(production)) {
-        frame.productions.push(production)
+        if (production.getBody()[0].isNonterminal()) {
+          frame.productions.push(production)
+        }
       }
     }
     this.solutionSpace.push(frame) // 解空间初始化
@@ -115,7 +120,7 @@ class EliminateLeftRecursion {
   // 形如 E->Eα 的产生式称为立即左递归
   // 其中 E 是非终止符号，α 是由终止符号与非终止符号组成的串且 α 不为空串
   productionIsImmedationLeftRecursion(production) {
-    if (production.getHead() === production.getBody()[0] && production.getBody().length > 1) {
+    if (production.getHead().getString() === production.getBody()[0].getString() && production.getBody().length > 1) {
       return true
     } else {
       return false
@@ -634,7 +639,7 @@ class EliminateLeftRecursion {
               if (iProduction.getBody()[0] === nonterminals[j]) {
                 change = true
                 const head = nonterminals[i]
-                const jProductions = grammar.getDerivations(nonterminals[j])
+                const jProductions = EFRGrammar.getDerivations(nonterminals[j])
                 for (const jProduction of jProductions) {
                   const newBody = []
                   for (const symbol of jProduction.getBody()) {
@@ -656,6 +661,9 @@ class EliminateLeftRecursion {
         }
         // 消除 newProductions 中的立即左递归
         // newProductions 中的产生式的 head 都是 nonterminals[i]
+        // newProductions.forEach(e => {
+        //   console.log(e.getString())
+        // })
         const immedationRecursion = this.scanImmedationLeftRecursion(newProductions)
         if (immedationRecursion.length > 0) { // 如果 newProductions 中有左递归
           const newNonterminal = EFRGrammar.getSignUnusedAlias(nonterminals[i]) // 一个新的，右上角带单引号的非终止符号
@@ -669,17 +677,14 @@ class EliminateLeftRecursion {
             }
           }
           for (const production of newProductions) {
-            if (immedationRecursion.includes(production)) {
+            if (this.productionIsImmedationLeftRecursion(production)) { // 如果一个产生式是立即左递归的
+              // console.log(production.getString())
               const head = newNonterminal
               const body = []
-              if (!production.getBody()[0].isEmpty()) {
-                for (let i = 1; i < production.getBody().length; i++) {
-                  body.push(EFRGrammar.getSign(production.getBody()[i]))
-                }
-                body.push(newNonterminal)
-              } else {
-                body.push(production.getBody()[0])
+              for (let i = 1; i < production.getBody().length; i++) {
+                body.push(EFRGrammar.getSign(production.getBody()[i]))
               }
+              body.push(newNonterminal)
               const tempProduction = new Production(head, body)
               if (!this.existTheProduction(EFRGrammar, tempProduction) && body.length > 0) {
                 EFRGrammar.addProduction(head, body)
@@ -688,6 +693,9 @@ class EliminateLeftRecursion {
               const head = EFRGrammar.getSign(production.getHead())
               const body = []
               for (const symbol of production.getBody()) {
+                if (symbol.isEmpty()) {
+                  break
+                }
                 body.push(EFRGrammar.getSign(symbol))
               }
               body.push(newNonterminal)
@@ -767,7 +775,7 @@ class EliminateLeftRecursion {
                 }
                 body.push(newNonterminal)
               } else {
-                body.push(production.getBody()[0])
+                body.push(newNonterminal)
               }
               const tempProduction = new Production(head, body)
               if (!this.existTheProduction(newG, tempProduction) && body.length > 0) {

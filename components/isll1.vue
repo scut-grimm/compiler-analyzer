@@ -54,7 +54,7 @@
                     <template slot="label">
                       <span class="left-table-label">结论</span>
                     </template>
-                    {{props.row.bodys.notice}}
+                    <span v-html="props.row.bodys.notice"></span>
                   </el-form-item>
                 </el-form>
               </template>
@@ -251,10 +251,10 @@ export default {
             }
             // console.log(tempNotice);
             tempNotice = tempNotice.slice(0, -2);
-            tempNotice += " 相交不为空; ";
+            tempNotice += " 相交不为空;<br> ";
             bodys.notice += tempNotice;
           }
-          bodys.notice = bodys.notice.slice(0, -2);
+          bodys.notice = bodys.notice.slice(0, -6);
           // console.log("11111111111");
           // console.log(bodys.notice);
         }

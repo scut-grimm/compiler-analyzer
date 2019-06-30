@@ -47,11 +47,11 @@ class IsLL1 {
           // console.log(index)
           // console.log(productionBodyFirstSets)
           for (const item of index) {
-            const tempProductionArray = []
-            for (const i of item) {
-              tempProductionArray.push(productionBodyFirstSets[i].production)
+            for (let i = 1; i < item.length; i++) {
+              const tempProductionArray = [productionBodyFirstSets[item[0]].production]
+              tempProductionArray.push(productionBodyFirstSets[item[i]].production)
+              bodyFirstSetIntersectionNoEmptyProduction.push([...tempProductionArray])
             }
-            bodyFirstSetIntersectionNoEmptyProduction.push([...tempProductionArray])
           }
         }
 
