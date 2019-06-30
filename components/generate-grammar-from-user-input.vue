@@ -252,6 +252,8 @@
             placeholder="请输入产生式"
             v-model="ruleForm.CFG"
             spellcheck="false"
+            id="productionInputArea"
+            ref="productionInputArea"
           ></el-input>
         </el-form-item>
       </el-form>
@@ -303,6 +305,9 @@ export default {
             let head = production[0]; // head是一个完整的字符
             head = head.replace(/\s+/, ""); // 忽略head中的空格
             let bodys = production[1].split(/\|/); // 把body按照 | 符号分开
+            if (!this.currentInputIslegal(head)) {
+              callback(new Error(`符号 ${head} 未定义`));
+            }
             if (!this.headIsNonterminal(head)) {
               callback(
                 new Error(
@@ -313,7 +318,11 @@ export default {
             for (let body of bodys) {
               let symbols = body.match(/\S+/g);
               if (symbols === null || symbols.lenght === 0) {
-                callback(new Error("产生式体不能为空"));
+                callback(
+                  new Error(
+                    "第" + (i + 1).toString() + "行 " + "产生式体不能为空"
+                  )
+                );
               }
               for (let symbol of symbols) {
                 if (!this.currentInputIslegal(symbol)) {
@@ -321,7 +330,12 @@ export default {
                 }
                 if (symbol === "ε" && symbols.length > 1) {
                   callback(
-                    new Error(`产生式格式错误，不可以同时包含 ε 和其他符号`)
+                    new Error(
+                      "第" +
+                        (i + 1).toString() +
+                        "行 " +
+                        "产生式格式错误，不可以同时包含 ε 和其他符号"
+                    )
                   );
                 }
               }
@@ -356,7 +370,8 @@ export default {
       rulesCFG: {
         CFG: [
           { max: 1200, message: "不能超过1200个字符", tirgger: "change" },
-          { validator: validateCFG, trigger: "change" }
+          { validator: validateCFG, trigger: "change" },
+          { validator: validateCFG, trigger: "blur" }
         ]
       },
       ruleForm: {
@@ -393,11 +408,34 @@ export default {
       }
     },
     inputSymbolByClick(symbol) {
-      this.ruleForm.CFG += symbol + " ";
+      symbol = symbol + " ";
+      const inputArea = document.getElementById("productionInputArea");
+      if (document.selection) {
+        let range = document.selection.createRange();
+        range.text = symbol;
+      } else if (
+        typeof inputArea.selectionStart === "number" &&
+        typeof inputArea.selectionEnd === "number"
+      ) {
+        let start = inputArea.selectionStart;
+        let end = inputArea.selectionEnd;
+        let cursorPos = start;
+        let tempString = inputArea.value;
+        inputArea.value =
+          tempString.substring(0, start) +
+          symbol +
+          tempString.substring(end, tempString.length);
+        cursorPos += symbol.length;
+        inputArea.selectionStart = inputArea.selectionEnd = cursorPos;
+      } else {
+        inputArea.value += symbol;
+      }
+      this.$set(this.ruleForm, "CFG", inputArea.value);
       this.focusInputArea();
     },
     focusInputArea() {
-      this.$refs.ruleForm.$children[0].$children[1].$refs.textarea.focus();
+      this.$refs.productionInputArea.focus();
+      // this.$refs.ruleForm.$children[0].$children[1].$refs.textarea.focus();
     },
     symbolTableRowSpan({ row, column, rowIndex, columnIndex }) {
       if (columnIndex === 10) {
@@ -437,6 +475,11 @@ export default {
         this.symbolInputVisible[val] = false;
         this.tagInputSymbol = "";
       }
+      // 这里强行改变 this.ruleForm.CFG 以触发表单验证
+      this.ruleForm.CFG += " ";
+      setTimeout(() => {
+        this.ruleForm.CFG = this.ruleForm.CFG.slice(0, -1);
+      }, 1000);
       return;
     },
     addNonterminal(val) {
@@ -451,6 +494,11 @@ export default {
         this.symbolInputVisible[val] = false;
         this.tagInputSymbol = "";
       }
+      // 这里强行改变 this.ruleForm.CFG 以触发表单验证
+      this.ruleForm.CFG += " ";
+      setTimeout(() => {
+        this.ruleForm.CFG = this.ruleForm.CFG.slice(0, -1);
+      }, 1000);
       return;
     },
     newSymbolLegal(newSymbol) {

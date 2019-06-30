@@ -30,7 +30,13 @@
           </el-tag> 恒成立
         </h3>
         <div class="left-table">
-          <el-table :data="productions" :show-header="false" max-height="550">
+          <el-table
+            :data="productions"
+            :show-header="false"
+            max-height="550"
+            row-key="leftTableRowKey"
+            :expand-row-keys="leftTableRowKeys"
+          >
             <el-table-column type="expand">
               <template slot-scope="props">
                 <el-form label-position="left" class="left-table-expand">
@@ -64,6 +70,7 @@
                     v-if="!scope.row.bodys.error"
                     size="mini"
                     style="margin:0px 10px"
+                    @click="changeLeftTableRowKeys(scope.row.leftTableRowKey)"
                   ></el-button>
                   <el-button
                     type="danger"
@@ -72,6 +79,7 @@
                     v-if="scope.row.bodys.error"
                     size="mini"
                     style="margin:0px 10px"
+                    @click="changeLeftTableRowKeys(scope.row.leftTableRowKey)"
                   ></el-button>
                 </div>
               </template>
@@ -92,7 +100,13 @@
           <el-tag class="firstSet">First(A)&cap;Follow(A)</el-tag> 必须为 &empty;
         </h3>
         <div class="right-table">
-          <el-table :data="productions" :show-header="false" max-height="550">
+          <el-table
+            :data="productions"
+            :show-header="false"
+            max-height="550"
+            row-key="rightTableRowKey"
+            :expand-row-keys="rightTableRowKeys"
+          >
             <el-table-column type="expand">
               <template slot-scope="props">
                 <el-form label-position="left" class="right-table-expand">
@@ -136,6 +150,7 @@
                     v-if="!scope.row.head.error"
                     size="mini"
                     style="margin:0px 10px"
+                    @click="changeRightTableRowKeys(scope.row.rightTableRowKey)"
                   ></el-button>
                   <el-button
                     type="danger"
@@ -144,6 +159,7 @@
                     v-if="scope.row.head.error"
                     size="mini"
                     style="margin:0px 10px"
+                    @click="changeRightTableRowKeys(scope.row.rightTableRowKey)"
                   ></el-button>
                 </div>
               </template>
@@ -167,12 +183,28 @@ export default {
     return {
       grammar: new Grammar(),
       isLL1: false,
-      productions: []
+      productions: [],
+      leftTableRowKeys: [],
+      rightTableRowKeys: []
     };
   },
   computed: {},
   created() {},
   methods: {
+    changeLeftTableRowKeys(key) {
+      if (this.leftTableRowKeys.includes(key)) {
+        this.leftTableRowKeys.splice(this.leftTableRowKeys.indexOf(key), 1);
+      } else {
+        this.leftTableRowKeys.push(key);
+      }
+    },
+    changeRightTableRowKeys(key) {
+      if (this.rightTableRowKeys.includes(key)) {
+        this.rightTableRowKeys.splice(this.rightTableRowKeys.indexOf(key), 1);
+      } else {
+        this.rightTableRowKeys.push(key);
+      }
+    },
     run() {
       let judge = new IsLL1(this.grammar);
       this.isLL1 = judge.isLL1;
@@ -187,6 +219,8 @@ export default {
       // console.log("mmmmmmmmm");
       // console.log(message);
       for (const item of message) {
+        const leftTableRowKey = message.indexOf(item);
+        const rightTableRowKey = message.indexOf(item);
         let productionString = item.head.getString() + " \u2192 ";
         for (const production of item.sameHeadProductions) {
           productionString += production.getBodyString() + " | ";
@@ -252,7 +286,9 @@ export default {
         rows.push({
           production: productionString,
           bodys: bodys,
-          head: head
+          head: head,
+          leftTableRowKey: leftTableRowKey,
+          rightTableRowKey: rightTableRowKey
         });
       }
       this.productions = rows;

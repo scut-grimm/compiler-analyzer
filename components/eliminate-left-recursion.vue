@@ -24,7 +24,7 @@
         </div>
       </div>
       <div v-else>
-        <h3>当前文法中无左递归</h3>
+        <h2>当前文法中无左递归</h2>
       </div>
     </div>
     <div class="second" v-show="second">
