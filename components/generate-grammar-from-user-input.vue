@@ -271,18 +271,6 @@ export default {
     var validateCFG = (rule, value, callback) => {
       let productions = value.split(/\n/);
       let empty = true;
-      // 设置开始符号的 for 循环
-      for (let i = 0; i < productions.length; i++) {
-        if (
-          productions[i] !== "" &&
-          productions[i].match(/->/g) !== null &&
-          productions[i].match(/->/g).length === 1
-        ) {
-          let prodution = productions[i].split(/->/);
-          this.startSymbol = prodution[0].match(/\S+/)[0];
-          break;
-        }
-      }
       for (let i = 0; i < productions.length; i++) {
         if (productions[i] !== "") {
           empty = false;
@@ -354,6 +342,23 @@ export default {
         callback(new Error("输入不能为空"));
       } else {
         callback();
+      }
+      // 设置开始符号的 for 循环
+      for (let i = 0; i < productions.length; i++) {
+        if (
+          productions[i] !== "" &&
+          productions[i].match(/->/g) !== null &&
+          productions[i].match(/->/g).length === 1
+        ) {
+          let prodution = productions[i].split(/->/);
+          let tempSymbols = prodution[0].match(/\S+/);
+          if (tempSymbols !== null && this.headIsNonterminal(tempSymbols[0])) {
+            this.startSymbol = tempSymbols[0];
+          } else {
+            this.startSymbol = "";
+          }
+          break;
+        }
       }
     };
     return {
@@ -476,10 +481,12 @@ export default {
         this.tagInputSymbol = "";
       }
       // 这里强行改变 this.ruleForm.CFG 以触发表单验证
-      this.ruleForm.CFG += " ";
-      setTimeout(() => {
-        this.ruleForm.CFG = this.ruleForm.CFG.slice(0, -1);
-      }, 1000);
+      if (this.ruleForm.CFG.length > 0) {
+        this.ruleForm.CFG += " ";
+        setTimeout(() => {
+          this.ruleForm.CFG = this.ruleForm.CFG.slice(0, -1);
+        }, 1);
+      }
       return;
     },
     addNonterminal(val) {
@@ -495,10 +502,12 @@ export default {
         this.tagInputSymbol = "";
       }
       // 这里强行改变 this.ruleForm.CFG 以触发表单验证
-      this.ruleForm.CFG += " ";
-      setTimeout(() => {
-        this.ruleForm.CFG = this.ruleForm.CFG.slice(0, -1);
-      }, 1000);
+      if (this.ruleForm.CFG.length > 0) {
+        this.ruleForm.CFG += " ";
+        setTimeout(() => {
+          this.ruleForm.CFG = this.ruleForm.CFG.slice(0, -1);
+        }, 1);
+      }
       return;
     },
     newSymbolLegal(newSymbol) {
