@@ -3,10 +3,10 @@
     <div class="first">
       <div class="button">
         <div v-if="hasImmedationRecursionProduction&&!hasIndirectRecursionProduction">
-          <el-button type="success" @click="eliminateImmedationRecursion">消除立即左递归</el-button>
+          <el-button type="success" @click="eliminateImmedationRecursion" v-if="!allDone()">消除立即左递归</el-button>
         </div>
         <div v-else-if="hasIndirectRecursionProduction">
-          <el-button type="success" @click="eliminateEmptyProductions">消除 ε 产生式</el-button>
+          <el-button type="success" @click="eliminateEmptyProductions" v-if="!allDone()">消除 ε 产生式</el-button>
         </div>
       </div>
       <div v-if="hasImmedationRecursionProduction||hasIndirectRecursionProduction">
@@ -29,7 +29,7 @@
     </div>
     <div class="second" v-show="second">
       <div class="button">
-        <el-button type="warning" @click="eliminateCycles">消除环</el-button>
+        <el-button type="warning" @click="eliminateCycles" v-if="!allDone()">消除环</el-button>
       </div>
       <div style="margin-top:10px">
         <HighlightProduction :productions="EEGProductions" title="消除ε产生式后的文法"></HighlightProduction>
@@ -37,16 +37,13 @@
     </div>
     <div class="thrid" v-show="thrid">
       <div class="button">
-        <el-button type="info" @click="eliminateLeftRecursion">消除左递归</el-button>
+        <el-button type="info" @click="eliminateLeftRecursion" v-if="!allDone()">消除左递归</el-button>
       </div>
       <div style="margin-top:10px">
         <HighlightProduction :productions="ECGProductions" title="消除环后的文法"></HighlightProduction>
       </div>
     </div>
     <div class="fourth" v-show="fourth">
-      <div class="button">
-        <el-button type="primary">消除左递归完成</el-button>
-      </div>
       <div style="margin-top:10px">
         <HighlightProduction :productions="ELRGProductions" :title="titleMessage"></HighlightProduction>
       </div>
@@ -78,7 +75,6 @@ export default {
       ECGProductions: null,
       ELRGProductions: null,
       buttonMessage: "完成",
-      //buttonMessage: "完成",
       second: false,
       thrid: false,
       fourth: false,
@@ -86,6 +82,25 @@ export default {
     };
   },
   methods: {
+    allDone() {
+      if (this.hasIndirectRecursionProduction) {
+        if (this.second && this.thrid && this.fourth) {
+          this.$message("消除左递归完成");
+          return true;
+        } else {
+          return false;
+        }
+      } else if (this.hasImmedationRecursionProduction) {
+        if (!this.second && !this.thrid && this.fourth) {
+          this.$message("消除左递归完成");
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        return true;
+      }
+    },
     eliminateImmedationRecursion() {
       this.second = false;
       this.thrid = false;

@@ -9,22 +9,22 @@
           <div class="notice">
             <div class="left">
               拟定的文法应属于上下文无关文法
-              <br>文法符号使用前必须先添加至下方符号表中
-              <br>符号 &#8594; 用一个减号紧接一个大于号代替，即 ->
-              <br>第一条产生式的头部默认为文法的开始符号
-              <br>开始符号将在符号表中高亮为红色
+              <br />文法符号使用前必须先添加至下方符号表中
+              <br />符号 &#8594; 用一个减号紧接一个大于号代替，即 ->
+              <br />第一条产生式的头部默认为文法的开始符号
+              <br />开始符号将在符号表中高亮为红色
             </div>
             <div class="center">
               产生式格式：产生式头 &#8594; 产生式体
-              <br>产生式头是单个非终止符号
-              <br>产生式体是由终止符号和非终止符号组成的串或空串
-              <br>产生式体中不同文法符号之间用空格隔开
+              <br />产生式头是单个非终止符号
+              <br />产生式体是由终止符号和非终止符号组成的串或空串
+              <br />产生式体中不同文法符号之间用空格隔开
             </div>
             <div class="right">
               例如：
-              <br>E -> A a | B b
-              <br>A -> a id | ε
-              <br>B -> b | ε
+              <br />E -> A a | B b
+              <br />A -> a id | ε
+              <br />B -> b | ε
             </div>
           </div>
         </el-collapse-item>
@@ -343,10 +343,10 @@ export default {
       }
     };
     return {
-      terminals: ["(", ")", "+", "-", "*", "a", "b", "c", "id"],
-      nonterminals: ["A", "B", "C", "D", "E", "F", "T", "E'", "T'", "F'"],
-      // terminals: [],
-      // nonterminals: [],
+      // terminals: ["(", ")", "+", "-", "*", "a", "b", "c", "id"],
+      // nonterminals: ["A", "B", "C", "D", "E", "F", "T", "E'", "T'", "F'"],
+      terminals: [],
+      nonterminals: [],
       symbol: "",
       tagInputSymbol: "",
       formalProductions: Array.of(),
@@ -732,6 +732,7 @@ export default {
   .medium {
     width: 90%;
     .table {
+      padding: 4px;
       .tag {
         margin-top: 2px;
         margin-bottom: 2px;
