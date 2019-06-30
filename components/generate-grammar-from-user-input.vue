@@ -362,10 +362,10 @@ export default {
       }
     };
     return {
-      // terminals: ["(", ")", "+", "-", "*", "a", "b", "c", "id"],
-      // nonterminals: ["A", "B", "C", "D", "E", "F", "T", "E'", "T'", "F'"],
-      terminals: [],
-      nonterminals: [],
+      terminals: ["(", ")", "+", "-", "*", "a", "b", "c", "id"],
+      nonterminals: ["A", "B", "C", "D", "E", "F", "T", "E'", "T'", "F'"],
+      // terminals: [],
+      // nonterminals: [],
       symbol: "",
       tagInputSymbol: "",
       formalProductions: Array.of(),
