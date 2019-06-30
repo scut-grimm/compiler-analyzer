@@ -26,7 +26,7 @@ class GenerateFollowSet {
     if(first){
       yield{
         curProduction: {},
-        notice: `将$放入Follow(${startSign.getString()})中`,
+        notice: `将\`$\`放入\`Follow(${startSign.getString()})\`中`,
         step: 0,
         highlightSymbols: [],
         active,
@@ -52,7 +52,7 @@ class GenerateFollowSet {
           if(toAdd.length > 0){
             yield {
               production,
-              notice: `FIRST(${remains.map(e=>e.getString()).join('')})=${toAdd.map(e=>e.getString()).join('')}，将除${Empty.getString()}之外的符号加入FOLLOW(${sign.getString()})中`,
+              notice: `\`FIRST(${remains.map(e=>e.getString()).join('')})\`=\`${toAdd.map(e=>e.getString()).join('')}\`，将除\`${Empty.getString()}\`之外的符号加入\`FOLLOW(${sign.getString()})\`中`,
               step: 1,
               highlightSymbols: [],
               processedSigns: [...processedSigns],
@@ -68,7 +68,7 @@ class GenerateFollowSet {
           if(remainsFirstSet.size === 0){
             yield {
               production,
-              notice: `在产生式('${production.getString()}')中，${sign.getString()}之后无符号`,
+              notice: `在产生式\`${production.getString()}\`中，\`${sign.getString()}\`之后无符号`,
               step: 2,
               highlightSymbols: [],
               processedSigns: [...processedSigns],
@@ -78,7 +78,7 @@ class GenerateFollowSet {
           }else if(remainsFirstSet.has(Empty)){
             yield {
               production,
-              notice: `在产生式('${production.getString()}')中，${sign.getString()}之后的符号的FITST(${remains.map(e=>e.getString()).join('')})中存在${Empty.getString()}`,
+              notice: `在产生式\`${production.getString()}\`中，\`${sign.getString()}\`之后的符号的\`FITST(${remains.map(e=>e.getString()).join('')})\`中存在\`${Empty.getString()}\``,
               step: 2,
               highlightSymbols: [],
               processedSigns: [...processedSigns],
@@ -89,7 +89,7 @@ class GenerateFollowSet {
           if(remainsFirstSet.size === 0 || remainsFirstSet.has(Empty)){
             yield {
               production,
-              notice: `将FOLLOW(${production.getHead().getString()})中的所有符号放入FOLLOW(${sign.getString()})中`,
+              notice: `将\`FOLLOW(${production.getHead().getString()})\`中的所有符号放入\`FOLLOW(${sign.getString()})\`中`,
               step: 2,
               highlightSymbols: [],
               processedSigns: [...processedSigns],

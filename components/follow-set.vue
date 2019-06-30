@@ -2,45 +2,25 @@
   <div class="ppt">
     <div class="algorithm">
       <div class="left">
-        <p class="title">算法流程：</p>
-        <p
-          class="step"
+        <div class="step-desc" style="text-align:center">
+          <span v-if="!started">点击开始按钮计算所有文法符号的Follow集合</span>
+          <template v-else>
+            <p class="title" v-if="notice !== ''">下一步操作</p>
+            <HighlightText :text="notice" ></HighlightText>
+            <p class="title" v-if="pre_notice !== ''">当前操作</p>
+            <HighlightText :text="pre_notice"></HighlightText>
+
+          </template>
+
+        </div>
+        <p class="title">算法流程</p>
+        <HighlightText
+        class="step"
           v-for="(step,index) in algorithmSteps"
           :key="index"
           :class="{'active': curStep===index}"
-        >{{step}}</p>
-      </div>
-      <div class="right">
-        <p class="title">当前操作：</p>
-        <p class="step">{{pre_notice}}</p>
-        <p class="title">下一步操作：</p>
-        <p class="step">{{notice}}</p>
-      </div>
-    </div>
-    <div class="grammar-content">
-      <div class="left">
-        <GrammarIndicator
-          style="width: 200px;"
-          :grammar="grammar"
-          :active="active"
-          @changeProduction="onChagneProduction"
-        ></GrammarIndicator>
-      </div>
-      <div class="center">
-        <div class="up">
-          <template v-if="gettingFirst.length > 0">
-            <span class="title">First({{gettingFirst.map(e => e.getString()).join('')}})</span>
-            <div class="set-div">
-              <span
-                v-for="(sign,index) in curFirstSet"
-                :key="index"
-                :class="{'active': curHighlightSymbols.indexOf(sign) !== -1}"
-              >{{sign.getString()}}</span>
-            </div>
-          </template>
-        </div>
-        <div class="down">
-        </div>
+          :text="(index + 1) + '. ' + step"
+        ></HighlightText>
       </div>
       <div class="right">
         <el-table
@@ -111,9 +91,11 @@ import AlgorithmWrapper from "~/classes/algorithm-wrapper";
 import GenerateFollowSet from "~/classes/algorithms/generate-follow-set";
 import Grammar from "~/classes/grammar";
 import MapSet from "~/classes/map-set";
+import HighlightText from '~/components/highlight-text'
 export default {
   components: {
-    GrammarIndicator
+    GrammarIndicator,
+    HighlightText
   },
   data() {
     return {
@@ -208,11 +190,11 @@ export default {
       clearTimeout(this.autoTimer);
       this.autoTimer = null;
     },
-    runAll(restart = true){
-      if(restart){
+    runAll(restart = true) {
+      if (restart) {
         this.start()
       }
-      if(this.isAllDone === false){
+      if (this.isAllDone === false) {
         this.skip()
         this.$nextTick(() => {
           this.runAll(false)
@@ -233,7 +215,7 @@ export default {
       this.grammar = grammar
       //this.runAll()
     },
-    finish(){
+    finish() {
       this.$eventbus.$emit('FinishFollowSet')
     }
   },
@@ -252,9 +234,9 @@ export default {
 
     algorithmSteps() {
       return [
-        "在开始符号S的FOLLOW(S)中，加入$",
-        "如果存在产生式A->αBβ，则将FIRST(β)中除ε以外的符号都放入FOLLOW(B)中",
-        "如果存在产生式A->αB，或A->αBβ，其中FIRST(β)中包含ε，则将FOLLOW(A)中的所有符号放入FOLLOW(B)中"
+        "在开始符号`S`的`FOLLOW(S)`中，加入`$`",
+        "如果存在产生式`A->αBβ`，则将`FIRST(β)`中除`ε`以外的符号都放入`FOLLOW(B)`中",
+        "如果存在产生式`A->αB`，或`A->αBβ`，其中`FIRST(β)`中包含`ε`，则将`FOLLOW(A)`中的所有符号放入`FOLLOW(B)`中"
       ];
     },
     passCount() {
@@ -312,23 +294,27 @@ export default {
 .ppt {
   .algorithm {
     display: flex;
+    font-weight: bold;
     .left {
       width: 50%;
       max-width: 50%;
+      .step-desc{
+        font-size: 30px;
+        min-height: 200px;
+      }
     }
     .right {
       width: 50%;
       max-width: 50%;
+      position: relative;
     }
     .title {
       font-size: 30px;
+      text-align: center;
     }
     .step {
-      font-size: 20px;
-      padding: 5px;
-      border: black solid 1px;
       &.active {
-        background-color: yellow;
+        background-color: rgba(252, 217, 21, 0.603);
       }
     }
   }
@@ -366,9 +352,7 @@ export default {
         margin: 2px;
         padding: 2px;
       }
-      .active {
-        background-color: burlywood;
-      }
+
     }
   }
 }
