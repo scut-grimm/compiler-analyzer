@@ -153,19 +153,52 @@ export default {
 
 
     },
+    getTestGrammar() {
+      const grammar = this.grammar
+    const E = grammar.getSign('E', 'Nonterminal')
+    const E1 = grammar.getSign('E\'', 'Nonterminal')
+    const T = grammar.getSign('T', 'Nonterminal')
+    const T1 = grammar.getSign('T\'', 'Nonterminal')
+    const F = grammar.getSign('F', 'Nonterminal')
+    const Plus = grammar.getSign('+', 'Terminal')
+    const Multi = grammar.getSign('*', 'Terminal')
+    const Id = grammar.getSign('id', 'Terminal')
+    const LeftClose = grammar.getSign('(', 'Terminal')
+    const RightClose = grammar.getSign(')', 'Terminal')
+    const Empty = grammar.getEmptySign()
+    const End = grammar.getStackBottomSign()
+    grammar.setStartSign(E)
+    grammar.addProduction(E, [T, E1])
+    grammar.addProduction(E1, [Plus, T, E1])
+    grammar.addProduction(E1, [Empty])
+    grammar.addProduction(T, [F, T1])
+    grammar.addProduction(T1, [Multi, F, T1])
+    grammar.addProduction(T1, [Empty])
+    grammar.addProduction(F, [LeftClose, E, RightClose])
+    grammar.addProduction(F, [Id])
+      return grammar
+    },
     regenerate(step) {
       if (step === 'GrammarInput') {
         return
       }
+
       if (this.curStep === 'GrammarInput') {
-        let tmp = this.$refs.GrammarInput.generateGrammar()
-        if (tmp) {
-          this.rawGrammar = tmp
-          this.grammar = tmp
+        if (true) {
+          let tmp = this.$refs.GrammarInput.generateGrammar()
+          if (tmp) {
+            this.rawGrammar = tmp
+            this.grammar = tmp
+          } else {
+            throw new Error('请先拟定文法')
+          }
+          console.log(tmp)
         } else {
-          throw new Error('请先拟定文法')
+          let grammar = this.getTestGrammar()
+          this.rawGrammar = grammar
+          this.grammar = grammar
         }
-        console.log(tmp)
+
       }
       if (this.rawGrammar.getProductions().length === 0) {
         this.jumptTo('GrammarInput')

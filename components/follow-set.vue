@@ -2,12 +2,21 @@
   <div class="ppt">
     <div class="algorithm">
       <div class="left">
-        <div class="step-desc" style="text-align:center">
+        <div
+          class="step-desc"
+          style="text-align:center"
+        >
           <span v-if="!started">点击开始按钮计算所有文法符号的Follow集合</span>
           <template v-else>
-            <p class="title" v-if="notice !== ''">下一步操作</p>
-            <HighlightText :text="notice" ></HighlightText>
-            <p class="title" v-if="pre_notice !== ''">当前操作</p>
+            <p
+              class="title"
+              v-if="notice !== ''"
+            >下一步操作</p>
+            <HighlightText :text="notice"></HighlightText>
+            <p
+              class="title"
+              v-if="pre_notice !== ''"
+            >当前操作</p>
             <HighlightText :text="pre_notice"></HighlightText>
 
           </template>
@@ -15,7 +24,7 @@
         </div>
         <p class="title">算法流程</p>
         <HighlightText
-        class="step"
+          class="step"
           v-for="(step,index) in algorithmSteps"
           :key="index"
           :class="{'active': curStep===index}"
@@ -32,7 +41,7 @@
             width="150"
           >
             <template slot-scope="scope">
-              <span>{{scope.row.nonterminal}}</span>
+              <HighlightText :text="'`' + scope.row.nonterminal + '`'"></HighlightText>
             </template>
           </el-table-column>
           <el-table-column
@@ -46,7 +55,7 @@
             </template>
           </el-table-column>
         </el-table>
-        <div style="position: absolute; bottom: 10px;left: 10px;">
+        <div style="position: absolute; bottom: -40px;left: 10px;">
           <template v-if="started === false">
             <el-button
               type="primary"
@@ -298,7 +307,7 @@ export default {
     .left {
       width: 50%;
       max-width: 50%;
-      .step-desc{
+      .step-desc {
         font-size: 30px;
         min-height: 200px;
       }
@@ -316,43 +325,6 @@ export default {
       &.active {
         background-color: rgba(252, 217, 21, 0.603);
       }
-    }
-  }
-  .grammar-content {
-    display: flex;
-    margin-top: 30px;
-    height: 500px;
-    > div {
-      border: black solid 1px;
-      border-right: none;
-    }
-    .left {
-      width: 20%;
-    }
-    .center {
-      width: 20%;
-      height: 100%;
-      .title {
-        font-size: 26px;
-      }
-      .up {
-        height: 50%;
-      }
-      .down {
-        height: 50%;
-      }
-    }
-    .right {
-      width: 60%;
-      position: relative;
-    }
-    .set-div {
-      font-size: 22px;
-      span {
-        margin: 2px;
-        padding: 2px;
-      }
-
     }
   }
 }

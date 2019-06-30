@@ -26,14 +26,14 @@ class GeneratePredictiveParsingTable {
     const End = G.getStackBottomSign()
     yield {
       curProduction,
-      notice: '分析产生式(' + curProduction.getString() + ')',
+      notice: '分析产生式`' + curProduction.getString() + '`',
       step: 0,
       highlightSymbols: []
     }
     for (const symbol of curFirstSet) {
       yield {
         curProduction,
-        notice: `First(${curProduction.getBodyString()})中存在终止符 ${symbol.getString()} , 将产生式 ${curProduction.getString()} 加入到分析表M[${curProduction.getHeadString()}, ${symbol.getString()}]中`,
+        notice: `\`First(${curProduction.getBodyString()})\`中存在终止符 \`${symbol.getString()}\` , 将产生式 \`${curProduction.getString()}\` 加入到分析表\`M[${curProduction.getHeadString()}, ${symbol.getString()}]\`中`,
         step: 0,
         highlightSymbols: [symbol]
       }
@@ -42,14 +42,14 @@ class GeneratePredictiveParsingTable {
     if (curFirstSet.has(Empty)) {
       yield {
         curProduction,
-        notice: `First(${curProduction.getBodyString()})中存在${Empty.getString()}`,
+        notice: `\`First(${curProduction.getBodyString()})\`中存在\`${Empty.getString()}\``,
         step: 1,
         highlightSymbols: [Empty]
       }
       for (const symbol of curFollowSet) {
         yield {
           curProduction,
-          notice: `Follow(${curProduction.getHeadString()})中存在终止符 ${symbol.getString()} , 将产生式 ${curProduction.getString()} 加入到分析表M[${curProduction.getHeadString()}, ${symbol.getString()}]中`,
+          notice: `\`Follow(${curProduction.getHeadString()})\`中存在终止符 \`${symbol.getString()}\` , 将产生式 \`${curProduction.getString()}\` 加入到分析表\`M[${curProduction.getHeadString()}, ${symbol.getString()}]\`中`,
           step: 1,
           highlightSymbols: [symbol]
         }
@@ -58,7 +58,7 @@ class GeneratePredictiveParsingTable {
       if (curFollowSet.has(End)) {
         yield {
           curProduction,
-          notice: `Follow(${curProduction.getHeadString()})中存在 $ , 将产生式 ${curProduction.getString()} 加入到分析表M[${curProduction.getHeadString()}, $]中`,
+          notice: `\`Follow(${curProduction.getHeadString()})\`中存在 \`$\` , 将产生式 \`${curProduction.getString()}\` 加入到分析表\`M[${curProduction.getHeadString()}, $]\`中`,
           step: 2,
           highlightSymbols: [End]
         }
@@ -66,7 +66,7 @@ class GeneratePredictiveParsingTable {
       } else {
         yield {
           curProduction,
-          notice: `Follow(${curProduction.getHeadString()})中不存在 $ ，跳过`,
+          notice: `\`Follow(${curProduction.getHeadString()})\`中不存在 \`$\` ，跳过`,
           step: 2,
           highlightSymbols: []
         }
@@ -74,7 +74,7 @@ class GeneratePredictiveParsingTable {
     } else {
       yield {
         curProduction,
-        notice: `First(${curProduction.getBodyString()})中不存在 ${Empty.getString()} ，跳过`,
+        notice: `\`First(${curProduction.getBodyString()})\`中不存在 \`${Empty.getString()}\` ，跳过`,
         step: 1,
         highlightSymbols: []
       }

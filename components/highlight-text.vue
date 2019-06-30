@@ -18,14 +18,14 @@ export default {
 <style lang="scss">
 .highlight-text{
   font-size: 20px;
-  padding: 5px 0;
+  padding: 5px;
 }
 .highlight-text-item{
   display: inline-block;
   background-color: rgba(64,158,255,.1);
     padding: 0 10px;
     line-height: 20px;
-    font-size: 12px;
+    font-size: 16px;
     color: #409EFF;
     border-radius: 4px;
     box-sizing: border-box;

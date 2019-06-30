@@ -2,59 +2,44 @@
   <div class="ppt">
     <div class="algorithm">
       <div class="left">
-        <p class="title">算法流程：</p>
-        <p
+        <div
+          class="step-desc"
+          style="text-align:center"
+        >
+          <span v-if="!started">点击开始按钮计算所有文法的预测分析表</span>
+          <template v-else>
+            <p
+              class="title"
+              v-if="notice !== ''"
+            >下一步操作</p>
+            <HighlightText :text="notice"></HighlightText>
+            <p
+              class="title"
+              v-if="pre_notice !== ''"
+            >当前操作</p>
+            <HighlightText :text="pre_notice"></HighlightText>
+
+          </template>
+
+        </div>
+        <p class="title">算法流程</p>
+        <HighlightText
           class="step"
           v-for="(step,index) in algorithmSteps"
           :key="index"
           :class="{'active': curStep===index}"
-        >{{step}}</p>
+          :text="(index + 1) + '. ' + step"
+        ></HighlightText>
       </div>
       <div class="right">
-        <p class="title">当前操作：</p>
-        <p class="step">{{pre_notice}}</p>
-        <p class="title">下一步操作：</p>
-        <p class="step">{{notice}}</p>
-      </div>
-    </div>
-    <div class="grammar-content">
-      <div class="left">
-        <GrammarIndicator
-          style="width: 200px;"
-          :grammar="grammar"
-          :active="active"
-          @changeProduction="onChagneProduction"
-        ></GrammarIndicator>
-      </div>
-      <div class="center">
-        <div class="up">
-          <template v-if="curProduction!==null">
-            <span class="title">First({{curProduction.body.map(e => e.getString()).join('')}})</span>
-            <div class="set-div">
-              <span
-                v-for="(sign,index) in curFirstSet"
-                :key="index"
-                :class="{'active': curHighlightSymbols.indexOf(sign) !== -1}"
-              >{{sign.getString()}}</span>
-            </div>
-          </template>
-        </div>
-        <div class="down">
-          <template v-if="curProduction!==null">
-            <span class="title">Follow({{curProduction.head.getString()}})</span>
-            <div class="set-div">
-              <span
-                v-for="(sign,index) in curFollowSet"
-                :key="index"
-                :class="{'active': curHighlightSymbols.indexOf(sign) !== -1}"
-              >{{sign.getString()}}</span>
-            </div>
-          </template>
-        </div>
-      </div>
-      <div class="right">
-        <el-table :data="tableData" style="width: 100%">
-          <el-table-column label="Non Terminal" width="150">
+        <el-table
+          :data="tableData"
+          style="width: 100%"
+        >
+          <el-table-column
+            label="Non Terminal"
+            width="150"
+          >
             <template slot-scope="scope">
               <span>{{scope.row.nonterminal}}</span>
             </template>
@@ -67,22 +52,43 @@
               width="120"
             >
               <template slot-scope="scope">
-                <span>{{scope.row[terminal]}}</span>
+                <HighlightText :text="'`' + scope.row[terminal] + '`'"></HighlightText>
               </template>
             </el-table-column>
           </el-table-column>
         </el-table>
-        <div style="position: absolute; bottom: 10px;left: 10px;">
+        <div style="position: absolute; bottom: -40px;left: 10px;">
           <template v-if="started === false">
-            <el-button type="primary" @click="start">开始</el-button>
+            <el-button
+              type="primary"
+              @click="start"
+            >开始</el-button>
           </template>
           <template v-if="started === true && isAllDone === false">
-            <el-button type="success" @click="next">下一步</el-button>
-            <el-button type="warning" @click="runAll">跳过</el-button>
-            <el-button type="info" @click="startAutoPlay" v-if="autoTimer === null">自动播放</el-button>
-            <el-button type="danger" @click="stopAutoPlay" v-if="autoTimer !== null">停止播放</el-button>
+            <el-button
+              type="success"
+              @click="next"
+            >下一步</el-button>
+            <el-button
+              type="warning"
+              @click="runAll"
+            >跳过</el-button>
+            <el-button
+              type="info"
+              @click="startAutoPlay"
+              v-if="autoTimer === null"
+            >自动播放</el-button>
+            <el-button
+              type="danger"
+              @click="stopAutoPlay"
+              v-if="autoTimer !== null"
+            >停止播放</el-button>
           </template>
-          <el-button @click="start" v-if="started" type="primary">重新开始</el-button>
+          <el-button
+            @click="start"
+            v-if="started"
+            type="primary"
+          >重新开始</el-button>
           <!-- <el-button type="primary" @click="finish">完成</el-button> -->
         </div>
       </div>
@@ -97,9 +103,12 @@ import PredictiveParsingTable from "~/classes/predictive-parsing-table";
 import GeneratePredictiveParsingTable from "~/classes/algorithms/generate-predictive-parsing-table";
 import Grammar from "~/classes/grammar";
 import MapSet from "~/classes/map-set";
+import HighlightText from '~/components/highlight-text'
+
 export default {
   components: {
-    GrammarIndicator
+    GrammarIndicator,
+    HighlightText
   },
   data() {
     const PPT = new PredictiveParsingTable();
@@ -198,11 +207,11 @@ export default {
       clearTimeout(this.autoTimer);
       this.autoTimer = null;
     },
-    runAll(restart = true){
-      if(restart){
+    runAll(restart = true) {
+      if (restart) {
         this.start()
       }
-      if(this.isAllDone === false){
+      if (this.isAllDone === false) {
         this.skip()
         this.$nextTick(() => {
           this.runAll(false)
@@ -219,7 +228,7 @@ export default {
         this.autoloop();
       }, this.autoTime);
     },
-    finish(){
+    finish() {
       this.$eventbus.$emit('FinishPPT')
     },
     setGrammar(grammar) {
@@ -278,9 +287,9 @@ export default {
     },
     algorithmSteps() {
       return [
-        "对于产生式A->α，对于First(α)每个终结符号a，将A->α加入到分析表M[A,a]中",
-        "若First(α)中存在ε, 将Follow(A)中的每个终结符号b，将A->α加入到分析表M[A,b]中",
-        "若First(α)中存在ε 且 Follow(A)中存在$，将A->α加入到M[A,$]中"
+        "对于产生式`A->α`，对于`First(α)`每个终结符号`a`，将`A->α`加入到分析表`M[A,a]`中",
+        "若`First(α)`中存在`ε`, 将`Follow(A)`中的每个终结符号`b`，将`A->α`加入到分析表`M[A,b]`中",
+        "若`First(α)`中存在`ε` 且 `Follow(A)`中存在`$`，将`A->α`加入到`M[A,$]`中"
       ];
     }
   },
@@ -293,62 +302,27 @@ export default {
 .ppt {
   .algorithm {
     display: flex;
+    font-weight: bold;
     .left {
       width: 50%;
       max-width: 50%;
+      .step-desc {
+        font-size: 30px;
+        min-height: 200px;
+      }
     }
     .right {
       width: 50%;
       max-width: 50%;
+      position: relative;
     }
     .title {
       font-size: 30px;
+      text-align: center;
     }
     .step {
-      font-size: 20px;
-      padding: 5px;
-      border: black solid 1px;
       &.active {
-        background-color: yellow;
-      }
-    }
-  }
-  .grammar-content {
-    display: flex;
-    margin-top: 30px;
-    height: 500px;
-    > div {
-      border: black solid 1px;
-      border-right: none;
-    }
-    .left {
-      width: 20%;
-    }
-    .center {
-      width: 20%;
-      height: 100%;
-      .title {
-        font-size: 26px;
-      }
-      .up {
-        height: 50%;
-      }
-      .down {
-        height: 50%;
-      }
-    }
-    .right {
-      width: 60%;
-      position: relative;
-    }
-    .set-div {
-      font-size: 22px;
-      span {
-        margin: 2px;
-        padding: 2px;
-      }
-      .active {
-        background-color: burlywood;
+        background-color: rgba(252, 217, 21, 0.603);
       }
     }
   }
