@@ -138,30 +138,30 @@ class EliminateLeftRecursion {
   // 扫描间接左递归
   // 递归实现的回溯法
   scanIndirectLeftRecursion(solutionSpace, derivationStack) {
-    {
-      console.log('-----------------------------------')
-      const temp = solutionSpace.getData()
-      for (const i of temp) {
-        let tempString = ''
-        for (let j = 0; j < i.productions.length; j++) {
-          tempString += i.productions[j].getString() + ', '
-        }
-        console.log(tempString + i.index.toString() + ', ' + i.bodySymbolIndex.toString())
-      }
-      console.log('************************************')
-      const tempDer = derivationStack.getData()
-      let tempString = ''
-      for (const i of tempDer) {
-        if (i !== undefined) {
-          tempString += i.getString() + ', '
-        } else {
-          tempString += 'undefined, '
-        }
-      }
-      tempString = tempString.slice(0, -2)
-      console.log(tempString)
-      console.log('-----------------------------------')
-    }
+    // {
+    //   console.log('-----------------------------------')
+    //   const temp = solutionSpace.getData()
+    //   for (const i of temp) {
+    //     let tempString = ''
+    //     for (let j = 0; j < i.productions.length; j++) {
+    //       tempString += i.productions[j].getString() + ', '
+    //     }
+    //     console.log(tempString + i.index.toString() + ', ' + i.bodySymbolIndex.toString())
+    //   }
+    //   console.log('************************************')
+    //   const tempDer = derivationStack.getData()
+    //   let tempString = ''
+    //   for (const i of tempDer) {
+    //     if (i !== undefined) {
+    //       tempString += i.getString() + ', '
+    //     } else {
+    //       tempString += 'undefined, '
+    //     }
+    //   }
+    //   tempString = tempString.slice(0, -2)
+    //   console.log(tempString)
+    //   console.log('-----------------------------------')
+    // }
     const bottom = solutionSpace.bottom()
     if (bottom.index === bottom.productions.length) { // 已经处理完解空间栈栈底产生式数组的最后一个产生式，算法结束
       return
