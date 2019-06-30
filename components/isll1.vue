@@ -1,9 +1,9 @@
 <template>
   <div class="isLL1">
     <div class="top">
-      <h3 v-if="isLL1===true">当前文法属于LL(1)文法</h3>
-      <h3 v-else>当前文法不属于LL(1)文法</h3>
-      <h3>当下面两个条件都满足时，一个文法才属于LL(1)文法</h3>
+      <h2 v-if="isLL1===true">当前文法属于LL(1)文法</h2>
+      <h2 v-else>当前文法不属于LL(1)文法</h2>
+      <div style="color:#99a9bf;margin:4px;font-size:18.72px">当下面两个条件都满足时，一个文法才属于LL(1)文法</div>
     </div>
 
     <div class="down">
