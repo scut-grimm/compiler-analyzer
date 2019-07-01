@@ -1,8 +1,21 @@
 <template>
   <div class="analysis">
-    <div class="left">
+    <div class="up">
       <div class="user-input">
         <userInput :grammar="grammar" @getInput="getData"></userInput>
+
+        <div style="position: relative; bottom: 10px;left: 10px;">
+          <template v-if="started === false">
+            <el-button type="primary" @click="start">开始</el-button>
+          </template>
+          <template v-if="started === true && isAllDone === false">
+            <el-button type="success" @click="next">下一步</el-button>
+            <el-button type="warning" @click="skip">跳过</el-button>
+            <el-button type="info" @click="startAutoPlay" v-if="autoTimer === null">自动播放</el-button>
+            <el-button type="danger" @click="stopAutoPlay" v-if="autoTimer !== null">停止播放</el-button>
+          </template>
+          <el-button @click="restart" v-if="started" type="primary">重新开始</el-button>
+        </div>
       </div>
 
       <div class="PPT">
@@ -26,22 +39,13 @@
           </el-table-column>
         </el-table>
       </div>
-
-      <div style="position: relative; bottom: 10px;left: 10px;">
-        <template v-if="started === false">
-          <el-button type="primary" @click="start">开始</el-button>
-        </template>
-        <template v-if="started === true && isAllDone === false">
-          <el-button type="success" @click="next">下一步</el-button>
-          <el-button type="warning" @click="skip">跳过</el-button>
-          <el-button type="info" @click="startAutoPlay" v-if="autoTimer === null">自动播放</el-button>
-          <el-button type="danger" @click="stopAutoPlay" v-if="autoTimer !== null">停止播放</el-button>
-        </template>
-        <el-button @click="restart" v-if="started" type="primary">重新开始</el-button>
       </div>
-    </div>
 
-    <div class="right">
+
+
+
+
+    <div class="down">
       <el-table :data="stackData" style="width: 100%">
         <el-table-column prop="matched" label="已匹配" width="180" align="right"></el-table-column>
         <el-table-column prop="symbolStack" label="符号栈" width="180" align="right"></el-table-column>
@@ -253,19 +257,22 @@ export default {
 
 <style lang="scss" scoped>
 .analysis {
-  display: flex;
   width: 90%;
   margin: 30px auto;
-  .left {
-    width: 30%;
+  .up {
+    display: flex;
+    width: 100%;
+    .user-input{
+      width: 29%;
+    }
     .PPT {
-      width: 100%;
+      width: 70%;
     }
     * {
       margin-bottom: 30px;
     }
   }
-  .right {
+  .down {
     /*padding-left: 20px;*/
     width: 70%;
     position: relative;
