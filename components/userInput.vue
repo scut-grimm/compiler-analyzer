@@ -32,7 +32,6 @@
                 //   result.push(grammar.getSign(i))
                 // }
                 if (arr.length > 0) {
-                  console.log(arr)
                   this.$emit('getInput', arr)
                 }
           }

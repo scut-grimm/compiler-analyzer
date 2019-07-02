@@ -19,7 +19,9 @@
       </div>
 
       <div class="PPT">
-        <el-table :data="tableData" >
+        <el-table :data="tableData"
+                  height="350"
+        >
           <el-table-column label="Non Terminal">
             <template slot-scope="scope">
               <span>{{scope.row.nonterminal}}</span>
@@ -32,7 +34,11 @@
               :label="terminal"
             >
               <template slot-scope="scope" >
-                <span>{{scope.row[terminal]}}</span>
+                <span v-if="scope.row[terminal] != M">
+                  {{scope.row[terminal]}}
+                </span>
+                <HighlightText :text="'`' + scope.row[terminal] + '`'" v-else>
+                </HighlightText>
               </template>
             </el-table-column>
           </el-table-column>
@@ -66,8 +72,11 @@ import MapSet from "~/classes/map-set";
 import ParsingStack from "~/classes/parsing-stack";
 import GenerateParsingStack from "~/classes/algorithms/generate-parsing-stack";
 import sign from "../classes/sign";
+import HighlightText from '~/components/highlight-text'
+
 export default {
   components: {
+    HighlightText,
     userInput
   },
   data() {
@@ -82,6 +91,7 @@ export default {
       strToken: [],
       tempInput: [],
       inputData: "",
+      M:"",
       Production: "",
       stackData: [],
       wrapper: null,
@@ -138,8 +148,12 @@ export default {
       }
     },
     next() {
-      let { Production, notice, token } = this.wrapper.next();
+      let { M, Production, notice, token } = this.wrapper.next();
+
       // this.pre_notice = this.notice
+      if(M) {
+        this.M = M.getString()
+      }
       this.notice = notice;
       this.Production = Production;
       this.strToken = token;
@@ -263,12 +277,15 @@ export default {
   .up {
     display: flex;
     width: 100%;
+    height:350px;
     .user-input{
+      height: 50%;
       width: 29%;
     }
     .PPT {
+      height: 100px;
       width: 70%;
-      margin-left: 5px;
+      margin-left: 10px;
     }
     * {
       margin-bottom: 15px;
