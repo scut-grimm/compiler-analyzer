@@ -4,7 +4,7 @@
       <div class="user-input">
         <userInput :grammar="grammar" @getInput="getData"></userInput>
 
-        <div style="position: relative; bottom: 10px;left: 10px;">
+        <div >
           <template v-if="started === false">
             <el-button type="primary" @click="start">开始</el-button>
           </template>
@@ -204,7 +204,7 @@ export default {
               console.log(e);
             }
           } else {
-            console.log(i);
+            console.log(i)
             this.$message("输入了文法中不存在的符号，请重新输入");
             return false;
           }
@@ -269,7 +269,7 @@ export default {
       width: 70%;
     }
     * {
-      margin-bottom: 30px;
+      margin-bottom: 15px;
     }
   }
   .down {
