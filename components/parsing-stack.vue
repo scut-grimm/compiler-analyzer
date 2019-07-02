@@ -19,20 +19,19 @@
       </div>
 
       <div class="PPT">
-        <el-table :data="tableData" style="width: 100%">
-          <el-table-column label="Non Terminal" width="100%">
+        <el-table :data="tableData" >
+          <el-table-column label="Non Terminal">
             <template slot-scope="scope">
               <span>{{scope.row.nonterminal}}</span>
             </template>
           </el-table-column>
-          <el-table-column label="Input Symbol" width="100%">
+          <el-table-column label="Input Symbol" >
             <el-table-column
               v-for="(terminal,index) in tableTerminals"
               :key="index"
               :label="terminal"
-              width="100%"
             >
-              <template slot-scope="scope" style="width: 100%">
+              <template slot-scope="scope" >
                 <span>{{scope.row[terminal]}}</span>
               </template>
             </el-table-column>
@@ -46,7 +45,9 @@
 
 
     <div class="down">
-      <el-table :data="stackData" style="width: 100%">
+      <el-table :data="stackData"
+                height="500"
+                style="width: 100%">
         <el-table-column prop="matched" label="已匹配" width="180" align="right"></el-table-column>
         <el-table-column prop="symbolStack" label="符号栈" width="180" align="right"></el-table-column>
         <el-table-column prop="input" label="输入" align="right"></el-table-column>
@@ -258,7 +259,7 @@ export default {
 <style lang="scss" scoped>
 .analysis {
   width: 90%;
-  margin: 30px auto;
+  margin: 5px auto;
   .up {
     display: flex;
     width: 100%;
@@ -267,6 +268,7 @@ export default {
     }
     .PPT {
       width: 70%;
+      margin-left: 5px;
     }
     * {
       margin-bottom: 15px;
@@ -274,8 +276,8 @@ export default {
   }
   .down {
     /*padding-left: 20px;*/
-    width: 70%;
-    position: relative;
+    width: 90%;
+    margin: auto;
   }
 }
 </style>
