@@ -34,7 +34,7 @@
               :label="terminal"
             >
               <template slot-scope="scope" >
-                <span v-if="scope.row[terminal] != M">
+                <span v-if="scope.row[terminal] != M || terminal!=p">
                   {{scope.row[terminal]}}
                 </span>
                 <HighlightText :text="'`' + scope.row[terminal] + '`'" v-else>
@@ -82,6 +82,7 @@ export default {
   data() {
     const parsingStack = new ParsingStack();
     return {
+      // todo:  变量命名规范
       grammar: new Grammar(),
       active: 0,
       parsingStack,
@@ -91,6 +92,7 @@ export default {
       strToken: [],
       tempInput: [],
       inputData: "",
+      p:"",
       M:"",
       Production: "",
       stackData: [],
@@ -148,11 +150,13 @@ export default {
       }
     },
     next() {
-      let { M, Production, notice, token } = this.wrapper.next();
+      let { p, M, Production, notice, token } = this.wrapper.next();
 
-      // this.pre_notice = this.notice
       if(M) {
         this.M = M.getString()
+      }
+      if(p){
+        this.p = p.getString()
       }
       this.notice = notice;
       this.Production = Production;
