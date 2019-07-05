@@ -24,7 +24,7 @@
           <el-tag class="production">
               A &#8594; α<sub>1</sub> | α<sub>2</sub>...| α<sub>n</sub>
           </el-tag><br />
-          设 1&le;i&le;j&le;n，且 i&ne;j，对于所有的 i 和 j，
+          设 1&le;i&le;j&le;n 且 i&ne;j，对于所有的 i 和 j，
           <el-tag class="firstSet">
             First(α<sub>i</sub>)&cap;First(α<sub>j</sub>)=&empty;
           </el-tag> 恒成立
@@ -47,7 +47,7 @@
                     <el-tag
                       v-for="(symbol,symbolIndex) in firstSet.set"
                       :key="symbolIndex"
-                      style="margin:0px 5px 0px 5px"
+                      style="margin:0px 5px 0px 5px; font-size: 16px;"
                     >{{symbol}}</el-tag>
                   </el-form-item>
                   <el-form-item v-if="props.row.bodys.notice.length>0">
@@ -117,7 +117,7 @@
                     <el-tag
                       v-for="(symbol,index) in props.row.head.firstSet.set"
                       :key="index"
-                      style="margin:0px 5px 0px 5px"
+                      style="margin:0px 5px 0px 5px; font-size: 16px;"
                     >{{symbol}}</el-tag>
                   </el-form-item>
                   <el-form-item>
@@ -333,6 +333,7 @@ export default {
         .left-table-label {
           width: 90px;
           color: #99a9bf;
+          font-size: 16px;
         }
       }
     }
@@ -352,17 +353,21 @@ export default {
         .right-table-label {
           width: 90px;
           color: #99a9bf;
+          font-size: 16px;
         }
       }
     }
     .production {
       margin: 2px;
+      font-size: 16px;
     }
     .symbol {
       margin: 2px;
+      font-size: 16px;
     }
     .firstSet {
       margin: 2px;
+      font-size: 16px;
     }
     .errorProduction {
       color: red;

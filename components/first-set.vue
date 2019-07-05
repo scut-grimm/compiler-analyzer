@@ -16,7 +16,7 @@
           <h3>
             1. 如果
             <el-tag class="symbol">X</el-tag>是一个终止符号，那么
-            <el-tag class="frstSet">First(X)=X</el-tag>
+            <el-tag class="firstSet">First(X)=X</el-tag>
           </h3>
         </div>
         <div class="step" :class="{'active':algorithmStep===2}">
@@ -78,7 +78,7 @@
         <el-table-column
           v-for="(pass,index) in tableColumnIndex"
           :key="index"
-          :label="pass.toString()"
+          :label="'Pass '+pass.toString()"
           style="font-size:20px"
         >
           <template slot-scope="scope">
@@ -376,12 +376,15 @@ export default {
         padding: 5px;
         .symbol {
           margin: 2px 7px 2px 0px;
+          font-size: 16px;
         }
         .production {
           margin: 2px 7px 2px 0px;
+          font-size: 16px;
         }
         .firstSet {
           margin: 2px 7px 2px 0px;
+          font-size: 16px;
         }
         &.active {
           background-color: rgba(252, 217, 21, 0.603);
