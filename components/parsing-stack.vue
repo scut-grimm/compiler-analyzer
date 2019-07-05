@@ -37,8 +37,9 @@
                 <span v-if="scope.row[terminal] != M || terminal!=p">
                   {{scope.row[terminal]}}
                 </span>
-                <HighlightText :text="'`' + scope.row[terminal] + '`'" v-else>
-                </HighlightText>
+                <span class="active" v-else>
+                  {{scope.row[terminal]}}
+                </span>
               </template>
             </el-table-column>
           </el-table-column>
@@ -282,6 +283,9 @@ export default {
     display: flex;
     width: 100%;
     height:350px;
+    .active {
+      background-color: rgba(252, 217, 21, 0.603);
+    }
     .user-input{
       height: 50%;
       width: 29%;
@@ -298,7 +302,8 @@ export default {
   .down {
     /*padding-left: 20px;*/
     width: 90%;
-    margin: auto;
+    position: relative;
+    margin-top: 30px;
   }
 }
 </style>
