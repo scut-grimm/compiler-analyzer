@@ -26,15 +26,14 @@
               if(val!=='') {
                 // const grammar = this.grammar
                 // let result = []
-                const arr = val.split(' ')
+                let arr = val.trim()
+                arr = arr.split(/\s+/)
                 // for(let i of arr){
                 //   result.push(grammar.getSign(i))
                 // }
                 if (arr.length > 0) {
                   this.$emit('getInput', arr)
                 }
-
-
           }
       }
       }

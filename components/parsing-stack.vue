@@ -4,7 +4,7 @@
       <div class="user-input">
         <userInput :grammar="grammar" @getInput="getData"></userInput>
 
-        <div style="position: relative; bottom: 10px;left: 10px;">
+        <div >
           <template v-if="started === false">
             <el-button type="primary" @click="start">开始</el-button>
           </template>
@@ -19,21 +19,26 @@
       </div>
 
       <div class="PPT">
-        <el-table :data="tableData" style="width: 100%">
-          <el-table-column label="Non Terminal" width="100%">
+        <el-table :data="tableData"
+                  height="350"
+        >
+          <el-table-column label="Non Terminal">
             <template slot-scope="scope">
               <span>{{scope.row.nonterminal}}</span>
             </template>
           </el-table-column>
-          <el-table-column label="Input Symbol" width="100%">
+          <el-table-column label="Input Symbol" >
             <el-table-column
               v-for="(terminal,index) in tableTerminals"
               :key="index"
               :label="terminal"
-              width="100%"
             >
-              <template slot-scope="scope" style="width: 100%">
-                <span>{{scope.row[terminal]}}</span>
+              <template slot-scope="scope" >
+                <span v-if="scope.row[terminal] != M || terminal!=p">
+                  {{scope.row[terminal]}}
+                </span>
+                <HighlightText :text="'`' + scope.row[terminal] + '`'" v-else>
+                </HighlightText>
               </template>
             </el-table-column>
           </el-table-column>
@@ -46,7 +51,9 @@
 
 
     <div class="down">
-      <el-table :data="stackData" style="width: 100%">
+      <el-table :data="stackData"
+                height="500"
+                style="width: 100%">
         <el-table-column prop="matched" label="已匹配" width="180" align="right"></el-table-column>
         <el-table-column prop="symbolStack" label="符号栈" width="180" align="right"></el-table-column>
         <el-table-column prop="input" label="输入" align="right"></el-table-column>
@@ -65,13 +72,17 @@ import MapSet from "~/classes/map-set";
 import ParsingStack from "~/classes/parsing-stack";
 import GenerateParsingStack from "~/classes/algorithms/generate-parsing-stack";
 import sign from "../classes/sign";
+import HighlightText from '~/components/highlight-text'
+
 export default {
   components: {
+    HighlightText,
     userInput
   },
   data() {
     const parsingStack = new ParsingStack();
     return {
+      // todo:  变量命名规范
       grammar: new Grammar(),
       active: 0,
       parsingStack,
@@ -81,6 +92,8 @@ export default {
       strToken: [],
       tempInput: [],
       inputData: "",
+      p:"",
+      M:"",
       Production: "",
       stackData: [],
       wrapper: null,
@@ -137,8 +150,14 @@ export default {
       }
     },
     next() {
-      let { Production, notice, token } = this.wrapper.next();
-      // this.pre_notice = this.notice
+      let { p, M, Production, notice, token } = this.wrapper.next();
+
+      if(M) {
+        this.M = M.getString()
+      }
+      if(p){
+        this.p = p.getString()
+      }
       this.notice = notice;
       this.Production = Production;
       this.strToken = token;
@@ -204,7 +223,7 @@ export default {
               console.log(e);
             }
           } else {
-            console.log(i);
+            console.log(i)
             this.$message("输入了文法中不存在的符号，请重新输入");
             return false;
           }
@@ -258,24 +277,28 @@ export default {
 <style lang="scss" scoped>
 .analysis {
   width: 90%;
-  margin: 30px auto;
+  margin: 5px auto;
   .up {
     display: flex;
     width: 100%;
+    height:350px;
     .user-input{
+      height: 50%;
       width: 29%;
     }
     .PPT {
+      height: 100px;
       width: 70%;
+      margin-left: 10px;
     }
     * {
-      margin-bottom: 30px;
+      margin-bottom: 15px;
     }
   }
   .down {
     /*padding-left: 20px;*/
-    width: 70%;
-    position: relative;
+    width: 90%;
+    margin: auto;
   }
 }
 </style>

@@ -35,6 +35,8 @@ class GenerateParsingStack {
     // 返回初始值
     if (!this.started) {
       yield {
+        p:p,
+        M:M,
         Production: '',
         notice: ``,
         token:strToken
@@ -52,6 +54,8 @@ class GenerateParsingStack {
       } else if (M.getBody().length === 1 && M.getBody()[0] === empty) {
         stack.pop()
         yield {
+          p:p,
+          M:M,
           Production: this.getTokenString(cur_index),
           notice: `输出${M.getHeadString()} -> ${M.getBodyString()}`,
           token:strToken.slice(cur_index)
@@ -60,6 +64,8 @@ class GenerateParsingStack {
         stack.pop()
         stack.push(M.getBody())
         yield {
+          p:p,
+          M:M,
           Production: this.getTokenString(cur_index),
           notice: `输出${M.getHeadString()} -> ${M.getBodyString()}`,
           token:strToken.slice(cur_index)
@@ -75,6 +81,8 @@ class GenerateParsingStack {
 
     stack.pop() // 匹配非终结符号
     yield {
+      p:p,
+      M:M,
       Production: this.getTokenString(cur_index+1),
       notice: `匹配${X.getString()}`,
       token:strToken.slice(cur_index+1)
