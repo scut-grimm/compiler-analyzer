@@ -22,12 +22,12 @@
         <el-table :data="tableData"
                   height="350"
         >
-          <el-table-column label="Non Terminal">
+          <el-table-column label="非终止符号">
             <template slot-scope="scope">
               <span>{{scope.row.nonterminal}}</span>
             </template>
           </el-table-column>
-          <el-table-column label="Input Symbol" >
+          <el-table-column label="输入符号" >
             <el-table-column
               v-for="(terminal,index) in tableTerminals"
               :key="index"
