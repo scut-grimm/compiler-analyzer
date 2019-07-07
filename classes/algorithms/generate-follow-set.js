@@ -32,7 +32,8 @@ class GenerateFollowSet {
         step: 0,
         highlightSymbols: [],
         active,
-        gettingFirst: []
+        gettingFirst: [],
+        curSign: startSign
       }
     }
     for(const production of this.grammar.getProductions()){
@@ -62,7 +63,8 @@ class GenerateFollowSet {
               highlightSymbols: [],
               processedSigns: [...processedSigns],
               active,
-              gettingFirst: [...remains]
+              gettingFirst: [...remains],
+              curSign: sign
             }
           }
 
@@ -75,7 +77,8 @@ class GenerateFollowSet {
               highlightSymbols: [],
               processedSigns: [...processedSigns],
               active,
-              gettingFirst: []
+              gettingFirst: [],
+              curSign: sign
             }
           }else if(remainsFirstSet.has(Empty)){
             yield {
@@ -85,7 +88,8 @@ class GenerateFollowSet {
               highlightSymbols: [],
               processedSigns: [...processedSigns],
               active,
-              gettingFirst: [...remains]
+              gettingFirst: [...remains],
+              curSign: sign
             }
           }
           if(remainsFirstSet.size === 0 || remainsFirstSet.has(Empty)){
@@ -103,7 +107,8 @@ class GenerateFollowSet {
               highlightSymbols: [],
               processedSigns: [...processedSigns],
               active,
-              gettingFirst: [production.getHead()]
+              gettingFirst: [production.getHead()],
+              curSign: sign
             }
 
           }

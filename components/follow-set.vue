@@ -38,7 +38,7 @@
           max-height="550"
         >
           <el-table-column
-            label="NonTerminal"
+            label="非终止符号"
             width="150"
           >
             <template slot-scope="scope">
@@ -52,7 +52,7 @@
             width="120"
           >
             <template slot-scope="scope">
-              <HighlightText :text="'`' + scope.row['pass' + String(index - 1)] + '`'"></HighlightText>
+              <HighlightText :highlight="index===passCount && scope.row.nonterminal === curSignText" :text="'`' + scope.row['pass' + String(index - 1)] + '`'"></HighlightText>
             </template>
           </el-table-column>
         </el-table>
@@ -126,7 +126,8 @@ export default {
       pass_results: [],
       tableTerminals: [],
       tableNonterminals: [],
-      processedSigns: []
+      processedSigns: [],
+      curSign: ''
     };
   },
   methods: {
@@ -164,7 +165,8 @@ export default {
         highlightSymbols,
         active,
         gettingFirst,
-        processedSigns
+        processedSigns,
+        curSign
       } = this.wrapper.next();
       this.processedSigns = processedSigns
       this.gettingFirst = gettingFirst
@@ -174,6 +176,7 @@ export default {
       this.notice = notice;
       this.curHighlightSymbols = highlightSymbols;
       this.active = active
+      this.curSign = curSign
       this.sync();
     },
     skip() {
@@ -184,7 +187,8 @@ export default {
         highlightSymbols,
         active,
         gettingFirst,
-        processedSigns
+        processedSigns,
+        curSign
       } = this.wrapper.skip();
       this.processedSigns = processedSigns
       this.gettingFirst = gettingFirst
@@ -194,6 +198,7 @@ export default {
       this.notice = notice;
       this.curHighlightSymbols = highlightSymbols;
       this.active = active
+      this.curSign = curSign
       this.sync();
     },
     startAutoPlay() {
@@ -282,7 +287,7 @@ export default {
           if (map.has(key)) {
             values = [...map.get(key)]
           }
-          cur['pass' + pass] = values.map(e => e.getString()).join('')
+          cur['pass' + pass] = values.map(e => e.getString()).join(' ')
         }
         pass++
       }
@@ -299,6 +304,12 @@ export default {
         }
       }
       return tableData
+    },
+    curSignText(){
+      if(typeof this.curSign.getString === 'function'){
+        return this.curSign.getString()
+      }
+      return ''
     }
   },
   mounted() {
