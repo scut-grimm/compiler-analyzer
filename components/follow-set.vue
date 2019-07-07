@@ -17,7 +17,7 @@
               class="title"
               v-if="pre_notice !== ''"
             >当前操作</p> -->
-            <HighlightText class="h2" :text="pre_notice"></HighlightText>
+            <HighlightText class="h2" :text="notice"></HighlightText>
 
           </template>
 
@@ -27,7 +27,7 @@
           class="step h3"
           v-for="(step,index) in algorithmSteps"
           :key="index"
-          :class="{'active': preStep===index}"
+          :class="{'active': curStep===index}"
           :text="(index + 1) + '. ' + step"
         ></HighlightText>
       </div>

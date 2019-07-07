@@ -24,6 +24,8 @@ class GenerateFollowSet {
     const processedSigns = new Set()
     let active = 0
     if(first){
+
+      followset.add(startSign, stackBottomSign)
       yield{
         curProduction: {},
         notice: `将\`$\`放入\`Follow(${startSign.getString()})\`中`,
@@ -32,7 +34,6 @@ class GenerateFollowSet {
         active,
         gettingFirst: []
       }
-      followset.add(startSign, stackBottomSign)
     }
     for(const production of this.grammar.getProductions()){
 
@@ -50,6 +51,10 @@ class GenerateFollowSet {
         if(sign.isNonterminal()){
           const toAdd = [...this.grammar.getSignsFirstSet(remains)].filter(e => !e.isEmpty())
           if(toAdd.length > 0){
+
+            for(const item of toAdd){
+              followset.add(sign, item)
+            }
             yield {
               production,
               notice: `\`FIRST(${remains.map(e=>e.getString()).join('')})\`=\`${toAdd.map(e=>e.getString()).join('')}\`，将除\`${Empty.getString()}\`之外的符号加入\`FOLLOW(${sign.getString()})\`中`,
@@ -58,9 +63,6 @@ class GenerateFollowSet {
               processedSigns: [...processedSigns],
               active,
               gettingFirst: [...remains]
-            }
-            for(const item of toAdd){
-              followset.add(sign, item)
             }
           }
 
@@ -87,6 +89,13 @@ class GenerateFollowSet {
             }
           }
           if(remainsFirstSet.size === 0 || remainsFirstSet.has(Empty)){
+
+            if(followset.has(production.getHead())){
+              const toAdd = [...followset.get(production.getHead())]
+              for(const item of toAdd){
+                followset.add(sign, item)
+              }
+            }
             yield {
               production,
               notice: `将\`FOLLOW(${production.getHead().getString()})\`中的所有符号放入\`FOLLOW(${sign.getString()})\`中`,
@@ -95,12 +104,6 @@ class GenerateFollowSet {
               processedSigns: [...processedSigns],
               active,
               gettingFirst: [production.getHead()]
-            }
-            if(followset.has(production.getHead())){
-              const toAdd = [...followset.get(production.getHead())]
-              for(const item of toAdd){
-                followset.add(sign, item)
-              }
             }
 
           }

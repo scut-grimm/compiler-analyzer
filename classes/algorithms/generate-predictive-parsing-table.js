@@ -31,13 +31,14 @@ class GeneratePredictiveParsingTable {
       highlightSymbols: []
     }
     for (const symbol of curFirstSet) {
+
+      table.set(curProduction.head, symbol, curProduction)
       yield {
         curProduction,
         notice: `\`First(${curProduction.getBodyString()})\`中存在终止符 \`${symbol.getString()}\` , 将产生式 \`${curProduction.getString()}\` 加入到分析表\`M[${curProduction.getHeadString()}, ${symbol.getString()}]\`中`,
         step: 0,
         highlightSymbols: [symbol]
       }
-      table.set(curProduction.head, symbol, curProduction)
     }
     if (curFirstSet.has(Empty)) {
       yield {
@@ -47,22 +48,24 @@ class GeneratePredictiveParsingTable {
         highlightSymbols: [Empty]
       }
       for (const symbol of curFollowSet) {
+
+        table.set(curProduction.head, symbol, curProduction)
         yield {
           curProduction,
           notice: `\`Follow(${curProduction.getHeadString()})\`中存在终止符 \`${symbol.getString()}\` , 将产生式 \`${curProduction.getString()}\` 加入到分析表\`M[${curProduction.getHeadString()}, ${symbol.getString()}]\`中`,
           step: 1,
           highlightSymbols: [symbol]
         }
-        table.set(curProduction.head, symbol, curProduction)
       }
       if (curFollowSet.has(End)) {
+
+        table.set(curProduction.head, End, curProduction)
         yield {
           curProduction,
           notice: `\`Follow(${curProduction.getHeadString()})\`中存在 \`$\` , 将产生式 \`${curProduction.getString()}\` 加入到分析表\`M[${curProduction.getHeadString()}, $]\`中`,
           step: 2,
           highlightSymbols: [End]
         }
-        table.set(curProduction.head, End, curProduction)
       } else {
         yield {
           curProduction,
