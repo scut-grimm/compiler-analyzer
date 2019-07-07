@@ -24,18 +24,18 @@ class GeneratePredictiveParsingTable {
     const curFollowSet = new Set(G.getSignFollowSet(curProduction.head))
     const Empty = G.getEmptySign()
     const End = G.getStackBottomSign()
-    yield {
-      curProduction,
-      notice: '分析产生式`' + curProduction.getString() + '`',
-      step: 0,
-      highlightSymbols: []
-    }
+    // yield {
+    //   curProduction,
+    //   notice: '分析产生式`' + curProduction.getString() + '`',
+    //   step: 0,
+    //   highlightSymbols: []
+    // }
     for (const symbol of curFirstSet) {
 
       table.set(curProduction.head, symbol, curProduction)
       yield {
         curProduction,
-        notice: `\`First(${curProduction.getBodyString()})\`中存在终止符 \`${symbol.getString()}\` , 将产生式 \`${curProduction.getString()}\` 加入到分析表\`M[${curProduction.getHeadString()}, ${symbol.getString()}]\`中`,
+        notice: '分析产生式`' + curProduction.getString() + '` ' + `\`First(${curProduction.getBodyString()})\`中存在终止符 \`${symbol.getString()}\` , 将产生式 \`${curProduction.getString()}\` 加入到分析表\`M[${curProduction.getHeadString()}, ${symbol.getString()}]\`中`,
         step: 0,
         highlightSymbols: [symbol]
       }
