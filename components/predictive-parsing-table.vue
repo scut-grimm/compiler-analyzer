@@ -325,6 +325,7 @@ export default {
     margin-inline-start: 0px;
     margin-inline-end: 0px;
     font-weight: bold;
+    border-radius: 5px;
   }
   .h2{
     display: block;
@@ -334,6 +335,7 @@ export default {
     margin-inline-start: 0px;
     margin-inline-end: 0px;
     font-weight: bold;
+    border-radius: 5px;
   }
 
   .algorithm {
@@ -342,6 +344,7 @@ export default {
     .left {
       width: 50%;
       max-width: 50%;
+      padding-right: 20px;
       .step-desc {
         min-height: 200px;
       }
