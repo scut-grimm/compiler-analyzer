@@ -88,6 +88,9 @@ class GeneratePredictiveParsingTable {
   getCurResult({ table }) {
     return table.getTableData()
   }
+  getModifyPosition({table}){
+    return table.getModifyPosition()
+  }
   getResultFromContext({ table }) {
     return table
   }

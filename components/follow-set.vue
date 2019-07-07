@@ -6,9 +6,9 @@
           class="step-desc"
           style="text-align:center"
         >
-          <span v-if="!started">点击开始按钮计算所有文法符号的Follow集合</span>
+          <span v-if="!started" class="h2">点击开始按钮计算所有非终止符号的Follow集合</span>
           <template v-else>
-            <p
+            <!-- <p
               class="title"
               v-if="notice !== ''"
             >下一步操作</p>
@@ -16,18 +16,18 @@
             <p
               class="title"
               v-if="pre_notice !== ''"
-            >当前操作</p>
-            <HighlightText :text="pre_notice"></HighlightText>
+            >当前操作</p> -->
+            <HighlightText class="h2" :text="pre_notice"></HighlightText>
 
           </template>
 
         </div>
-        <p class="title">算法流程</p>
+        <p class="title h3">算法流程</p>
         <HighlightText
-          class="step"
+          class="step h3"
           v-for="(step,index) in algorithmSteps"
           :key="index"
-          :class="{'active': curStep===index}"
+          :class="{'active': preStep===index}"
           :text="(index + 1) + '. ' + step"
         ></HighlightText>
       </div>
@@ -35,6 +35,7 @@
         <el-table
           :data="tableData"
           style="width: 100%"
+          max-height="550"
         >
           <el-table-column
             label="NonTerminal"
@@ -51,11 +52,11 @@
             width="120"
           >
             <template slot-scope="scope">
-              <span>{{scope.row['pass' + String(index - 1)]}}</span>
+              <HighlightText :text="'`' + scope.row['pass' + String(index - 1)] + '`'"></HighlightText>
             </template>
           </el-table-column>
         </el-table>
-        <div style="position: absolute; bottom: -40px;left: 10px;">
+        <div style="position: absolute; bottom: -60px;left: 10px;">
           <template v-if="started === false">
             <el-button
               type="primary"
@@ -115,6 +116,7 @@ export default {
       notice: "",
       started: false,
       curStep: -1,
+      preStep: -1,
       curHighlightSymbols: [],
       autoTime: 1000,
       autoTimer: null,
@@ -139,6 +141,8 @@ export default {
       this.isAllDone = false;
       this.curHighlightSymbols = [];
       this.active = 0
+      this.curStep = this.preStep = -1;
+      this.notice = this.pre_notice = ''
       this.sync();
     },
     sync() {
@@ -164,6 +168,7 @@ export default {
       } = this.wrapper.next();
       this.processedSigns = processedSigns
       this.gettingFirst = gettingFirst
+      this.preStep = this.curStep
       this.curStep = step;
       this.pre_notice = this.notice;
       this.notice = notice;
@@ -183,6 +188,7 @@ export default {
       } = this.wrapper.skip();
       this.processedSigns = processedSigns
       this.gettingFirst = gettingFirst
+      this.preStep = this.curStep
       this.curStep = step;
       this.pre_notice = this.notice;
       this.notice = notice;
@@ -244,8 +250,8 @@ export default {
     algorithmSteps() {
       return [
         "在开始符号`S`的`FOLLOW(S)`中，加入`$`",
-        "如果存在产生式`A->αBβ`，则将`FIRST(β)`中除`ε`以外的符号都放入`FOLLOW(B)`中",
-        "如果存在产生式`A->αB`，或`A->αBβ`，其中`FIRST(β)`中包含`ε`，则将`FOLLOW(A)`中的所有符号放入`FOLLOW(B)`中"
+        "如果存在产生式`A→αBβ`，则将`FIRST(β)`中除`ε`以外的符号都放入`FOLLOW(B)`中",
+        "如果存在产生式`A→αB`，或`A→αBβ`，其中`FIRST(β)`中包含`ε`，则将`FOLLOW(A)`中的所有符号放入`FOLLOW(B)`中"
       ];
     },
     passCount() {
@@ -301,6 +307,24 @@ export default {
 </script>
 <style lang="scss" scoped>
 .ppt {
+  .h3{
+    display: block;
+    font-size: 1.17em;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    font-weight: bold;
+  }
+  .h2{
+    display: block;
+    font-size: 1.5em;
+    margin-block-start: 0.83em;
+    margin-block-end: 0.83em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    font-weight: bold;
+  }
   .algorithm {
     display: flex;
     font-weight: bold;
@@ -308,7 +332,7 @@ export default {
       width: 50%;
       max-width: 50%;
       .step-desc {
-        font-size: 30px;
+        //font-size: 30px;
         min-height: 200px;
       }
     }

@@ -1,15 +1,22 @@
 <template>
-  <p v-html="html" class="highlight-text">
+  <p v-html="html" :class="{ 'highlight-text': html!==''}">
 
   </p>
 </template>
 <script>
-import _ from 'lodash'
 export default {
-  props: ['text'],
+  props: ['text', 'highlight'],
   computed:{
     html(){
-      return this.text.replace(/`(.*?)`/g,'<span class="highlight-text-item">$1</span>')
+      if(this.text === '``'){
+        return ''
+      }
+      if(this.highlight){
+        return this.text.replace(/`(.*?)`/g,'<span class="highlight-text-item cell-heighlight">$1</span>')
+      }else{
+        return this.text.replace(/`(.*?)`/g,'<span class="highlight-text-item">$1</span>')
+      }
+
 
     }
   }
@@ -30,8 +37,15 @@ export default {
     border-radius: 4px;
     box-sizing: border-box;
     border: 1px solid rgba(64,158,255,.2);
-    white-space: nowrap;
+    //white-space: nowrap;
     font-weight: bold;
     margin: 0 5px;
+    word-break: break-all;
+    word-wrap:break-word;
 }
+  .cell-heighlight{
+    color: #F56C6C;
+    background-color: rgba(245,108,108,.1);
+    border-color: rgba(245,108,108,.2);
+  }
 </style>

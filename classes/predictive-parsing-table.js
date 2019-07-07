@@ -4,6 +4,10 @@ class PredictiveParsingTable {
     this.map = new Map()
     this.nonterminals = new Set()
     this.terminals = new Set()
+    this.modify = {
+      nonterminal: '',
+      terminal: ''
+    }
   }
   clone(){
     let other = new PredictiveParsingTable()
@@ -35,8 +39,15 @@ class PredictiveParsingTable {
       assert.strictEqual(submap.get(terminal).getString(), production.getString(), 'has more than one item')
     }
     submap.set(terminal, production)
+    this.modify = {
+      nonterminal,
+      terminal
+    }
     this.nonterminals.add(nonterminal)
     this.terminals.add(terminal)
+  }
+  getModifyPosition(){
+    return this.modify
   }
   getTableData() {
     const nonterminals = [...this.nonterminals]
