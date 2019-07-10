@@ -517,7 +517,7 @@ export default {
       if (symbol.length === 0) {
         return false;
       }
-      const illegalSymbol = /(-|>|\||\$|ε|\u2192)+/;
+      const illegalSymbol = /(-|>|\||\$|ε|\u2192|`)+/;
       if (illegalSymbol.test(symbol)) {
         this.$message(`符号 ${symbol} 不可定义为文法符号`);
         return false;
