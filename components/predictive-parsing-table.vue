@@ -17,6 +17,7 @@
               class="title"
               v-if="pre_notice !== ''"
             >当前操作</p> -->
+            <HighlightText class="h2" :text="'基于产生式`' + this.curCalProduction.getString() + '`'" v-if="this.curCalProduction.getString"></HighlightText>
             <HighlightText class="h2" :text="notice"></HighlightText>
 
           </template>
@@ -129,7 +130,8 @@ export default {
       autoTimer: null,
       isAllDone: false,
       modifyNonterminal: '',
-      modifyTerminal: ''
+      modifyTerminal: '',
+      curCalProduction: {}
     };
   },
   methods: {
@@ -177,6 +179,7 @@ export default {
       this.pre_notice = this.notice;
       this.notice = notice;
       this.curHighlightSymbols = highlightSymbols;
+      this.curCalProduction = curProduction
       this.sync();
     },
     skip() {
@@ -191,6 +194,7 @@ export default {
       this.pre_notice = this.notice;
       this.notice = notice;
       this.curHighlightSymbols = highlightSymbols;
+      this.curCalProduction = curProduction
       this.sync();
     },
     oldnext() {

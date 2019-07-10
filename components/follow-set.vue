@@ -17,6 +17,9 @@
               class="title"
               v-if="pre_notice !== ''"
             >当前操作</p> -->
+            <HighlightText class="h2" :text="'当前计算`Follow(' + this.curSign.getString() + ')`'" v-if="this.curSign.getString"></HighlightText>
+            <HighlightText class="h2" :text="'基于产生式`' + this.curCalProduction.getString() + '`'" v-if="this.curCalProduction.getString"></HighlightText>
+
             <HighlightText class="h2" :text="notice"></HighlightText>
 
           </template>
@@ -127,7 +130,8 @@ export default {
       tableTerminals: [],
       tableNonterminals: [],
       processedSigns: [],
-      curSign: ''
+      curSign: '',
+      curCalProduction: {}
     };
   },
   methods: {
@@ -177,6 +181,7 @@ export default {
       this.curHighlightSymbols = highlightSymbols;
       this.active = active
       this.curSign = curSign
+      this.curCalProduction = production
       this.sync();
     },
     skip() {
@@ -199,6 +204,7 @@ export default {
       this.curHighlightSymbols = highlightSymbols;
       this.active = active
       this.curSign = curSign
+      this.curCalProduction = production
       this.sync();
     },
     startAutoPlay() {

@@ -27,7 +27,7 @@ class GenerateFollowSet {
 
       followset.add(startSign, stackBottomSign)
       yield{
-        curProduction: {},
+        production: {},
         notice: `将\`$\`放入\`Follow(${startSign.getString()})\`中`,
         step: 0,
         highlightSymbols: [],
