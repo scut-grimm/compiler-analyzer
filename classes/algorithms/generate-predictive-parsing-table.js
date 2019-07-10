@@ -31,7 +31,9 @@ class GeneratePredictiveParsingTable {
     //   highlightSymbols: []
     // }
     for (const symbol of curFirstSet) {
-
+      if(symbol.isTerminal() == false){
+        continue;
+      }
       table.set(curProduction.head, symbol, curProduction)
       yield {
         curProduction,
@@ -48,7 +50,9 @@ class GeneratePredictiveParsingTable {
         highlightSymbols: [Empty]
       }
       for (const symbol of curFollowSet) {
-
+        if(symbol.isTerminal() == false){
+          continue;
+        }
         table.set(curProduction.head, symbol, curProduction)
         yield {
           curProduction,
