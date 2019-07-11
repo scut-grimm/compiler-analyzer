@@ -661,6 +661,13 @@ export default {
     delectSymbol(val) {
       this.terminals = this.terminals.filter(e => e !== val);
       this.nonterminals = this.nonterminals.filter(e => e !== val);
+       // 这里强行改变 this.ruleForm.CFG 以触发表单验证
+      if (this.ruleForm.CFG.length > 0) {
+        this.ruleForm.CFG += " ";
+        setTimeout(() => {
+          this.ruleForm.CFG = this.ruleForm.CFG.slice(0, -1);
+        }, 1);
+      }
     },
     generateGrammar(jump = false) {
       if (this.getProductions()) {
