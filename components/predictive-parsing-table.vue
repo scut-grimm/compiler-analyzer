@@ -162,6 +162,9 @@ export default {
       if(typeof this.modifyTerminal.getString === 'function'){
         this.modifyTerminal = this.modifyTerminal.getString()
       }
+      if(this.isAllDone){
+        this.$message("已完成预测分析表构建");
+      }
       if (this.isAllDone && this.autoTimer !== null) {
         clearTimeout(this.autoTimer);
         this.autoTimer = null;

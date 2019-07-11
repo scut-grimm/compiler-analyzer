@@ -156,6 +156,9 @@ export default {
       this.tableTerminals = this.grammar.getTerminals()
       this.tableNonterminals = this.grammar.getNonterminals()
       this.isAllDone = this.wrapper.isAllDone();
+      if(this.isAllDone){
+        this.$message("已完成预测分析表构建");
+      }
       if (this.isAllDone && this.autoTimer !== null) {
         clearTimeout(this.autoTimer);
         this.autoTimer = null;
